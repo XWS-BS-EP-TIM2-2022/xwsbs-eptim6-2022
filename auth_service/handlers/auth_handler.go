@@ -11,6 +11,11 @@ type AuthHandler struct {
 	UserStore *store.UsersStore
 }
 
+func InitAuthHandler() *AuthHandler {
+	userStore := store.InitUsersStore()
+	return &AuthHandler{UserStore: userStore}
+}
+
 func DecodeUser(req *http.Request) (store.User, error) {
 	var user store.User
 	err := json.NewDecoder(req.Body).Decode(&user)
@@ -25,7 +30,7 @@ func (ag *AuthHandler) LoginUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	ag.UserStore.FindByUsername(user.Username)
-	
+
 }
 
 func (ag *AuthHandler) AddNewUser(w http.ResponseWriter, r *http.Request) {
@@ -37,9 +42,9 @@ func (ag *AuthHandler) AddNewUser(w http.ResponseWriter, r *http.Request) {
 	}
 	ag.UserStore.AddNew(user)
 	fmt.Println("Post request")
-	json.NewEncoder(w).Encode(ag.UserStore.Users)
 }
 
 func (ag *AuthHandler) GetAll(w http.ResponseWriter, r *http.Request) {
-	json.NewEncoder(w).Encode(ag.UserStore.Users)
+	users := ag.UserStore.FindAll()
+	json.NewEncoder(w).Encode(users)
 }
