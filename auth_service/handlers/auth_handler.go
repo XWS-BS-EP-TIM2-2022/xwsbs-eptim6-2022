@@ -11,7 +11,9 @@ import (
 )
 
 var secretString = []byte("secret_key") //TODO: Use ENV Variable
-
+type ErrorMessage struct {
+	Message string `json:"message"`
+}
 type JWT struct {
 	Token string `json:"token"`
 }
@@ -31,7 +33,12 @@ func (ag *AuthHandler) LoginUser(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	dbUser := ag.UserStore.FindByUsername(user.Username)
+	dbUser, err := ag.UserStore.FindByUsername(user.Username)
+	if err != nil {
+		fmt.Println("User not found")
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
 	if dbUser.Password == user.Password {
 		tokenStr, err := GenerateJWT(dbUser)
 		if err != nil {
@@ -69,6 +76,11 @@ func (ag *AuthHandler) AuthorizeJWT(w http.ResponseWriter, r *http.Request) {
 
 func (ag *AuthHandler) AddNewUser(w http.ResponseWriter, r *http.Request) {
 	user, err := DecodeUser(r)
+	if _, err := ag.UserStore.FindByUsername(user.Username); err == nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(ErrorMessage{Message: "Username already in use"})
+		return
+	}
 	if err != nil {
 		println("Error while parsing json")
 		w.WriteHeader(http.StatusBadRequest)

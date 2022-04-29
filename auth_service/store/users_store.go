@@ -28,14 +28,11 @@ func (us *UsersStore) AddNew(u User) {
 	fmt.Println("Inserted a single document: ", insertResult.InsertedID)
 }
 
-func (us *UsersStore) FindByUsername(username string) User {
+func (us *UsersStore) FindByUsername(username string) (User, error) {
 	var user User
 	filter := bson.D{{"username", username}}
 	err := us.UsersCollection.FindOne(context.TODO(), filter).Decode(&user)
-	if err != nil {
-		log.Fatal(err)
-	}
-	return user
+	return user, err
 }
 func (us *UsersStore) FindAll() []User {
 	cur, err := us.UsersCollection.Find(context.TODO(), bson.D{{}}, options.Find())
