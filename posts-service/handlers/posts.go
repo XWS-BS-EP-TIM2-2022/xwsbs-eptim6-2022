@@ -29,8 +29,16 @@ func (p *PostsHandler) GetAll(rw http.ResponseWriter, r *http.Request) {
 
 func (p *PostsHandler) CreatePost(rw http.ResponseWriter, r *http.Request) {
 
-	post := r.Context().Value(KeyProduct{}).(store.Post)
+	post := store.Post{}
+
+	err := post.FromJSON(r.Body)
+	if err != nil {
+		http.Error(rw, "Error reading product", http.StatusBadRequest)
+		return
+	}
 	store.CreatePost(&post)
+	rw.WriteHeader(http.StatusOK)
+	rw.Write([]byte("New post created."))
 }
 
 func (p *PostsHandler) GetOne(rw http.ResponseWriter, r *http.Request) {
@@ -58,5 +66,3 @@ func (p *PostsHandler) GetOne(rw http.ResponseWriter, r *http.Request) {
 		http.Error(rw, "Unable to marshal json", http.StatusInternalServerError)
 	}
 }
-
-type KeyProduct struct{}

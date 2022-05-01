@@ -8,12 +8,19 @@ import (
 )
 
 type Post struct {
-	ID        int    `json:"id"`
-	Username  string `json:"username"`
-	Text      string `json:"text"`
-	Likes     int    `json:"likes"`
-	Dislikes  int    `json:"dislikes"`
-	CreatedOn string `json:"-"`
+	ID        int       `json:"id"`
+	Username  string    `json:"username"`
+	Text      string    `json:"text"` // slike i linkovi?
+	Likes     int       `json:"likes"`
+	Dislikes  int       `json:"dislikes"`
+	CreatedOn string    `json:"-"`
+	Comments  []Comment `json:"comments"`
+}
+
+type Comment struct {
+	//ID int `json:"id"`
+	Username string `json:"username"`
+	Text     string `json:"text"`
 }
 
 func (p *Post) FromJSON(r io.Reader) error {
