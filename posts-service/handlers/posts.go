@@ -9,16 +9,31 @@ import (
 )
 
 type PostsHandler struct {
-	l *log.Logger
+	l          *log.Logger
+	postsStore *store.PostsStore
 }
 
 func NewPostsHandler(l *log.Logger) *PostsHandler {
-	return &PostsHandler{l}
+	postsStore := store.InitPostsStore()
+	return &PostsHandler{l, postsStore}
 }
 
 func (p *PostsHandler) GetAll(rw http.ResponseWriter, r *http.Request) {
 
-	lp := store.GetPosts()
+	lp := p.postsStore.GetAll()
+
+	// serialize the list to JSON
+	err := lp.ToJSON(rw)
+	if err != nil {
+		http.Error(rw, "Unable to marshal json", http.StatusInternalServerError)
+	}
+}
+
+func (p *PostsHandler) GetByUser(rw http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	user := vars["username"]
+
+	lp := p.postsStore.GetByUser(user)
 
 	// serialize the list to JSON
 	err := lp.ToJSON(rw)
@@ -33,10 +48,14 @@ func (p *PostsHandler) CreatePost(rw http.ResponseWriter, r *http.Request) {
 
 	err := post.FromJSON(r.Body)
 	if err != nil {
-		http.Error(rw, "Error reading product", http.StatusBadRequest)
+		http.Error(rw, "Error creating post", http.StatusBadRequest)
 		return
 	}
-	store.CreatePost(&post)
+	err = p.postsStore.CreatePost(post)
+	if err != nil {
+		http.Error(rw, "Error creating post", http.StatusBadRequest)
+		return
+	}
 	rw.WriteHeader(http.StatusOK)
 	rw.Write([]byte("New post created."))
 }
@@ -49,17 +68,39 @@ func (p *PostsHandler) GetOne(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	post, _, err := store.FindPost(id)
+	post := p.postsStore.GetById(id)
 
-	if err == store.ErrProductNotFound {
-		http.Error(rw, "Post not found", http.StatusNotFound)
-		return
-	}
-
+	err = post.ToJSON(rw)
 	if err != nil {
-		http.Error(rw, "Post not found", http.StatusInternalServerError)
+		http.Error(rw, "Unable to marshal json", http.StatusInternalServerError)
+	}
+}
+
+func (p *PostsHandler) LikePost(rw http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		http.Error(rw, "Unable to convert id", http.StatusBadRequest)
 		return
 	}
+
+	post := p.postsStore.LikePost(id)
+
+	err = post.ToJSON(rw)
+	if err != nil {
+		http.Error(rw, "Unable to marshal json", http.StatusInternalServerError)
+	}
+}
+
+func (p *PostsHandler) DislikePost(rw http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		http.Error(rw, "Unable to convert id", http.StatusBadRequest)
+		return
+	}
+
+	post := p.postsStore.LikePost(id)
 
 	err = post.ToJSON(rw)
 	if err != nil {

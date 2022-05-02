@@ -19,10 +19,12 @@ func main() {
 	getRouter := sm.Methods(http.MethodGet).Subrouter()
 	getRouter.HandleFunc("/posts", ph.GetAll)
 	//getRouter.HandleFunc("/posts/homepage", ph.GetForUser)
-	//getRouter.HandleFunc("/posts/user-profile", ph.GetByUser)
-	getRouter.HandleFunc("/posts/{id:[0-9]+}", ph.GetOne)
-	//getRouter.HandleFunc("/posts/like/{id:[0-9]+}", ph.LikePost)
-	//getRouter.HandleFunc("/posts/dislike/{id:[0-9]+}", ph.DislikePost)
+	getRouter.HandleFunc("/posts/user-profile/{username:[a-z]+}", ph.GetByUser)
+	getRouter.HandleFunc("/posts/{id:[0-9]+}", ph.GetOne) // ne radi
+
+	putRouter := sm.Methods(http.MethodPut).Subrouter()
+	getRouter.HandleFunc("/posts/like/{id:[0-9]+}", ph.LikePost)       // ne radi
+	putRouter.HandleFunc("/posts/dislike/{id:[0-9]+}", ph.DislikePost) // ne radi
 
 	postRouter := sm.Methods(http.MethodPost).Subrouter()
 	postRouter.HandleFunc("/posts/create", ph.CreatePost)
