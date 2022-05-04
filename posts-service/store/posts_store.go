@@ -13,18 +13,18 @@ import (
 )
 
 type Post struct {
-	ID        primitive.ObjectID `json:"id"`
-	Username  string             `json:"username"`
-	Text      string             `json:"text"` // slike i linkovi?
-	Likes     int                `json:"likes"`
-	Dislikes  int                `json:"dislikes"`
-	CreatedOn string             `json:"-"`
-	Comments  []Comment          `json:"comments"`
+	ID        primitive.ObjectID `bson:"_id"`
+	Username  string             `bson:"username"`
+	Text      string             `bson:"text"`
+	Likes     int                `bson:"likes"`
+	Dislikes  int                `bson:"dislikes"`
+	CreatedOn string             `bson:"-"`
+	Comments  []Comment          `bson:"comments"`
 }
 
 type Comment struct {
-	Username string `json:"username"`
-	Text     string `json:"text"`
+	Username string `bson:"username"`
+	Text     string `bson:"text"`
 }
 
 type Posts []*Post
@@ -48,56 +48,55 @@ type PostsStore struct {
 	PostsCollection *mongo.Collection
 }
 
-func (ps *PostsStore) GetAll() Posts {
+func (ps *PostsStore) GetAll() (Posts, error) {
 	cur, err := ps.PostsCollection.Find(context.TODO(), bson.D{{}}, options.Find())
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 	var posts Posts
 	for cur.Next(context.TODO()) {
 		var elem Post
 		err := cur.Decode(&elem)
 		if err != nil {
-			log.Fatal(err)
+			return nil, err
 		}
 		posts = append(posts, &elem)
 	}
 	cur.Close(context.TODO())
-	return posts
+	return posts, nil
 }
 
-func (ps *PostsStore) GetByUser(user string) Posts {
+func (ps *PostsStore) GetByUser(user string) (Posts, error) {
 	filter := bson.D{{"username", user}}
 	cur, err := ps.PostsCollection.Find(context.TODO(), filter, options.Find())
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 	var posts Posts
 	for cur.Next(context.TODO()) {
 		var elem Post
 		err := cur.Decode(&elem)
 		if err != nil {
-			log.Fatal(err)
+			return nil, err
 		}
 		posts = append(posts, &elem)
 	}
 	cur.Close(context.TODO())
-	return posts
+	return posts, nil
 }
 
-func (ps *PostsStore) GetById(id int) Post {
-	filter := bson.D{{"id", id}}
+func (ps *PostsStore) GetById(id primitive.ObjectID) (Post, error) {
+	filter := bson.D{{"_id", id}}
 	var post Post
 	err := ps.PostsCollection.FindOne(context.TODO(), filter).Decode(&post)
 	if err != nil {
-		log.Fatal(err)
+		return post, err
 	}
-	return post
+	return post, nil
 }
 
 func (ps *PostsStore) CreatePost(newPost Post) error {
 	post, err := ps.PostsCollection.InsertOne(context.TODO(), newPost)
-
 	if err != nil {
 		return err
 	}
@@ -105,34 +104,37 @@ func (ps *PostsStore) CreatePost(newPost Post) error {
 	return nil
 }
 
-func (ps *PostsStore) LikePost(id int) Post {
-	filter := bson.D{{"id", id}}
+func (ps *PostsStore) LikePost(id primitive.ObjectID) (Post, error) {
+	filter := bson.D{{"_id", id}}
 
 	update := bson.D{
 		{"$inc", bson.D{
 			{"likes", 1},
 		}},
 	}
+	var post Post
 	_, err := ps.PostsCollection.UpdateOne(context.TODO(), filter, update)
 	if err != nil {
-		log.Fatal(err)
+		return post, nil
 	}
 
 	return ps.GetById(id)
 }
 
-func (ps *PostsStore) DislikePost(id int) Post {
-	filter := bson.D{{"id", id}}
+func (ps *PostsStore) DislikePost(id primitive.ObjectID) (Post, error) {
+	filter := bson.D{{"_id", id}}
 
 	update := bson.D{
 		{"$inc", bson.D{
 			{"dislikes", 1},
 		}},
 	}
+	var post Post
 	_, err := ps.PostsCollection.UpdateOne(context.TODO(), filter, update)
 	if err != nil {
-		log.Fatal(err)
+		return post, nil
 	}
+
 	return ps.GetById(id)
 }
 
@@ -148,7 +150,7 @@ func InitPostsStore() *PostsStore {
 		log.Fatal(err)
 	}
 	fmt.Println("Connected to MongoDB!")
-	collection := client.Database("posts_database").Collection("posts")
+	collection := client.Database("posts_database").Collection("user_posts")
 	fmt.Println(collection.Name())
 	return &PostsStore{PostsCollection: collection}
 }

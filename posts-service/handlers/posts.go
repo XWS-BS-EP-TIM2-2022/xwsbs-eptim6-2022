@@ -2,9 +2,9 @@ package handlers
 
 import (
 	"github.com/gorilla/mux"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"log"
 	"net/http"
-	"strconv"
 	"xwsbs-eptim6-2022/posts-service/store"
 )
 
@@ -20,10 +20,13 @@ func NewPostsHandler(l *log.Logger) *PostsHandler {
 
 func (p *PostsHandler) GetAll(rw http.ResponseWriter, r *http.Request) {
 
-	lp := p.postsStore.GetAll()
+	lp, err := p.postsStore.GetAll()
+	if err != nil {
+		http.Error(rw, "Error while fetching posts", http.StatusBadRequest)
+	}
 
 	// serialize the list to JSON
-	err := lp.ToJSON(rw)
+	err = lp.ToJSON(rw)
 	if err != nil {
 		http.Error(rw, "Unable to marshal json", http.StatusInternalServerError)
 	}
@@ -33,10 +36,13 @@ func (p *PostsHandler) GetByUser(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	user := vars["username"]
 
-	lp := p.postsStore.GetByUser(user)
+	lp, err := p.postsStore.GetByUser(user)
+	if err != nil {
+		http.Error(rw, "Error while fetching posts", http.StatusBadRequest)
+	}
 
 	// serialize the list to JSON
-	err := lp.ToJSON(rw)
+	err = lp.ToJSON(rw)
 	if err != nil {
 		http.Error(rw, "Unable to marshal json", http.StatusInternalServerError)
 	}
@@ -51,6 +57,7 @@ func (p *PostsHandler) CreatePost(rw http.ResponseWriter, r *http.Request) {
 		http.Error(rw, "Error creating post", http.StatusBadRequest)
 		return
 	}
+	//post.ID = getObjectId(post.ID)
 	err = p.postsStore.CreatePost(post)
 	if err != nil {
 		http.Error(rw, "Error creating post", http.StatusBadRequest)
@@ -62,13 +69,13 @@ func (p *PostsHandler) CreatePost(rw http.ResponseWriter, r *http.Request) {
 
 func (p *PostsHandler) GetOne(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	id, err := strconv.Atoi(vars["id"])
+	id := vars["id"]
+
+	post, err := p.postsStore.GetById(getObjectId(id))
 	if err != nil {
-		http.Error(rw, "Unable to convert id", http.StatusBadRequest)
+		http.Error(rw, "Could not get post", http.StatusBadRequest)
 		return
 	}
-
-	post := p.postsStore.GetById(id)
 
 	err = post.ToJSON(rw)
 	if err != nil {
@@ -78,13 +85,13 @@ func (p *PostsHandler) GetOne(rw http.ResponseWriter, r *http.Request) {
 
 func (p *PostsHandler) LikePost(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	id, err := strconv.Atoi(vars["id"])
+	id := vars["id"]
+
+	post, err := p.postsStore.LikePost(getObjectId(id))
 	if err != nil {
-		http.Error(rw, "Unable to convert id", http.StatusBadRequest)
+		http.Error(rw, "Could not like post", http.StatusBadRequest)
 		return
 	}
-
-	post := p.postsStore.LikePost(id)
 
 	err = post.ToJSON(rw)
 	if err != nil {
@@ -94,16 +101,23 @@ func (p *PostsHandler) LikePost(rw http.ResponseWriter, r *http.Request) {
 
 func (p *PostsHandler) DislikePost(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	id, err := strconv.Atoi(vars["id"])
+	id := vars["id"]
+
+	post, err := p.postsStore.DislikePost(getObjectId(id))
 	if err != nil {
-		http.Error(rw, "Unable to convert id", http.StatusBadRequest)
+		http.Error(rw, "Could not dislike post", http.StatusBadRequest)
 		return
 	}
-
-	post := p.postsStore.LikePost(id)
 
 	err = post.ToJSON(rw)
 	if err != nil {
 		http.Error(rw, "Unable to marshal json", http.StatusInternalServerError)
 	}
+}
+
+func getObjectId(id string) primitive.ObjectID {
+	if objectId, err := primitive.ObjectIDFromHex(id); err == nil {
+		return objectId
+	}
+	return primitive.NewObjectID()
 }
