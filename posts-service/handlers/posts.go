@@ -116,6 +116,38 @@ func (p *PostsHandler) DislikePost(rw http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func (p *PostsHandler) UnlikePost(rw http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+
+	post, err := p.postsStore.UnlikePost(getObjectId(id))
+	if err != nil {
+		http.Error(rw, "Could not like post", http.StatusBadRequest)
+		return
+	}
+
+	err = post.ToJSON(rw)
+	if err != nil {
+		http.Error(rw, "Unable to marshal json", http.StatusInternalServerError)
+	}
+}
+
+func (p *PostsHandler) UndislikePost(rw http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+
+	post, err := p.postsStore.UndislikePost(getObjectId(id))
+	if err != nil {
+		http.Error(rw, "Could not dislike post", http.StatusBadRequest)
+		return
+	}
+
+	err = post.ToJSON(rw)
+	if err != nil {
+		http.Error(rw, "Unable to marshal json", http.StatusInternalServerError)
+	}
+}
+
 func (p *PostsHandler) CommentOnPost(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
