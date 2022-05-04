@@ -115,7 +115,7 @@ func (ps *PostsStore) LikePost(id primitive.ObjectID) (Post, error) {
 	var post Post
 	_, err := ps.PostsCollection.UpdateOne(context.TODO(), filter, update)
 	if err != nil {
-		return post, nil
+		return post, err
 	}
 
 	return ps.GetById(id)
@@ -132,10 +132,27 @@ func (ps *PostsStore) DislikePost(id primitive.ObjectID) (Post, error) {
 	var post Post
 	_, err := ps.PostsCollection.UpdateOne(context.TODO(), filter, update)
 	if err != nil {
-		return post, nil
+		return post, err
 	}
 
 	return ps.GetById(id)
+}
+
+func (ps *PostsStore) InsertComment(id primitive.ObjectID, comment Comment) error {
+	filter := bson.D{{"_id", id}}
+
+	update := bson.D{
+		{"$push", bson.D{
+			{"comments", comment},
+		}},
+	}
+
+	_, err := ps.PostsCollection.UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+	return nil
 }
 
 func InitPostsStore() *PostsStore {

@@ -28,7 +28,7 @@ func main() {
 
 	postRouter := sm.Methods(http.MethodPost).Subrouter()
 	postRouter.HandleFunc("/posts/create", ph.CreatePost)
-	//postRouter.HandleFunc("/posts/comment/{id:[0-9]+}", ph.CommentPost)
+	postRouter.HandleFunc("/posts/comment/{id:[a-zA-Z0-9]+}", ph.CommentOnPost)
 
 	s := http.Server{
 		Addr:         ":9090",           // configure the bind address

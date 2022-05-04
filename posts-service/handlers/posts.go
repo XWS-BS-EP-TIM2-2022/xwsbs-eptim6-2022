@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"encoding/json"
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"log"
@@ -113,6 +114,25 @@ func (p *PostsHandler) DislikePost(rw http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(rw, "Unable to marshal json", http.StatusInternalServerError)
 	}
+}
+
+func (p *PostsHandler) CommentOnPost(rw http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+
+	comment := store.Comment{}
+	err := json.NewDecoder(r.Body).Decode(&comment)
+	if err != nil {
+		http.Error(rw, "Error while commenting post", http.StatusBadRequest)
+	}
+
+	err = p.postsStore.InsertComment(getObjectId(id), comment)
+	if err != nil {
+		http.Error(rw, "Error commenting post", http.StatusBadRequest)
+		return
+	}
+	rw.WriteHeader(http.StatusOK)
+	rw.Write([]byte("Your comment has been submitted."))
 }
 
 func getObjectId(id string) primitive.ObjectID {
