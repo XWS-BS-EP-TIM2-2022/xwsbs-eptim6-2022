@@ -3,29 +3,35 @@ package store
 import (
 	"context"
 	"fmt"
+	"log"
+
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"log"
 )
 
 type User struct {
-	Username string `json:"username"`
-	Name     string `json:"name"`
-	Surname  string `json:"surname"`
-	Password string `json:"password"`
+	ID       primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+	Username string             `json:"username" bson:"username"`
+	Name     string             `json:"name" bson:"name"`
+	Surname  string             `json:"surname" bson:"surname"`
+	Password string             `json:"password" bson:"password"`
 }
 
 type UsersStore struct {
 	UsersCollection *mongo.Collection
 }
 
-func (us *UsersStore) FindOne(username string) (User, error) {
-	var user User
-	filter := bson.D{{"username", username}}
-	err := us.UsersCollection.FindOne(context.TODO(), filter).Decode(&user)
-	return user, err
-}
+// func (us *UsersStore) FindOne(id primitive.ObjectID) (User, error) {
+// 	var user User
+// 	filter := bson.D{{Key: "id", Value: id}}
+// 	err := us.UsersCollection.FindOne(context.TODO(), filter).Decode(&user)
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+// 	return user, err
+// }
 
 func (us *UsersStore) FindAll() []User {
 	cur, err := us.UsersCollection.Find(context.TODO(), bson.D{{}}, options.Find())
@@ -46,12 +52,13 @@ func (us *UsersStore) FindAll() []User {
 	return users
 }
 
-func (us *UsersStore) AddUser(u User) {
+func (us *UsersStore) AddUser(u User) *mongo.InsertOneResult {
 	insertResult, err := us.UsersCollection.InsertOne(context.TODO(), u)
 	if err != nil {
 		log.Fatal(err)
 	}
 	fmt.Println("Inserted a single document: ", insertResult.InsertedID)
+	return insertResult
 }
 
 func InitUsersStore() *UsersStore {

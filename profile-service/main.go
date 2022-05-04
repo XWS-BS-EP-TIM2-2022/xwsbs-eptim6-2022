@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
-	"github.com/gorilla/mux"
 	"log"
 	"net/http"
 	"profile-service/handlers"
+
+	"github.com/gorilla/mux"
 )
 
 func RegisterRouts() *mux.Router {
@@ -14,7 +15,7 @@ func RegisterRouts() *mux.Router {
 	uh := handlers.InitUserHandler()
 	//ph := handlers.InitProfileHandler()
 
-	myRouter.HandleFunc("/user", uh.GetUser).Methods("GET")
+	myRouter.HandleFunc("/user/{id}", uh.GetUser).Methods("GET")
 	myRouter.HandleFunc("/newUser", uh.AddNewUser).Methods("POST")
 	myRouter.HandleFunc("/users", uh.GetAll).Methods("GET")
 	//myRouter.HandleFunc("/profile", ph.getProfile).Methods("GET")

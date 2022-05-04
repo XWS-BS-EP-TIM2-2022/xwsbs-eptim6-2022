@@ -1,10 +1,15 @@
 package handlers
 
 import (
+	"context"
 	"encoding/json"
-	"fmt"
+	"log"
 	"net/http"
 	"profile-service/store"
+
+	"github.com/gorilla/mux"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type UserHandler struct {
@@ -20,8 +25,15 @@ func InitUserHandler() *UserHandler {
 }
 
 func (uh *UserHandler) GetUser(w http.ResponseWriter, r *http.Request) {
-	username, _ := DecodeUsername(r)
-	user, _ := uh.UserStore.FindOne(username)
+	params := mux.Vars(r)
+	id, _ := primitive.ObjectIDFromHex(params["id"])
+	//user, _ := uh.UserStore.FindOne(id)
+	var user store.User
+	filter := bson.D{{Key: "id", Value: id}}
+	err := uh.UserStore.UsersCollection.FindOne(context.TODO(), filter).Decode(&user)
+	if err != nil {
+		log.Fatal(err)
+	}
 	json.NewEncoder(w).Encode(user)
 }
 
@@ -31,29 +43,8 @@ func (uh *UserHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 }
 
 func (uh *UserHandler) AddNewUser(w http.ResponseWriter, r *http.Request) {
-	user, err := DecodeUser(r)
-	if _, err := uh.UserStore.FindOne(user.Username); err == nil {
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(ErrorMessage{Message: "Username already in use"})
-		return
-	}
-	if err != nil {
-		println("Error while parsing json")
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-	uh.UserStore.AddUser(user)
-	fmt.Println("Post request")
-}
-
-func DecodeUser(req *http.Request) (store.User, error) {
 	var user store.User
-	err := json.NewDecoder(req.Body).Decode(&user)
-	return user, err
-}
-
-func DecodeUsername(req *http.Request) (string, error) {
-	var username string
-	err := json.NewDecoder(req.Body).Decode(&username)
-	return username, err
+	json.NewDecoder(r.Body).Decode(&user)
+	user1 := uh.UserStore.AddUser(user)
+	json.NewEncoder(w).Encode(user1)
 }
