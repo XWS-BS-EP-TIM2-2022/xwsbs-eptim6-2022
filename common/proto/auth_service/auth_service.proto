@@ -1,0 +1,47 @@
+syntax = "proto3";
+package auth;
+option go_package = "https://github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common/auth";
+import "google/api/annotations.proto";
+
+
+service AuthService {
+  rpc AddNewUser (CreateNewUser) returns (User){
+    option (google.api.http) = {
+      post: "/api/auth/users"
+      body: "user"
+    };
+  }
+  rpc GetAll (GetAllRequest) returns (GetAllResponse){
+    option (google.api.http) = {
+      get: "/api/auth/users"
+    };
+  }
+  rpc LoginUser (CreateNewUser) returns (Token){
+    option (google.api.http) = {
+      put: "/api/auth/session"
+    };
+  }
+}
+
+message Token {
+  string token = 1;
+}
+
+message GetAllRequest {
+
+}
+
+message GetAllResponse {
+  repeated User users = 1;
+}
+
+message User {
+  string username = 1;
+  string name = 2;
+  string surname = 3;
+  string password = 4;
+}
+
+message CreateNewUser {
+  User user = 1;
+}

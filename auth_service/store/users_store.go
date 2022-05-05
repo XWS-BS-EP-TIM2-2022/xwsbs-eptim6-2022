@@ -20,6 +20,12 @@ type UsersStore struct {
 	UsersCollection *mongo.Collection
 }
 
+type AuthStore interface {
+	AddNew(user User)
+	FindByUsername(username string) (User, error)
+	FindAll() []User
+}
+
 func (us *UsersStore) AddNew(u User) {
 	insertResult, err := us.UsersCollection.InsertOne(context.TODO(), u)
 	if err != nil {
@@ -51,6 +57,13 @@ func (us *UsersStore) FindAll() []User {
 	cur.Close(context.TODO())
 	fmt.Println(users)
 	return users
+}
+
+func GetClient() (*mongo.Client, error) {
+	mongoUri := "localhost:27017" //os.Getenv("MONGODB_URI")
+	clientOptions := options.Client().ApplyURI("mongodb://" + mongoUri + "/?connect=direct")
+	client, err := mongo.Connect(context.TODO(), clientOptions)
+	return client, err
 }
 
 func InitUsersStore() *UsersStore {
