@@ -17,6 +17,11 @@ type User struct {
 	Name        string             `json:"name" bson:"name"`
 	Surname     string             `json:"surname" bson:"surname"`
 	Password    string             `json:"password" bson:"password"`
+	Email       string             `json:"email" bson:"email"`
+	Telephone   string             `json:"telephone" bson:"telephone"`
+	Gender      string             `json:"gender" bson:"gender"`
+	BirthDate   string             `json:"birthdate" bson:"birthdate"`
+	Biography   string             `json:"biography" bson:"biography"`
 	Experiences []Experience       `json:"experiences" bson:"experiences"`
 	Educations  []Education        `json:"educations" bson:"educations"`
 	Skills      []Skill            `json:"skills" bson:"skills"`
@@ -96,6 +101,30 @@ func (us *UsersStore) AddUser(u User) *mongo.InsertOneResult {
 	}
 	fmt.Println("Inserted a single document: ", insertResult.InsertedID)
 	return insertResult
+}
+
+func (us *UsersStore) UpdateUser(id primitive.ObjectID, user User) error {
+	filter := bson.D{{Key: "_id", Value: id}}
+
+	update := bson.D{
+		{Key: "$set", Value: bson.D{
+			{Key: "username", Value: user.Username},
+			{Key: "name", Value: user.Name},
+			{Key: "surname", Value: user.Surname},
+			{Key: "password", Value: user.Password},
+			{Key: "email", Value: user.Email},
+			{Key: "telephone", Value: user.Telephone},
+			{Key: "gender", Value: user.Gender},
+			{Key: "birthdate", Value: user.BirthDate},
+			{Key: "biography", Value: user.Biography},
+		}},
+	}
+
+	_, err := us.UsersCollection.UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return nil
 }
 
 func (us *UsersStore) InsertExperience(id primitive.ObjectID, experience Experience) error {

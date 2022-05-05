@@ -18,6 +18,7 @@ func RegisterRouts() *mux.Router {
 	myRouter.HandleFunc("/user/{id}", uh.GetUser).Methods("GET")
 	myRouter.HandleFunc("/user", uh.AddNewUser).Methods("POST")
 	myRouter.HandleFunc("/users", uh.GetAll).Methods("GET")
+	myRouter.HandleFunc("/user/{id}", uh.UpdateUser).Methods("PUT")
 
 	myRouter.HandleFunc("/user/{id}/experience", uh.AddExperience).Methods("POST")
 	myRouter.HandleFunc("/user/{id}/education", uh.AddEducation).Methods("POST")

@@ -37,6 +37,17 @@ func (uh *UserHandler) AddNewUser(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(user1)
 }
 
+func (uh *UserHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	id, _ := primitive.ObjectIDFromHex(params["id"])
+
+	var user store.User
+	json.NewDecoder(r.Body).Decode(&user)
+
+	err := uh.UserStore.UpdateUser(id, user)
+	json.NewEncoder(w).Encode(err)
+}
+
 func (uh *UserHandler) AddExperience(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id, _ := primitive.ObjectIDFromHex(params["id"])
