@@ -23,15 +23,15 @@ type UsersStore struct {
 	UsersCollection *mongo.Collection
 }
 
-// func (us *UsersStore) FindOne(id primitive.ObjectID) (User, error) {
-// 	var user User
-// 	filter := bson.D{{Key: "id", Value: id}}
-// 	err := us.UsersCollection.FindOne(context.TODO(), filter).Decode(&user)
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
-// 	return user, err
-// }
+func (us *UsersStore) FindOne(id primitive.ObjectID) (User, error) {
+	var user User
+	filter := bson.D{{Key: "_id", Value: id}}
+	err := us.UsersCollection.FindOne(context.TODO(), filter).Decode(&user)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return user, err
+}
 
 func (us *UsersStore) FindAll() []User {
 	cur, err := us.UsersCollection.Find(context.TODO(), bson.D{{}}, options.Find())

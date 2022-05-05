@@ -1,14 +1,11 @@
 package handlers
 
 import (
-	"context"
 	"encoding/json"
-	"log"
 	"net/http"
 	"profile-service/store"
 
 	"github.com/gorilla/mux"
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -27,13 +24,7 @@ func InitUserHandler() *UserHandler {
 func (uh *UserHandler) GetUser(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id, _ := primitive.ObjectIDFromHex(params["id"])
-	//user, _ := uh.UserStore.FindOne(id)
-	var user store.User
-	filter := bson.D{{Key: "id", Value: id}}
-	err := uh.UserStore.UsersCollection.FindOne(context.TODO(), filter).Decode(&user)
-	if err != nil {
-		log.Fatal(err)
-	}
+	user, _ := uh.UserStore.FindOne(id)
 	json.NewEncoder(w).Encode(user)
 }
 
@@ -47,4 +38,16 @@ func (uh *UserHandler) AddNewUser(w http.ResponseWriter, r *http.Request) {
 	json.NewDecoder(r.Body).Decode(&user)
 	user1 := uh.UserStore.AddUser(user)
 	json.NewEncoder(w).Encode(user1)
+}
+
+func DecodeUsername(req *http.Request) (string, error) {
+	var username string
+	err := json.NewDecoder(req.Body).Decode(&username)
+	return username, err
+}
+
+func DecodeID(req *http.Request) (primitive.ObjectID, error) {
+	var id primitive.ObjectID
+	err := json.NewDecoder(req.Body).Decode(&id)
+	return id, err
 }

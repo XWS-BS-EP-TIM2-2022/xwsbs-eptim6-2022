@@ -16,7 +16,7 @@ func RegisterRouts() *mux.Router {
 	//ph := handlers.InitProfileHandler()
 
 	myRouter.HandleFunc("/user/{id}", uh.GetUser).Methods("GET")
-	myRouter.HandleFunc("/newUser", uh.AddNewUser).Methods("POST")
+	myRouter.HandleFunc("/user", uh.AddNewUser).Methods("POST")
 	myRouter.HandleFunc("/users", uh.GetAll).Methods("GET")
 	//myRouter.HandleFunc("/profile", ph.getProfile).Methods("GET")
 	return myRouter
