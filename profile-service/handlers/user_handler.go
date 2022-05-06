@@ -115,3 +115,19 @@ func (uh *UserHandler) AddInterest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+func (uh *UserHandler) FollowUser(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func (uh *UserHandler) UnfollowUser(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func (uh *UserHandler) AcceptFollow(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func (uh *UserHandler) RejectFollow(w http.ResponseWriter, r *http.Request) {
+
+}

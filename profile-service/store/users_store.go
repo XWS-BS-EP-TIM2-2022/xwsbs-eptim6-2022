@@ -12,20 +12,24 @@ import (
 )
 
 type User struct {
-	ID          primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
-	Username    string             `json:"username" bson:"username"`
-	Name        string             `json:"name" bson:"name"`
-	Surname     string             `json:"surname" bson:"surname"`
-	Password    string             `json:"password" bson:"password"`
-	Email       string             `json:"email" bson:"email"`
-	Telephone   string             `json:"telephone" bson:"telephone"`
-	Gender      string             `json:"gender" bson:"gender"`
-	BirthDate   string             `json:"birthdate" bson:"birthdate"`
-	Biography   string             `json:"biography" bson:"biography"`
-	Experiences []Experience       `json:"experiences" bson:"experiences"`
-	Educations  []Education        `json:"educations" bson:"educations"`
-	Skills      []Skill            `json:"skills" bson:"skills"`
-	Interests   []Interest         `json:"interests" bson:"interests"`
+	ID             primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+	Username       string             `json:"username" bson:"username"`
+	Name           string             `json:"name" bson:"name"`
+	Surname        string             `json:"surname" bson:"surname"`
+	Password       string             `json:"password" bson:"password"`
+	Email          string             `json:"email" bson:"email"`
+	Telephone      string             `json:"telephone" bson:"telephone"`
+	Gender         string             `json:"gender" bson:"gender"`
+	BirthDate      string             `json:"birthdate" bson:"birthdate"`
+	Biography      string             `json:"biography" bson:"biography"`
+	Experiences    []Experience       `json:"experiences" bson:"experiences"`
+	Educations     []Education        `json:"educations" bson:"educations"`
+	Skills         []Skill            `json:"skills" bson:"skills"`
+	Interests      []Interest         `json:"interests" bson:"interests"`
+	Followers      []User             `json:"followers" bson:"followers"`
+	Following      []User             `json:"following" bson:"following"`
+	IsPublic       bool               `json:"public" bson:"public"`
+	FollowRequests []FollowRequest    `json:"requests" bson:"requests"`
 }
 
 type Experience struct {
@@ -46,6 +50,10 @@ type Interest struct {
 
 type UsersStore struct {
 	UsersCollection *mongo.Collection
+}
+
+type FollowRequest struct {
+	ID primitive.ObjectID
 }
 
 func InitUsersStore() *UsersStore {
@@ -181,4 +189,20 @@ func (us *UsersStore) InsertInterest(id primitive.ObjectID, interest Interest) e
 		return err
 	}
 	return nil
+}
+
+func (us *UsersStore) FollowUser() {
+
+}
+
+func (us *UsersStore) UnfollowUser() {
+
+}
+
+func (us *UsersStore) AcceptFollow() {
+
+}
+
+func (us *UsersStore) RejectFollow() {
+
 }
