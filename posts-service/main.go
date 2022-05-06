@@ -21,6 +21,7 @@ func main() {
 	//getRouter.HandleFunc("/posts/homepage", ph.GetForUser)
 	getRouter.HandleFunc("/posts/user-profile/{username:[a-z]+}", ph.GetByUser)
 	getRouter.HandleFunc("/posts/{id:[a-zA-Z0-9]+}", ph.GetOne)
+	getRouter.HandleFunc("/posts/drop/drop", ph.Drop)
 
 	//putRouter := sm.Methods(http.MethodPut).Subrouter()
 	getRouter.HandleFunc("/posts/like/{id:[a-zA-Z0-9]+}", ph.LikePost)

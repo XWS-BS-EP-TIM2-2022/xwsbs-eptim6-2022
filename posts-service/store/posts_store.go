@@ -13,11 +13,13 @@ import (
 )
 
 type Post struct {
-	ID        primitive.ObjectID `bson:"_id"`
+	ID        primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
 	Username  string             `bson:"username"`
 	Text      string             `bson:"text"`
 	Likes     int                `bson:"likes"`
+	Liked     []string           `bson:"liked"`
 	Dislikes  int                `bson:"dislikes"`
+	Disliked  []string           `bson:"disliked"`
 	CreatedOn string             `bson:"-"`
 	Comments  []Comment          `bson:"comments"`
 }
@@ -104,12 +106,15 @@ func (ps *PostsStore) CreatePost(newPost Post) error {
 	return nil
 }
 
-func (ps *PostsStore) LikePost(id primitive.ObjectID) (Post, error) {
+func (ps *PostsStore) LikePost(id primitive.ObjectID, user string) (Post, error) {
 	filter := bson.D{{"_id", id}}
 
 	update := bson.D{
 		{"$inc", bson.D{
 			{"likes", 1},
+		}},
+		{"$push", bson.D{
+			{"liked", user},
 		}},
 	}
 	var post Post
@@ -121,12 +126,56 @@ func (ps *PostsStore) LikePost(id primitive.ObjectID) (Post, error) {
 	return ps.GetById(id)
 }
 
-func (ps *PostsStore) DislikePost(id primitive.ObjectID) (Post, error) {
+func (ps *PostsStore) UnlikePost(id primitive.ObjectID, user string) (Post, error) {
+	filter := bson.D{{"_id", id}}
+
+	update := bson.D{
+		{"$inc", bson.D{
+			{"likes", -1},
+		}},
+		{"$pull", bson.D{
+			{"liked", user},
+		}},
+	}
+	var post Post
+	_, err := ps.PostsCollection.UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		log.Fatal(err)
+		return post, err
+	}
+
+	return ps.GetById(id)
+}
+
+func (ps *PostsStore) DislikePost(id primitive.ObjectID, user string) (Post, error) {
 	filter := bson.D{{"_id", id}}
 
 	update := bson.D{
 		{"$inc", bson.D{
 			{"dislikes", 1},
+		}},
+		{"$push", bson.D{
+			{"disliked", user},
+		}},
+	}
+	var post Post
+	_, err := ps.PostsCollection.UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		return post, err
+	}
+
+	return ps.GetById(id)
+}
+
+func (ps *PostsStore) UndislikePost(id primitive.ObjectID, user string) (Post, error) {
+	filter := bson.D{{"_id", id}}
+
+	update := bson.D{
+		{"$inc", bson.D{
+			{"dislikes", -1},
+		}},
+		{"$pull", bson.D{
+			{"disliked", user},
 		}},
 	}
 	var post Post
@@ -155,6 +204,30 @@ func (ps *PostsStore) InsertComment(id primitive.ObjectID, comment Comment) erro
 	return nil
 }
 
+func (ps *PostsStore) IsAlreadyLiked(id primitive.ObjectID, username string) bool {
+	post, _ := ps.GetById(id)
+	for _, element := range post.Liked {
+		if element == username {
+			return true
+		}
+	}
+	return false
+}
+
+func (ps *PostsStore) IsAlreadyDisliked(id primitive.ObjectID, username string) bool {
+	post, _ := ps.GetById(id)
+	for _, element := range post.Disliked {
+		if element == username {
+			return true
+		}
+	}
+	return false
+}
+
+func (ps *PostsStore) Drop() {
+	ps.Drop()
+}
+
 func InitPostsStore() *PostsStore {
 	mongoUri := "localhost:27017" //os.Getenv("MONGODB_URI")
 	clientOptions := options.Client().ApplyURI("mongodb://" + mongoUri + "/?connect=direct")
@@ -167,7 +240,8 @@ func InitPostsStore() *PostsStore {
 		log.Fatal(err)
 	}
 	fmt.Println("Connected to MongoDB!")
-	collection := client.Database("posts_database").Collection("user_posts")
+	//collection := client.Database("posts_database").Collection("user_posts") drop?
+	collection := client.Database("post_db").Collection("user_posts")
 	fmt.Println(collection.Name())
 	return &PostsStore{PostsCollection: collection}
 }

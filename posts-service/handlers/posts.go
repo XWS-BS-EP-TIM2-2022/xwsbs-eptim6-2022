@@ -19,6 +19,10 @@ func NewPostsHandler(l *log.Logger) *PostsHandler {
 	return &PostsHandler{l, postsStore}
 }
 
+func (p *PostsHandler) Drop(rw http.ResponseWriter, r *http.Request) {
+	p.postsStore.Drop()
+}
+
 func (p *PostsHandler) GetAll(rw http.ResponseWriter, r *http.Request) {
 
 	lp, err := p.postsStore.GetAll()
@@ -88,15 +92,33 @@ func (p *PostsHandler) LikePost(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 
-	post, err := p.postsStore.LikePost(getObjectId(id))
-	if err != nil {
-		http.Error(rw, "Could not like post", http.StatusBadRequest)
-		return
-	}
+	var curUser string // dobaviti trenutno ulogovanog korisnika
+	curUser = "korisnik"
 
-	err = post.ToJSON(rw)
-	if err != nil {
-		http.Error(rw, "Unable to marshal json", http.StatusInternalServerError)
+	liked := p.postsStore.IsAlreadyLiked(getObjectId(id), curUser)
+	if liked == false {
+		post, err := p.postsStore.LikePost(getObjectId(id), curUser)
+		if err != nil {
+			http.Error(rw, "Could not like post", http.StatusBadRequest)
+			return
+		}
+
+		err = post.ToJSON(rw)
+		if err != nil {
+			http.Error(rw, "Unable to marshal json", http.StatusInternalServerError)
+		}
+	}
+	if liked == true {
+		post, err := p.postsStore.UnlikePost(getObjectId(id), curUser)
+		if err != nil {
+			http.Error(rw, "Could not unlike post", http.StatusBadRequest)
+			return
+		}
+
+		err = post.ToJSON(rw)
+		if err != nil {
+			http.Error(rw, "Unable to marshal json", http.StatusInternalServerError)
+		}
 	}
 }
 
@@ -104,15 +126,34 @@ func (p *PostsHandler) DislikePost(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 
-	post, err := p.postsStore.DislikePost(getObjectId(id))
-	if err != nil {
-		http.Error(rw, "Could not dislike post", http.StatusBadRequest)
-		return
-	}
+	var curUser string // dobaviti trenutno ulogovanog korisnika
+	curUser = "korisnik"
 
-	err = post.ToJSON(rw)
-	if err != nil {
-		http.Error(rw, "Unable to marshal json", http.StatusInternalServerError)
+	disliked := p.postsStore.IsAlreadyDisliked(getObjectId(id), curUser)
+
+	if disliked == false {
+		post, err := p.postsStore.DislikePost(getObjectId(id), curUser)
+		if err != nil {
+			http.Error(rw, "Could not dislike post", http.StatusBadRequest)
+			return
+		}
+
+		err = post.ToJSON(rw)
+		if err != nil {
+			http.Error(rw, "Unable to marshal json", http.StatusInternalServerError)
+		}
+	}
+	if disliked == true {
+		post, err := p.postsStore.UndislikePost(getObjectId(id), curUser)
+		if err != nil {
+			http.Error(rw, "Could not undislike post", http.StatusBadRequest)
+			return
+		}
+
+		err = post.ToJSON(rw)
+		if err != nil {
+			http.Error(rw, "Unable to marshal json", http.StatusInternalServerError)
+		}
 	}
 }
 
