@@ -18,18 +18,15 @@ func main() {
 
 	getRouter := sm.Methods(http.MethodGet).Subrouter()
 	getRouter.HandleFunc("/posts", ph.GetAll)
-	//getRouter.HandleFunc("/posts/homepage", ph.GetForUser)
-	getRouter.HandleFunc("/posts/user-profile/{username:[a-z]+}", ph.GetByUser)
+	getRouter.HandleFunc("/posts/user/{username:[a-z]+}", ph.GetByUser)
 	getRouter.HandleFunc("/posts/{id:[a-zA-Z0-9]+}", ph.GetOne)
-	getRouter.HandleFunc("/posts/drop/drop", ph.Drop)
 
-	//putRouter := sm.Methods(http.MethodPut).Subrouter()
 	getRouter.HandleFunc("/posts/like/{id:[a-zA-Z0-9]+}", ph.LikePost)
 	getRouter.HandleFunc("/posts/dislike/{id:[a-zA-Z0-9]+}", ph.DislikePost)
 
 	postRouter := sm.Methods(http.MethodPost).Subrouter()
-	postRouter.HandleFunc("/posts/create", ph.CreatePost)
-	postRouter.HandleFunc("/posts/comment/{id:[a-zA-Z0-9]+}", ph.CommentOnPost)
+	postRouter.HandleFunc("/posts/new-post", ph.CreatePost)
+	postRouter.HandleFunc("/posts/new-comment/{id:[a-zA-Z0-9]+}", ph.CommentOnPost)
 
 	s := http.Server{
 		Addr:         ":9090",           // configure the bind address
