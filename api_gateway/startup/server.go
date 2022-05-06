@@ -1,10 +1,10 @@
 package startup
 
 import (
-	authGw "../../../common/proto/auth_service"
 	"context"
 	"fmt"
 	cfg "github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/api_gateway/startup/config"
+	authGw "github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common/proto/auth_service"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -29,6 +29,7 @@ func NewServer(config *cfg.Config) *Server {
 func (server *Server) initHandlers() {
 	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
 	authEndPoint := fmt.Sprintf("%s:%s", server.config.AuthHost, server.config.AuthPort)
+	fmt.Println("Api gateway")
 	err := authGw.RegisterAuthServiceHandlerFromEndpoint(context.TODO(), server.mux, authEndPoint, opts)
 	if err != nil {
 		panic(err)

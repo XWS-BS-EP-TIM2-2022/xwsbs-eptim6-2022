@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/api_gateway/startup"
-	cfg "github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/auth_service/config"
+	"github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/auth_service/startup"
+	cfg "github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/auth_service/startup/config"
 )
 
 func main() {

@@ -21,12 +21,12 @@ type UsersStore struct {
 }
 
 type AuthStore interface {
-	AddNew(user User)
+	AddNew(user *User)
 	FindByUsername(username string) (User, error)
 	FindAll() []User
 }
 
-func (us *UsersStore) AddNew(u User) {
+func (us *UsersStore) AddNew(u *User) {
 	insertResult, err := us.UsersCollection.InsertOne(context.TODO(), u)
 	if err != nil {
 		log.Fatal(err)
@@ -41,6 +41,7 @@ func (us *UsersStore) FindByUsername(username string) (User, error) {
 	return user, err
 }
 func (us *UsersStore) FindAll() []User {
+	fmt.Println("FindAll users_store")
 	cur, err := us.UsersCollection.Find(context.TODO(), bson.D{{}}, options.Find())
 	if err != nil {
 		log.Fatal(err)
@@ -59,24 +60,27 @@ func (us *UsersStore) FindAll() []User {
 	return users
 }
 
-func GetClient() (*mongo.Client, error) {
-	mongoUri := "localhost:27017" //os.Getenv("MONGODB_URI")
-	clientOptions := options.Client().ApplyURI("mongodb://" + mongoUri + "/?connect=direct")
-	client, err := mongo.Connect(context.TODO(), clientOptions)
-	return client, err
+func GetClient(host, port string) (*mongo.Client, error) {
+	uri := fmt.Sprintf("mongodb://%s:%s/", host, port)
+	options := options.Client().ApplyURI(uri)
+	return mongo.Connect(context.TODO(), options)
+	//mongoUri := "localhost:27017" //os.Getenv("MONGODB_URI")
+	//clientOptions := options.Client().ApplyURI("mongodb://" + mongoUri + "/?connect=direct")
+	//client, err := mongo.Connect(context.TODO(), clientOptions)
+	//return client, err
 }
 
-func InitUsersStore() *UsersStore {
-	mongoUri := "localhost:27017" //os.Getenv("MONGODB_URI")
-	clientOptions := options.Client().ApplyURI("mongodb://" + mongoUri + "/?connect=direct")
-	client, err := mongo.Connect(context.TODO(), clientOptions)
-
-	// Check the connection
-	err = client.Ping(context.TODO(), nil)
-
-	if err != nil {
-		log.Fatal(err)
-	}
+func InitUsersStore(client *mongo.Client) *UsersStore {
+	//mongoUri := "localhost:27017" //os.Getenv("MONGODB_URI")
+	//clientOptions := options.Client().ApplyURI("mongodb://" + mongoUri + "/?connect=direct")
+	//client, err := mongo.Connect(context.TODO(), clientOptions)
+	//
+	//// Check the connection
+	//err = client.Ping(context.TODO(), nil)
+	//
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
 	fmt.Println("Connected to MongoDB!")
 	collection := client.Database("users_database").Collection("users")
 	fmt.Println(collection.Name())

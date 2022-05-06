@@ -1,4 +1,4 @@
-package api_gateway
+package main
 
 import (
 	"github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/api_gateway/startup"

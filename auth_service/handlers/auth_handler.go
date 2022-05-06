@@ -1,9 +1,9 @@
 package handlers
 
 import (
-	"auth_service/store"
 	"encoding/json"
 	"fmt"
+	"github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/auth_service/store"
 	"github.com/dgrijalva/jwt-go"
 	"net/http"
 	"strings"

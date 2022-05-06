@@ -1,7 +1,8 @@
 package application
 
 import (
-	"auth_service/store"
+	"fmt"
+	"github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/auth_service/store"
 )
 
 type AuthService struct {
@@ -19,5 +20,6 @@ func (service *AuthService) FindByUsername(username string) (store.User, error) 
 }
 
 func (service *AuthService) FindAll() []store.User {
+	fmt.Println("FindAll auth_service")
 	return service.store.FindAll()
 }

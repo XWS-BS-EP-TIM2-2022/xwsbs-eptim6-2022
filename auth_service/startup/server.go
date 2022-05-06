@@ -1,10 +1,10 @@
 package startup
 
 import (
-	"auth_service/application"
-	"auth_service/infrastructure/api"
-	"auth_service/store"
 	"fmt"
+	"github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/auth_service/application"
+	"github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/auth_service/infrastructure/api"
+	"github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/auth_service/store"
 	//"github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/api_gateway/startup/config"
 	"github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/auth_service/startup/config"
 	auths "github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common/proto/auth_service"
@@ -37,15 +37,19 @@ func (server *Server) Start() {
 
 //Da li je ovo initUserStore iz users_store.go ???????
 func (server *Server) initMongoClient() *mongo.Client {
-	client, err := store.GetClient()
+	client, err := store.GetClient(server.config.AuthDBHost, server.config.AuthDBPort)
 	if err != nil {
 		log.Fatal(err)
 	}
 	return client
 }
 
-func (server *Server) initUsersStore(client *mongo.Client) store.AuthStore {
-	store := store.InitUsersStore()
+func (server *Server) initAuthStore(client *mongo.Client) *store.UsersStore {
+	store := store.InitUsersStore(client)
+	for _, user := range users {
+		store.AddNew(user)
+		fmt.Println("Added: " + user.Username)
+	}
 	return store
 }
 
@@ -53,7 +57,7 @@ func (server *Server) initAuthService(store store.AuthStore) *application.AuthSe
 	return application.NewAuthService(store)
 }
 
-func (server *Server) initAuthHandler(service *application.AuthService) *api.AuthHandlerHandler {
+func (server *Server) initAuthHandler(service *application.AuthService) *api.AuthHandler {
 	return api.NewAuthHandler(service)
 }
 
