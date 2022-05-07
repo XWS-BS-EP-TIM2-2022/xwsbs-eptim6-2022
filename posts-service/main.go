@@ -12,6 +12,13 @@ import (
 )
 
 func main() {
+	imgHandler, err := handlers.InitImageHandler()
+	if err != nil {
+		log.Fatalln("ERROR FIREBASE STORAGE")
+	}
+
+	//Set the attribute
+
 	l := log.New(os.Stdout, "posts-service ", log.LstdFlags)
 	ph := handlers.NewPostsHandler(l)
 	sm := mux.NewRouter()
@@ -27,6 +34,7 @@ func main() {
 	postRouter := sm.Methods(http.MethodPost).Subrouter()
 	postRouter.HandleFunc("/posts/new-post", ph.CreatePost)
 	postRouter.HandleFunc("/posts/new-comment/{id:[a-zA-Z0-9]+}", ph.CommentOnPost)
+	postRouter.HandleFunc("/posts/image", imgHandler.SaveImageHandler)
 
 	s := http.Server{
 		Addr:         ":9090",           // configure the bind address
@@ -61,3 +69,17 @@ func main() {
 	ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)
 	s.Shutdown(ctx)
 }
+
+//**
+//
+//	f, err := os.Open("./test.jpg")
+//	imageData, _, err := image.Decode(f)
+//	buf := new(bytes.Buffer)
+//	err = jpeg.Encode(buf, imageData, nil)
+//	if err != nil {
+//		log.Fatalln("ENCOIDNG IMAGE ERROR")
+//	}
+//	send_s3 := buf.Bytes()
+//	imgHandler.SaveImage(send_s3)
+//
+//*//
