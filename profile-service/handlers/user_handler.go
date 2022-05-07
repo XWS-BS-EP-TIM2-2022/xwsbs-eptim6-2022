@@ -33,6 +33,13 @@ func (uh *UserHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 func (uh *UserHandler) AddNewUser(w http.ResponseWriter, r *http.Request) {
 	var user store.User
 	json.NewDecoder(r.Body).Decode(&user)
+	user.Experiences = []store.Experience{}
+	user.Educations = []store.Education{}
+	user.Skills = []store.Skill{}
+	user.Interests = []store.Interest{}
+	user.Followers = []store.Follower{}
+	user.Followings = []store.Following{}
+	user.FollowRequests = []string{}
 	user1 := uh.UserStore.AddUser(user)
 	json.NewEncoder(w).Encode(user1)
 }
@@ -144,12 +151,21 @@ func (uh *UserHandler) FollowUser(w http.ResponseWriter, r *http.Request) {
 	follower.Username = userFollowing.Username
 	following.Username = userFollower.Username
 
-	err := uh.UserStore.FollowUser(userToFollowID, userID, follower, following)
-	if err != nil {
-		http.Error(w, "Error following user", http.StatusBadRequest)
-		return
+	if userFollowing.IsPublic {
+		err := uh.UserStore.FollowUser(userToFollowID, userID, follower, following)
+		if err != nil {
+			http.Error(w, "Error following user", http.StatusBadRequest)
+			return
+		}
+		json.NewEncoder(w).Encode(err)
+	} else {
+		err := uh.UserStore.AddFollowRequest(userToFollowID, userFollower.Username)
+		if err != nil {
+			http.Error(w, "Error adding your follow request to the user you want to follow", http.StatusBadRequest)
+			return
+		}
+		json.NewEncoder(w).Encode(err)
 	}
-	json.NewEncoder(w).Encode(err)
 }
 
 func (uh *UserHandler) UnfollowUser(w http.ResponseWriter, r *http.Request) {
@@ -157,7 +173,43 @@ func (uh *UserHandler) UnfollowUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func (uh *UserHandler) AcceptFollow(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	userToAcceptID, _ := primitive.ObjectIDFromHex(params["idUserToAccept"])
+	userID, _ := primitive.ObjectIDFromHex(params["id"])
 
+	userFromFollowRequest, err2 := uh.UserStore.FindOne(userToAcceptID) //ovaj user zeli da zaprati
+	if err2 != nil {
+		http.Error(w, "Error getting user with {idUserToAccept}", http.StatusBadRequest)
+		return
+	}
+	json.NewEncoder(w).Encode(userFromFollowRequest)
+
+	user, err1 := uh.UserStore.FindOne(userID) //ovog usera
+	if err1 != nil {
+		http.Error(w, "Error getting user with {id}", http.StatusBadRequest)
+		return
+	}
+	json.NewEncoder(w).Encode(user)
+
+	var follower store.Follower
+	var following store.Following
+
+	following.Username = userFromFollowRequest.Username
+	follower.Username = user.Username
+
+	err := uh.UserStore.FollowUser(userID, userFromFollowRequest.ID, follower, following)
+	if err != nil {
+		http.Error(w, "Error following user", http.StatusBadRequest)
+		return
+	}
+	json.NewEncoder(w).Encode(err)
+
+	err3 := uh.UserStore.AcceptFollow(userID, userFromFollowRequest.Username)
+	if err3 != nil {
+		http.Error(w, "Error accepting user follow", http.StatusBadRequest)
+		return
+	}
+	json.NewEncoder(w).Encode(err2)
 }
 
 func (uh *UserHandler) RejectFollow(w http.ResponseWriter, r *http.Request) {

@@ -13,7 +13,6 @@ func RegisterRouts() *mux.Router {
 	myRouter := mux.NewRouter().StrictSlash(true)
 
 	uh := handlers.InitUserHandler()
-	//ph := handlers.InitProfileHandler()
 
 	myRouter.HandleFunc("/user/{id}", uh.GetUser).Methods("GET")
 	myRouter.HandleFunc("/user", uh.AddNewUser).Methods("POST")
@@ -26,13 +25,11 @@ func RegisterRouts() *mux.Router {
 	myRouter.HandleFunc("/user/{id}/interest", uh.AddInterest).Methods("POST")
 
 	myRouter.HandleFunc("/user/follow/{id}/{idToFollow}", uh.FollowUser).Methods("PUT")
-	myRouter.HandleFunc("/user/unfollow/{id}/{idToFollow}", uh.UnfollowUser).Methods("PUT")
-	//u post telo ide ID usera koji zeli da prihvati zahtev od usera sa id-jem {id}
-	myRouter.HandleFunc("/user/accept-follow-request/{id}", uh.AcceptFollow).Methods("POST")
+	myRouter.HandleFunc("/user/unfollow/{id}/{idToUnfollow}", uh.UnfollowUser).Methods("PUT")
+	myRouter.HandleFunc("/user/accept-follow-request/{id}/{idUserToAccept}", uh.AcceptFollow).Methods("PUT")
 	//u post telo ide ID usera koji zeli da odbije zahtev od usera sa id-jem {id}
 	myRouter.HandleFunc("/user/reject-follow-request/{id}", uh.RejectFollow).Methods("POST")
 
-	//myRouter.HandleFunc("/profile", ph.getProfile).Methods("GET")
 	return myRouter
 }
 
