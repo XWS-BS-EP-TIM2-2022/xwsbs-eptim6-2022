@@ -60,7 +60,7 @@ func (uh *UserHandler) AddExperience(w http.ResponseWriter, r *http.Request) {
 
 	err1 := uh.UserStore.InsertExperience(id, experience)
 	if err1 != nil {
-		http.Error(w, "Error commenting post", http.StatusBadRequest)
+		http.Error(w, "Error adding experience", http.StatusBadRequest)
 		return
 	}
 }
@@ -94,7 +94,7 @@ func (uh *UserHandler) AddSkill(w http.ResponseWriter, r *http.Request) {
 
 	err1 := uh.UserStore.InsertSkill(id, skill)
 	if err1 != nil {
-		http.Error(w, "Error adding eduction", http.StatusBadRequest)
+		http.Error(w, "Error adding skill", http.StatusBadRequest)
 		return
 	}
 }
@@ -111,13 +111,45 @@ func (uh *UserHandler) AddInterest(w http.ResponseWriter, r *http.Request) {
 
 	err1 := uh.UserStore.InsertInterest(id, interest)
 	if err1 != nil {
-		http.Error(w, "Error adding eduction", http.StatusBadRequest)
+		http.Error(w, "Error adding interest", http.StatusBadRequest)
 		return
 	}
 }
 
 func (uh *UserHandler) FollowUser(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	userToFollowID, _ := primitive.ObjectIDFromHex(params["idToFollow"])
+	userID, _ := primitive.ObjectIDFromHex(params["id"])
 
+	var follower store.Follower
+	var following store.Following
+
+	var userFollower store.User
+	var userFollowing store.User
+
+	userFollower, err1 := uh.UserStore.FindOne(userID)
+	if err1 != nil {
+		http.Error(w, "Error getting user with {id}", http.StatusBadRequest)
+		return
+	}
+	json.NewEncoder(w).Encode(userFollower)
+
+	userFollowing, err2 := uh.UserStore.FindOne(userToFollowID)
+	if err2 != nil {
+		http.Error(w, "Error getting user with {idToFollow}", http.StatusBadRequest)
+		return
+	}
+	json.NewEncoder(w).Encode(userFollowing)
+
+	follower.Username = userFollowing.Username
+	following.Username = userFollower.Username
+
+	err := uh.UserStore.FollowUser(userToFollowID, userID, follower, following)
+	if err != nil {
+		http.Error(w, "Error following user", http.StatusBadRequest)
+		return
+	}
+	json.NewEncoder(w).Encode(err)
 }
 
 func (uh *UserHandler) UnfollowUser(w http.ResponseWriter, r *http.Request) {

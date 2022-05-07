@@ -25,11 +25,8 @@ func RegisterRouts() *mux.Router {
 	myRouter.HandleFunc("/user/{id}/skill", uh.AddSkill).Methods("POST")
 	myRouter.HandleFunc("/user/{id}/interest", uh.AddInterest).Methods("POST")
 
-	//u post telo ide ID usera koji zeli da zaprati ID usera {id}
-	//{id} usera koga zelim da zapratim (meni se dodaje u following a njemu u followers)
-	myRouter.HandleFunc("/user/follow/{id}", uh.FollowUser).Methods("POST")
-	//u post telo ide ID usera koji zeli da otprati ID usera {id}
-	myRouter.HandleFunc("/user/unfollow/{id}", uh.UnfollowUser).Methods("POST")
+	myRouter.HandleFunc("/user/follow/{id}/{idToFollow}", uh.FollowUser).Methods("PUT")
+	myRouter.HandleFunc("/user/unfollow/{id}/{idToFollow}", uh.UnfollowUser).Methods("PUT")
 	//u post telo ide ID usera koji zeli da prihvati zahtev od usera sa id-jem {id}
 	myRouter.HandleFunc("/user/accept-follow-request/{id}", uh.AcceptFollow).Methods("POST")
 	//u post telo ide ID usera koji zeli da odbije zahtev od usera sa id-jem {id}
