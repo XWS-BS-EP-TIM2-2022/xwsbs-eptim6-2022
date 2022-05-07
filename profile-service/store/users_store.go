@@ -26,10 +26,10 @@ type User struct {
 	Educations     []Education        `json:"educations" bson:"educations"`
 	Skills         []Skill            `json:"skills" bson:"skills"`
 	Interests      []Interest         `json:"interests" bson:"interests"`
-	Followers      []User             `json:"followers" bson:"followers"`
-	Following      []User             `json:"following" bson:"following"`
+	Followers      []Follower         `json:"followers" bson:"followers"`
+	Followings     []Following        `json:"followings" bson:"followings"`
 	IsPublic       bool               `json:"public" bson:"public"`
-	FollowRequests []FollowRequest    `json:"requests" bson:"requests"`
+	FollowRequests []string           `json:"requests" bson:"requests"`
 }
 
 type Experience struct {
@@ -48,12 +48,20 @@ type Interest struct {
 	Text string `json:"text" bson:"text"`
 }
 
-type UsersStore struct {
-	UsersCollection *mongo.Collection
+type Follower struct {
+	Username string `json:"username" bson:"username"`
 }
 
-type FollowRequest struct {
-	ID primitive.ObjectID
+type Following struct {
+	Username string `json:"username" bson:"username"`
+}
+
+// type FollowRequest struct {
+// 	Username string `json:"username" bson:"username"`
+// }
+
+type UsersStore struct {
+	UsersCollection *mongo.Collection
 }
 
 func InitUsersStore() *UsersStore {
@@ -76,6 +84,16 @@ func InitUsersStore() *UsersStore {
 func (us *UsersStore) FindOne(id primitive.ObjectID) (User, error) {
 	var user User
 	filter := bson.D{{Key: "_id", Value: id}}
+	err := us.UsersCollection.FindOne(context.TODO(), filter).Decode(&user)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return user, err
+}
+
+func (us *UsersStore) FindOneByUsername(username string) (User, error) {
+	var user User
+	filter := bson.D{{Key: "username", Value: username}}
 	err := us.UsersCollection.FindOne(context.TODO(), filter).Decode(&user)
 	if err != nil {
 		log.Fatal(err)
@@ -125,6 +143,7 @@ func (us *UsersStore) UpdateUser(id primitive.ObjectID, user User) error {
 			{Key: "gender", Value: user.Gender},
 			{Key: "birthdate", Value: user.BirthDate},
 			{Key: "biography", Value: user.Biography},
+			{Key: "public", Value: user.IsPublic},
 		}},
 	}
 
@@ -191,18 +210,70 @@ func (us *UsersStore) InsertInterest(id primitive.ObjectID, interest Interest) e
 	return nil
 }
 
-func (us *UsersStore) FollowUser() {
+func (us *UsersStore) FollowUser(userToFollowID primitive.ObjectID, userID primitive.ObjectID, follower Follower, following Following) error {
+	filterUserToFollow := bson.D{{Key: "_id", Value: userToFollowID}}
+	filterUser := bson.D{{Key: "_id", Value: userID}}
 
+	updateUserToFollow := bson.D{
+		{Key: "$push", Value: bson.D{{Key: "followers", Value: following}}},
+	}
+	updateUser := bson.D{
+		{Key: "$push", Value: bson.D{{Key: "followings", Value: follower}}},
+	}
+
+	_, err := us.UsersCollection.UpdateOne(context.TODO(), filterUserToFollow, updateUserToFollow)
+	if err != nil {
+		log.Fatal(err)
+	}
+	_, err1 := us.UsersCollection.UpdateOne(context.TODO(), filterUser, updateUser)
+	if err1 != nil {
+		log.Fatal(err)
+	}
+	return nil
 }
 
-func (us *UsersStore) UnfollowUser() {
-
+func (us *UsersStore) AddFollowRequest(userToFollowID primitive.ObjectID, userFollowRequest string) error {
+	filterUserToFollow := bson.D{{Key: "_id", Value: userToFollowID}}
+	updateUserToFollow := bson.D{
+		{Key: "$push", Value: bson.D{{Key: "requests", Value: userFollowRequest}}},
+	}
+	_, err := us.UsersCollection.UpdateOne(context.TODO(), filterUserToFollow, updateUserToFollow)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return nil
 }
 
-func (us *UsersStore) AcceptFollow() {
+func (us *UsersStore) UnfollowUser(userToUnfollowID primitive.ObjectID, userID primitive.ObjectID, follower Follower, following Following) error {
+	filterUserToUnfollow := bson.D{{Key: "_id", Value: userToUnfollowID}}
+	filterUser := bson.D{{Key: "_id", Value: userID}}
 
+	updateUserToUnfollow := bson.D{
+		{Key: "$pull", Value: bson.D{{Key: "followers", Value: following}}},
+	}
+	updateUser := bson.D{
+		{Key: "$pull", Value: bson.D{{Key: "followings", Value: follower}}},
+	}
+
+	_, err := us.UsersCollection.UpdateOne(context.TODO(), filterUserToUnfollow, updateUserToUnfollow)
+	if err != nil {
+		log.Fatal(err)
+	}
+	_, err1 := us.UsersCollection.UpdateOne(context.TODO(), filterUser, updateUser)
+	if err1 != nil {
+		log.Fatal(err)
+	}
+	return nil
 }
 
-func (us *UsersStore) RejectFollow() {
-
+func (us *UsersStore) AcceptRejectFollow(userToUpdateRequests primitive.ObjectID, userFollowRequest string) error {
+	filterUserToUpdateRequests := bson.D{{Key: "_id", Value: userToUpdateRequests}}
+	updateUserToFollow := bson.D{
+		{Key: "$pull", Value: bson.D{{Key: "requests", Value: userFollowRequest}}},
+	}
+	_, err := us.UsersCollection.UpdateOne(context.TODO(), filterUserToUpdateRequests, updateUserToFollow)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return nil
 }
