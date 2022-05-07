@@ -41,7 +41,7 @@ func (handler *AuthHandler) AddNewUser(ctx context.Context, request *pb.CreateNe
 
 func (handler *AuthHandler) LoginUser(ctx context.Context, request *pb.CreateNewUser) (*pb.Token, error) {
 	fmt.Println("GRPC LOGIN")
-	if request == nil {
+	if request.User == nil {
 		fmt.Println("request je nil")
 	}
 	user := mapUser2(request.User)
