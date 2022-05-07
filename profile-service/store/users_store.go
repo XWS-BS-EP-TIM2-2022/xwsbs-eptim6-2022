@@ -244,8 +244,26 @@ func (us *UsersStore) AddFollowRequest(userToFollowID primitive.ObjectID, userFo
 	return nil
 }
 
-func (us *UsersStore) UnfollowUser() {
+func (us *UsersStore) UnfollowUser(userToUnfollowID primitive.ObjectID, userID primitive.ObjectID, follower Follower, following Following) error {
+	filterUserToUnfollow := bson.D{{Key: "_id", Value: userToUnfollowID}}
+	filterUser := bson.D{{Key: "_id", Value: userID}}
 
+	updateUserToUnfollow := bson.D{
+		{Key: "$pull", Value: bson.D{{Key: "followers", Value: following}}},
+	}
+	updateUser := bson.D{
+		{Key: "$pull", Value: bson.D{{Key: "followings", Value: follower}}},
+	}
+
+	_, err := us.UsersCollection.UpdateOne(context.TODO(), filterUserToUnfollow, updateUserToUnfollow)
+	if err != nil {
+		log.Fatal(err)
+	}
+	_, err1 := us.UsersCollection.UpdateOne(context.TODO(), filterUser, updateUser)
+	if err1 != nil {
+		log.Fatal(err)
+	}
+	return nil
 }
 
 func (us *UsersStore) AcceptRejectFollow(userToUpdateRequests primitive.ObjectID, userFollowRequest string) error {

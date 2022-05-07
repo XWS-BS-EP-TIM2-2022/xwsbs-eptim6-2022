@@ -169,7 +169,39 @@ func (uh *UserHandler) FollowUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func (uh *UserHandler) UnfollowUser(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	userToUnfollowID, _ := primitive.ObjectIDFromHex(params["idToUnfollow"])
+	userID, _ := primitive.ObjectIDFromHex(params["id"])
 
+	var follower store.Follower
+	var following store.Following
+
+	var userFollower store.User
+	var userFollowing store.User
+
+	userFollower, err1 := uh.UserStore.FindOne(userID)
+	if err1 != nil {
+		http.Error(w, "Error getting user with {id}", http.StatusBadRequest)
+		return
+	}
+	json.NewEncoder(w).Encode(userFollower)
+
+	userFollowing, err2 := uh.UserStore.FindOne(userToUnfollowID)
+	if err2 != nil {
+		http.Error(w, "Error getting user with {idToFollow}", http.StatusBadRequest)
+		return
+	}
+	json.NewEncoder(w).Encode(userFollowing)
+
+	follower.Username = userFollowing.Username
+	following.Username = userFollower.Username
+
+	err := uh.UserStore.UnfollowUser(userToUnfollowID, userID, follower, following)
+	if err != nil {
+		http.Error(w, "Error following user", http.StatusBadRequest)
+		return
+	}
+	json.NewEncoder(w).Encode(err)
 }
 
 func (uh *UserHandler) AcceptFollow(w http.ResponseWriter, r *http.Request) {
