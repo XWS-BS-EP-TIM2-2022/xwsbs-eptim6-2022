@@ -61,3 +61,17 @@ func main() {
 	ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)
 	s.Shutdown(ctx)
 }
+
+//**
+//
+//	f, err := os.Open("./test.jpg")
+//	imageData, _, err := image.Decode(f)
+//	buf := new(bytes.Buffer)
+//	err = jpeg.Encode(buf, imageData, nil)
+//	if err != nil {
+//		log.Fatalln("ENCOIDNG IMAGE ERROR")
+//	}
+//	send_s3 := buf.Bytes()
+//	imgHandler.SaveImage(send_s3)
+//
+//*//
