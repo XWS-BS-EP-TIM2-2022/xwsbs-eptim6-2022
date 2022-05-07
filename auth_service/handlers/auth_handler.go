@@ -21,10 +21,10 @@ type AuthHandler struct {
 	UserStore *store.UsersStore
 }
 
-func InitAuthHandler() *AuthHandler {
-	userStore := store.InitUsersStore()
-	return &AuthHandler{UserStore: userStore}
-}
+//func InitAuthHandler() *AuthHandler {
+//	userStore := store.InitUsersStore()
+//	return &AuthHandler{UserStore: userStore}
+//}
 
 func (ag *AuthHandler) LoginUser(w http.ResponseWriter, r *http.Request) {
 	user, err := DecodeUser(r)
@@ -53,7 +53,7 @@ func (ag *AuthHandler) LoginUser(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (ag *AuthHandler) AuthorizeJWT(w http.ResponseWriter, r *http.Request) {
+func AuthorizeJWT(w http.ResponseWriter, r *http.Request) {
 	if r.Header["Authorization"] != nil {
 		tokenStr := strings.Split(r.Header["Authorization"][0], " ")[1]
 		token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
@@ -74,16 +74,10 @@ func (ag *AuthHandler) AuthorizeJWT(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (ag *AuthHandler) AddNewUser(w http.ResponseWriter, r *http.Request) {
-	user, err := DecodeUser(r)
+func (ag *AuthHandler) AddNewUser(user store.User) {
 	if _, err := ag.UserStore.FindByUsername(user.Username); err == nil {
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(ErrorMessage{Message: "Username already in use"})
-		return
-	}
-	if err != nil {
-		println("Error while parsing json")
-		w.WriteHeader(http.StatusBadRequest)
+		//w.WriteHeader(http.StatusBadRequest)
+		//json.NewEncoder(w).Encode(ErrorMessage{Message: "Username already in use"})
 		return
 	}
 	ag.UserStore.AddNew(user)
@@ -91,6 +85,7 @@ func (ag *AuthHandler) AddNewUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func (ag *AuthHandler) GetAll(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("GetAll iz auth_handler najnovije")
 	users := ag.UserStore.FindAll()
 	json.NewEncoder(w).Encode(users)
 }

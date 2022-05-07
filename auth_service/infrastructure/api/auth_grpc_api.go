@@ -32,3 +32,25 @@ func (handler *AuthHandler) GetAll(ctx context.Context, request *pb.GetAllReques
 	}
 	return response, nil
 }
+
+func (handler *AuthHandler) AddNewUser(ctx context.Context, request *pb.CreateNewUser) (*pb.User, error) {
+	user := mapUser2(request.User)
+	handler.service.AddNew(user)
+	return mapUser(user), nil
+}
+
+func (handler *AuthHandler) LoginUser(ctx context.Context, request *pb.CreateNewUser) (*pb.Token, error) {
+	fmt.Println("GRPC LOGIN")
+	if request == nil {
+		fmt.Println("request je nil")
+	}
+	user := mapUser2(request.User)
+	fmt.Println("USER")
+	token := handler.service.LoginUser(user)
+	fmt.Println("TOKEN")
+	response := &pb.Token{
+		Token: token,
+	}
+	fmt.Println("RETURN")
+	return response, nil
+}

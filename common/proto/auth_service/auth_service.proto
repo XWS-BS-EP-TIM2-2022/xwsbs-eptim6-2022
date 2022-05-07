@@ -5,7 +5,7 @@ import "google/api/annotations.proto";
 
 
 service AuthService {
-  rpc AddNewUser (CreateNewUser) returns (User){
+  rpc AddNewUser (CreateNewUser) returns (CreateNewUser){
     option (google.api.http) = {
       post: "/api/auth/users"
       body: "user"
@@ -19,6 +19,7 @@ service AuthService {
   rpc LoginUser (CreateNewUser) returns (Token){
     option (google.api.http) = {
       put: "/api/auth/session"
+      body: "user"
     };
   }
 }
@@ -43,5 +44,13 @@ message User {
 }
 
 message CreateNewUser {
+  User user = 1;
+}
+
+message PutNewUser {
+  User user = 1;
+}
+
+message CreateNewUserResponse {
   User user = 1;
 }

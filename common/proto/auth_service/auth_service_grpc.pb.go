@@ -18,11 +18,11 @@ import (
 // Requires gRPC-Go v1.32.0 or later.
 const _ = grpc.SupportPackageIsVersion7
 
-// AuthServiceClient is the client API for AuthService service.F
+// AuthServiceClient is the client API for AuthService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AuthServiceClient interface {
-	AddNewUser(ctx context.Context, in *CreateNewUser, opts ...grpc.CallOption) (*User, error)
+	AddNewUser(ctx context.Context, in *CreateNewUser, opts ...grpc.CallOption) (*CreateNewUser, error)
 	GetAll(ctx context.Context, in *GetAllRequest, opts ...grpc.CallOption) (*GetAllResponse, error)
 	LoginUser(ctx context.Context, in *CreateNewUser, opts ...grpc.CallOption) (*Token, error)
 }
@@ -35,8 +35,8 @@ func NewAuthServiceClient(cc grpc.ClientConnInterface) AuthServiceClient {
 	return &authServiceClient{cc}
 }
 
-func (c *authServiceClient) AddNewUser(ctx context.Context, in *CreateNewUser, opts ...grpc.CallOption) (*User, error) {
-	out := new(User)
+func (c *authServiceClient) AddNewUser(ctx context.Context, in *CreateNewUser, opts ...grpc.CallOption) (*CreateNewUser, error) {
+	out := new(CreateNewUser)
 	err := c.cc.Invoke(ctx, "/auth.AuthService/AddNewUser", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -66,7 +66,7 @@ func (c *authServiceClient) LoginUser(ctx context.Context, in *CreateNewUser, op
 // All implementations must embed UnimplementedAuthServiceServer
 // for forward compatibility
 type AuthServiceServer interface {
-	AddNewUser(context.Context, *CreateNewUser) (*User, error)
+	AddNewUser(context.Context, *CreateNewUser) (*CreateNewUser, error)
 	GetAll(context.Context, *GetAllRequest) (*GetAllResponse, error)
 	LoginUser(context.Context, *CreateNewUser) (*Token, error)
 	mustEmbedUnimplementedAuthServiceServer()
@@ -76,7 +76,7 @@ type AuthServiceServer interface {
 type UnimplementedAuthServiceServer struct {
 }
 
-func (UnimplementedAuthServiceServer) AddNewUser(context.Context, *CreateNewUser) (*User, error) {
+func (UnimplementedAuthServiceServer) AddNewUser(context.Context, *CreateNewUser) (*CreateNewUser, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddNewUser not implemented")
 }
 func (UnimplementedAuthServiceServer) GetAll(context.Context, *GetAllRequest) (*GetAllResponse, error) {
