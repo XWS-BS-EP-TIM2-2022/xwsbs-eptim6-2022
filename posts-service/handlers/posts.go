@@ -1,22 +1,31 @@
 package handlers
 
 import (
+	"bytes"
 	"encoding/json"
+	"fmt"
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"image"
+	"image/jpeg"
 	"log"
 	"net/http"
 	"xwsbs-eptim6-2022/posts-service/store"
 )
 
 type PostsHandler struct {
-	l          *log.Logger
-	postsStore *store.PostsStore
+	l            *log.Logger
+	postsStore   *store.PostsStore
+	imageHandler *ImagesHandler
 }
 
 func NewPostsHandler(l *log.Logger) *PostsHandler {
 	postsStore := store.InitPostsStore()
-	return &PostsHandler{l, postsStore}
+	imagesHandler, err := InitImageHandler()
+	if err != nil {
+		l.Fatalln("Firebase storage error")
+	}
+	return &PostsHandler{l, postsStore, imagesHandler}
 }
 
 func (p *PostsHandler) Drop(rw http.ResponseWriter, r *http.Request) {
@@ -54,22 +63,31 @@ func (p *PostsHandler) GetByUser(rw http.ResponseWriter, r *http.Request) {
 }
 
 func (p *PostsHandler) CreatePost(rw http.ResponseWriter, r *http.Request) {
-
-	post := store.Post{}
-
-	err := post.FromJSON(r.Body)
+	err := r.ParseMultipartForm(32 << 20)
 	if err != nil {
-		http.Error(rw, "Error creating post", http.StatusBadRequest)
-		return
+		fmt.Println("ERROR")
 	}
-	//post.ID = getObjectId(post.ID)
+	postText := r.Form.Get("text")
+	fmt.Println(postText)
+	var url = ""
+	f, _, err := r.FormFile("file")
+	if err == nil {
+		defer f.Close()
+		imageData, _, err := image.Decode(f)
+		buf := new(bytes.Buffer)
+		err = jpeg.Encode(buf, imageData, nil)
+		if err != nil {
+			log.Fatalln("ENCOIDNG IMAGE ERROR")
+		}
+		url, err = p.imageHandler.SaveImage(buf.Bytes())
+	}
+	post := store.Post{Username: "admin", ImageUrl: url, Text: postText} //TODO: Fix hardcode username
 	err = p.postsStore.CreatePost(post)
 	if err != nil {
-		http.Error(rw, "Error creating post", http.StatusBadRequest)
-		return
+		fmt.Println("Greska")
 	}
 	rw.WriteHeader(http.StatusOK)
-	rw.Write([]byte("New post created."))
+	json.NewEncoder(rw).Encode(post)
 }
 
 func (p *PostsHandler) GetOne(rw http.ResponseWriter, r *http.Request) {

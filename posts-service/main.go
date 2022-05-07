@@ -12,13 +12,6 @@ import (
 )
 
 func main() {
-	imgHandler, err := handlers.InitImageHandler()
-	if err != nil {
-		log.Fatalln("ERROR FIREBASE STORAGE")
-	}
-
-	//Set the attribute
-
 	l := log.New(os.Stdout, "posts-service ", log.LstdFlags)
 	ph := handlers.NewPostsHandler(l)
 	sm := mux.NewRouter()
@@ -34,7 +27,6 @@ func main() {
 	postRouter := sm.Methods(http.MethodPost).Subrouter()
 	postRouter.HandleFunc("/posts/new-post", ph.CreatePost)
 	postRouter.HandleFunc("/posts/new-comment/{id:[a-zA-Z0-9]+}", ph.CommentOnPost)
-	postRouter.HandleFunc("/posts/image", imgHandler.SaveImageHandler)
 
 	s := http.Server{
 		Addr:         ":9090",           // configure the bind address

@@ -21,6 +21,7 @@ type Post struct {
 	Dislikes  int                `bson:"dislikes"`
 	Disliked  []string           `bson:"disliked"`
 	CreatedOn string             `bson:"-"`
+	ImageUrl  string             `bson:"url"`
 	Comments  []Comment          `bson:"comments"`
 }
 
