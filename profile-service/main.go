@@ -27,8 +27,7 @@ func RegisterRouts() *mux.Router {
 	myRouter.HandleFunc("/user/follow/{id}/{idToFollow}", uh.FollowUser).Methods("PUT")
 	myRouter.HandleFunc("/user/unfollow/{id}/{idToUnfollow}", uh.UnfollowUser).Methods("PUT")
 	myRouter.HandleFunc("/user/accept-follow-request/{id}/{idUserToAccept}", uh.AcceptFollow).Methods("PUT")
-	//u post telo ide ID usera koji zeli da odbije zahtev od usera sa id-jem {id}
-	myRouter.HandleFunc("/user/reject-follow-request/{id}", uh.RejectFollow).Methods("POST")
+	myRouter.HandleFunc("/user/reject-follow-request/{id}/{idUserToReject}", uh.RejectFollow).Methods("PUT")
 
 	return myRouter
 }

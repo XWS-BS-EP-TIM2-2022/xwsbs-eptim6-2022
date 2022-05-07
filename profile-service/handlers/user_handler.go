@@ -204,14 +204,30 @@ func (uh *UserHandler) AcceptFollow(w http.ResponseWriter, r *http.Request) {
 	}
 	json.NewEncoder(w).Encode(err)
 
-	err3 := uh.UserStore.AcceptFollow(userID, userFromFollowRequest.Username)
+	err3 := uh.UserStore.AcceptRejectFollow(userID, userFromFollowRequest.Username)
 	if err3 != nil {
 		http.Error(w, "Error accepting user follow", http.StatusBadRequest)
 		return
 	}
-	json.NewEncoder(w).Encode(err2)
+	json.NewEncoder(w).Encode(err3)
 }
 
 func (uh *UserHandler) RejectFollow(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	userToAcceptID, _ := primitive.ObjectIDFromHex(params["idUserToReject"])
+	userID, _ := primitive.ObjectIDFromHex(params["id"])
 
+	userFromFollowRequest, err2 := uh.UserStore.FindOne(userToAcceptID)
+	if err2 != nil {
+		http.Error(w, "Error getting user with {idUserToReject}", http.StatusBadRequest)
+		return
+	}
+	json.NewEncoder(w).Encode(userFromFollowRequest)
+
+	err3 := uh.UserStore.AcceptRejectFollow(userID, userFromFollowRequest.Username)
+	if err3 != nil {
+		http.Error(w, "Error rejecting user follow", http.StatusBadRequest)
+		return
+	}
+	json.NewEncoder(w).Encode(err2)
 }

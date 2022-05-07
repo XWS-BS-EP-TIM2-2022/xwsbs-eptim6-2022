@@ -248,7 +248,7 @@ func (us *UsersStore) UnfollowUser() {
 
 }
 
-func (us *UsersStore) AcceptFollow(userToUpdateRequests primitive.ObjectID, userFollowRequest string) error {
+func (us *UsersStore) AcceptRejectFollow(userToUpdateRequests primitive.ObjectID, userFollowRequest string) error {
 	filterUserToUpdateRequests := bson.D{{Key: "_id", Value: userToUpdateRequests}}
 	updateUserToFollow := bson.D{
 		{Key: "$pull", Value: bson.D{{Key: "requests", Value: userFollowRequest}}},
@@ -258,8 +258,4 @@ func (us *UsersStore) AcceptFollow(userToUpdateRequests primitive.ObjectID, user
 		log.Fatal(err)
 	}
 	return nil
-}
-
-func (us *UsersStore) RejectFollow() {
-
 }
