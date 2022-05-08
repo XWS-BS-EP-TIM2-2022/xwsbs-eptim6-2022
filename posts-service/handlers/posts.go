@@ -28,10 +28,6 @@ func NewPostsHandler(l *log.Logger) *PostsHandler {
 	return &PostsHandler{l, postsStore, imagesHandler}
 }
 
-func (p *PostsHandler) Drop(rw http.ResponseWriter, r *http.Request) {
-	p.postsStore.Drop()
-}
-
 func (p *PostsHandler) GetAll(rw http.ResponseWriter, r *http.Request) {
 
 	lp, err := p.postsStore.GetAll()
@@ -91,7 +87,7 @@ func (p *PostsHandler) CreatePost(rw http.ResponseWriter, r *http.Request) {
 	post := store.Post{Username: username, ImageUrl: url, Text: postText}
 	err = p.postsStore.CreatePost(post)
 	if err != nil {
-		http.Error(rw, "Could create post", http.StatusBadRequest)
+		http.Error(rw, "Could not create post", http.StatusBadRequest)
 		return
 	}
 	rw.WriteHeader(http.StatusOK)
@@ -118,8 +114,11 @@ func (p *PostsHandler) LikePost(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 
-	var curUser string // dobaviti trenutno ulogovanog korisnika
-	curUser = "korisnik"
+	curUser, err := validateLoggedinUser(r)
+	if err != nil {
+		http.Error(rw, "Login error", http.StatusBadRequest)
+		return
+	}
 
 	liked := p.postsStore.IsAlreadyLiked(getObjectId(id), curUser)
 	if liked == false {
@@ -152,8 +151,11 @@ func (p *PostsHandler) DislikePost(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 
-	var curUser string // dobaviti trenutno ulogovanog korisnika
-	curUser = "korisnik"
+	curUser, err := validateLoggedinUser(r)
+	if err != nil {
+		http.Error(rw, "Login error", http.StatusBadRequest)
+		return
+	}
 
 	disliked := p.postsStore.IsAlreadyDisliked(getObjectId(id), curUser)
 
@@ -187,12 +189,18 @@ func (p *PostsHandler) CommentOnPost(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 
+	curUser, err := validateLoggedinUser(r)
+	if err != nil {
+		http.Error(rw, "Login error", http.StatusBadRequest)
+		return
+	}
+
 	comment := store.Comment{}
-	err := json.NewDecoder(r.Body).Decode(&comment)
+	err = json.NewDecoder(r.Body).Decode(&comment)
 	if err != nil {
 		http.Error(rw, "Error while commenting post", http.StatusBadRequest)
 	}
-
+	comment.Username = curUser
 	err = p.postsStore.InsertComment(getObjectId(id), comment)
 	if err != nil {
 		http.Error(rw, "Error commenting post", http.StatusBadRequest)
