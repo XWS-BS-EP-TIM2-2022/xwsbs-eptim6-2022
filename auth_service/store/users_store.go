@@ -65,7 +65,7 @@ func InitUsersStore() *UsersStore {
 		log.Fatal(err)
 	}
 	fmt.Println("Connected to MongoDB!")
-	collection := client.Database("users_database").Collection("users")
+	collection := client.Database("users_database1").Collection("users")
 	fmt.Println(collection.Name())
 	return &UsersStore{UsersCollection: collection}
 }
