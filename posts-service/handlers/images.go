@@ -49,7 +49,5 @@ func generateUrl(name string) string {
 func generateImageName() string {
 	name := time.Now().Unix()
 	strconv.FormatInt(name, 16)
-	//name = strings.Join(strings.Split(name, " "), "")
-	//name = strings.Split(name, "+")[0]
 	return strconv.FormatInt(name, 16)
 }

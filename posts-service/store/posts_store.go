@@ -12,6 +12,10 @@ import (
 	"log"
 )
 
+type User struct {
+	Username string `json:"username"`
+}
+
 type Post struct {
 	ID        primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
 	Username  string             `bson:"username"`

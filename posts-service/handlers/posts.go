@@ -63,9 +63,15 @@ func (p *PostsHandler) GetByUser(rw http.ResponseWriter, r *http.Request) {
 }
 
 func (p *PostsHandler) CreatePost(rw http.ResponseWriter, r *http.Request) {
-	err := r.ParseMultipartForm(32 << 20)
+	username, err := validateLoggedinUser(r)
 	if err != nil {
-		fmt.Println("ERROR")
+		http.Error(rw, "Login error", http.StatusBadRequest)
+		return
+	}
+	err = r.ParseMultipartForm(32 << 20)
+	if err != nil {
+		http.Error(rw, "Form parsing error", http.StatusBadRequest)
+		return
 	}
 	postText := r.Form.Get("text")
 	fmt.Println(postText)
@@ -77,14 +83,16 @@ func (p *PostsHandler) CreatePost(rw http.ResponseWriter, r *http.Request) {
 		buf := new(bytes.Buffer)
 		err = jpeg.Encode(buf, imageData, nil)
 		if err != nil {
-			log.Fatalln("ENCOIDNG IMAGE ERROR")
+			http.Error(rw, "ENCOIDNG IMAGE ERROR", http.StatusBadRequest)
+			return
 		}
 		url, err = p.imageHandler.SaveImage(buf.Bytes())
 	}
-	post := store.Post{Username: "admin", ImageUrl: url, Text: postText} //TODO: Fix hardcode username
+	post := store.Post{Username: username, ImageUrl: url, Text: postText}
 	err = p.postsStore.CreatePost(post)
 	if err != nil {
-		fmt.Println("Greska")
+		http.Error(rw, "Could create post", http.StatusBadRequest)
+		return
 	}
 	rw.WriteHeader(http.StatusOK)
 	json.NewEncoder(rw).Encode(post)
@@ -199,4 +207,25 @@ func getObjectId(id string) primitive.ObjectID {
 		return objectId
 	}
 	return primitive.NewObjectID()
+}
+
+func validateLoggedinUser(r *http.Request) (string, error) {
+	client := &http.Client{}
+	var authServiceHost = "http://localhost:8080/api/auth/session/validations"
+	jsonBody, err := json.Marshal(map[string]string{
+		"token": r.Header["Authorization"][0],
+	})
+	if err != nil {
+		return "", err
+	}
+	req, err := http.NewRequest(http.MethodPut, authServiceHost, bytes.NewBuffer(jsonBody))
+	req.Header.Set("Authorization", r.Header["Authorization"][0])
+	resp, err := client.Do(req)
+	var user store.User
+	json.NewDecoder(resp.Body).Decode(&user)
+	fmt.Println(user)
+	if err != nil {
+		return "", err
+	}
+	return user.Username, nil
 }
