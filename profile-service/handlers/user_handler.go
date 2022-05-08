@@ -1,7 +1,9 @@
 package handlers
 
 import (
+	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"profile-service/store"
 
@@ -19,9 +21,14 @@ func InitUserHandler() *UserHandler {
 }
 
 func (uh *UserHandler) GetUser(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
-	id, _ := primitive.ObjectIDFromHex(params["id"])
-	user, _ := uh.UserStore.FindOne(id)
+	username, err2 := validateLoggedinUser(r)
+	if err2 != nil {
+		http.Error(w, "Error while validating user", http.StatusBadRequest)
+	}
+	user, err3 := uh.UserStore.FindOneByUsername(username)
+	if err3 != nil {
+		http.Error(w, "Error while finding one user", http.StatusBadRequest)
+	}
 	json.NewEncoder(w).Encode(user)
 }
 
@@ -45,8 +52,15 @@ func (uh *UserHandler) AddNewUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func (uh *UserHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
-	id, _ := primitive.ObjectIDFromHex(params["id"])
+	username, err2 := validateLoggedinUser(r)
+	if err2 != nil {
+		http.Error(w, "Error while validating user", http.StatusBadRequest)
+	}
+	user1, err3 := uh.UserStore.FindOneByUsername(username)
+	if err3 != nil {
+		http.Error(w, "Error while finding one user", http.StatusBadRequest)
+	}
+	id := user1.ID
 
 	var user store.User
 	json.NewDecoder(r.Body).Decode(&user)
@@ -56,8 +70,15 @@ func (uh *UserHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func (uh *UserHandler) AddExperience(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
-	id, _ := primitive.ObjectIDFromHex(params["id"])
+	username, err2 := validateLoggedinUser(r)
+	if err2 != nil {
+		http.Error(w, "Error while validating user", http.StatusBadRequest)
+	}
+	user, err3 := uh.UserStore.FindOneByUsername(username)
+	if err3 != nil {
+		http.Error(w, "Error while finding one user", http.StatusBadRequest)
+	}
+	id := user.ID
 
 	var experience store.Experience
 	err := json.NewDecoder(r.Body).Decode(&experience)
@@ -73,8 +94,15 @@ func (uh *UserHandler) AddExperience(w http.ResponseWriter, r *http.Request) {
 }
 
 func (uh *UserHandler) AddEducation(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
-	id, _ := primitive.ObjectIDFromHex(params["id"])
+	username, err2 := validateLoggedinUser(r)
+	if err2 != nil {
+		http.Error(w, "Error while validating user", http.StatusBadRequest)
+	}
+	user, err3 := uh.UserStore.FindOneByUsername(username)
+	if err3 != nil {
+		http.Error(w, "Error while finding one user", http.StatusBadRequest)
+	}
+	id := user.ID
 
 	var education store.Education
 	err := json.NewDecoder(r.Body).Decode(&education)
@@ -90,8 +118,15 @@ func (uh *UserHandler) AddEducation(w http.ResponseWriter, r *http.Request) {
 }
 
 func (uh *UserHandler) AddSkill(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
-	id, _ := primitive.ObjectIDFromHex(params["id"])
+	username, err2 := validateLoggedinUser(r)
+	if err2 != nil {
+		http.Error(w, "Error while validating user", http.StatusBadRequest)
+	}
+	user, err3 := uh.UserStore.FindOneByUsername(username)
+	if err3 != nil {
+		http.Error(w, "Error while finding one user", http.StatusBadRequest)
+	}
+	id := user.ID
 
 	var skill store.Skill
 	err := json.NewDecoder(r.Body).Decode(&skill)
@@ -107,8 +142,15 @@ func (uh *UserHandler) AddSkill(w http.ResponseWriter, r *http.Request) {
 }
 
 func (uh *UserHandler) AddInterest(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
-	id, _ := primitive.ObjectIDFromHex(params["id"])
+	username, err2 := validateLoggedinUser(r)
+	if err2 != nil {
+		http.Error(w, "Error while validating user", http.StatusBadRequest)
+	}
+	user, err3 := uh.UserStore.FindOneByUsername(username)
+	if err3 != nil {
+		http.Error(w, "Error while finding one user", http.StatusBadRequest)
+	}
+	id := user.ID
 
 	var interest store.Interest
 	err := json.NewDecoder(r.Body).Decode(&interest)
@@ -125,8 +167,16 @@ func (uh *UserHandler) AddInterest(w http.ResponseWriter, r *http.Request) {
 
 func (uh *UserHandler) FollowUser(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
-	userToFollowID, _ := primitive.ObjectIDFromHex(params["idToFollow"])
-	userID, _ := primitive.ObjectIDFromHex(params["id"])
+	userToFollowID, _ := primitive.ObjectIDFromHex(params["id"])
+	username, err2 := validateLoggedinUser(r)
+	if err2 != nil {
+		http.Error(w, "Error while validating user", http.StatusBadRequest)
+	}
+	user, err3 := uh.UserStore.FindOneByUsername(username)
+	if err3 != nil {
+		http.Error(w, "Error while finding one user", http.StatusBadRequest)
+	}
+	userID := user.ID
 
 	var follower store.Follower
 	var following store.Following
@@ -141,7 +191,7 @@ func (uh *UserHandler) FollowUser(w http.ResponseWriter, r *http.Request) {
 	}
 	json.NewEncoder(w).Encode(userFollower)
 
-	userFollowing, err2 := uh.UserStore.FindOne(userToFollowID)
+	userFollowing, err2 = uh.UserStore.FindOne(userToFollowID)
 	if err2 != nil {
 		http.Error(w, "Error getting user with {idToFollow}", http.StatusBadRequest)
 		return
@@ -170,8 +220,16 @@ func (uh *UserHandler) FollowUser(w http.ResponseWriter, r *http.Request) {
 
 func (uh *UserHandler) UnfollowUser(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
-	userToUnfollowID, _ := primitive.ObjectIDFromHex(params["idToUnfollow"])
-	userID, _ := primitive.ObjectIDFromHex(params["id"])
+	userToUnfollowID, _ := primitive.ObjectIDFromHex(params["id"])
+	username, err2 := validateLoggedinUser(r)
+	if err2 != nil {
+		http.Error(w, "Error while validating user", http.StatusBadRequest)
+	}
+	user, err3 := uh.UserStore.FindOneByUsername(username)
+	if err3 != nil {
+		http.Error(w, "Error while finding one user", http.StatusBadRequest)
+	}
+	userID := user.ID
 
 	var follower store.Follower
 	var following store.Following
@@ -186,7 +244,7 @@ func (uh *UserHandler) UnfollowUser(w http.ResponseWriter, r *http.Request) {
 	}
 	json.NewEncoder(w).Encode(userFollower)
 
-	userFollowing, err2 := uh.UserStore.FindOne(userToUnfollowID)
+	userFollowing, err2 = uh.UserStore.FindOne(userToUnfollowID)
 	if err2 != nil {
 		http.Error(w, "Error getting user with {idToFollow}", http.StatusBadRequest)
 		return
@@ -206,8 +264,16 @@ func (uh *UserHandler) UnfollowUser(w http.ResponseWriter, r *http.Request) {
 
 func (uh *UserHandler) AcceptFollow(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
-	userToAcceptID, _ := primitive.ObjectIDFromHex(params["idUserToAccept"])
-	userID, _ := primitive.ObjectIDFromHex(params["id"])
+	userToAcceptID, _ := primitive.ObjectIDFromHex(params["id"])
+	username, err2 := validateLoggedinUser(r)
+	if err2 != nil {
+		http.Error(w, "Error while validating user", http.StatusBadRequest)
+	}
+	user, err3 := uh.UserStore.FindOneByUsername(username)
+	if err3 != nil {
+		http.Error(w, "Error while finding one user", http.StatusBadRequest)
+	}
+	userID := user.ID
 
 	userFromFollowRequest, err2 := uh.UserStore.FindOne(userToAcceptID) //ovaj user zeli da zaprati
 	if err2 != nil {
@@ -236,7 +302,7 @@ func (uh *UserHandler) AcceptFollow(w http.ResponseWriter, r *http.Request) {
 	}
 	json.NewEncoder(w).Encode(err)
 
-	err3 := uh.UserStore.AcceptRejectFollow(userID, userFromFollowRequest.Username)
+	err3 = uh.UserStore.AcceptRejectFollow(userID, userFromFollowRequest.Username)
 	if err3 != nil {
 		http.Error(w, "Error accepting user follow", http.StatusBadRequest)
 		return
@@ -246,8 +312,16 @@ func (uh *UserHandler) AcceptFollow(w http.ResponseWriter, r *http.Request) {
 
 func (uh *UserHandler) RejectFollow(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
-	userToAcceptID, _ := primitive.ObjectIDFromHex(params["idUserToReject"])
-	userID, _ := primitive.ObjectIDFromHex(params["id"])
+	userToAcceptID, _ := primitive.ObjectIDFromHex(params["id"])
+	username, err2 := validateLoggedinUser(r)
+	if err2 != nil {
+		http.Error(w, "Error while validating user", http.StatusBadRequest)
+	}
+	user, err3 := uh.UserStore.FindOneByUsername(username)
+	if err3 != nil {
+		http.Error(w, "Error while finding one user", http.StatusBadRequest)
+	}
+	userID := user.ID
 
 	userFromFollowRequest, err2 := uh.UserStore.FindOne(userToAcceptID)
 	if err2 != nil {
@@ -256,10 +330,33 @@ func (uh *UserHandler) RejectFollow(w http.ResponseWriter, r *http.Request) {
 	}
 	json.NewEncoder(w).Encode(userFromFollowRequest)
 
-	err3 := uh.UserStore.AcceptRejectFollow(userID, userFromFollowRequest.Username)
+	err3 = uh.UserStore.AcceptRejectFollow(userID, userFromFollowRequest.Username)
 	if err3 != nil {
 		http.Error(w, "Error rejecting user follow", http.StatusBadRequest)
 		return
 	}
 	json.NewEncoder(w).Encode(err2)
 }
+
+func validateLoggedinUser(r *http.Request) (string, error) {
+	client := &http.Client{}
+	var authServiceHost = "http://localhost:8080/api/auth/session/validations"
+	jsonBody, err := json.Marshal(map[string]string{
+		"token": r.Header["Authorization"][0],
+	})
+	if err != nil {
+		return "", err
+	}
+	req, _ := http.NewRequest(http.MethodPut, authServiceHost, bytes.NewBuffer(jsonBody))
+	req.Header.Set("Authorization", r.Header["Authorization"][0])
+	resp, err := client.Do(req)
+	var user store.User
+	json.NewDecoder(resp.Body).Decode(&user)
+	fmt.Println(user)
+	if err != nil {
+		return "", err
+	}
+	return user.Username, nil
+}
+
+//GET USER, EXPERIENCE, EDUCATION, SKILL, INTEREST

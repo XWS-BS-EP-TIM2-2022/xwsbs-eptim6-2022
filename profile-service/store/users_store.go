@@ -65,7 +65,7 @@ type UsersStore struct {
 }
 
 func InitUsersStore() *UsersStore {
-	mongoUri := "localhost:27018" //os.Getenv("MONGODB_URI")
+	mongoUri := "localhost:27017" //os.Getenv("MONGODB_URI")
 	clientOptions := options.Client().ApplyURI("mongodb://" + mongoUri + "/?connect=direct")
 	client, _ := mongo.Connect(context.TODO(), clientOptions)
 
