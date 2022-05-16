@@ -24,7 +24,7 @@ func (service *AuthService) FindAll() []store.User {
 	return service.store.FindAll()
 }
 
-func (service *AuthService) AddNew(user store.User) {
+func (service *AuthService) AddNewUser(user store.User) {
 	service.store.AddNew(user)
 	fmt.Println("Added user:" + user.Username)
 }

@@ -46,6 +46,7 @@ func (server *Server) initMongoClient() *mongo.Client {
 
 func (server *Server) initAuthStore(client *mongo.Client) *store.UsersStore {
 	store := store.InitUsersStore(client)
+	fmt.Println("init<")
 	for _, user := range users {
 		store.AddNew(user)
 		fmt.Println("Added: " + user.Username)

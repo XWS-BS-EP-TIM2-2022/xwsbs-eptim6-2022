@@ -33,10 +33,13 @@ func (handler *AuthHandler) GetAll(ctx context.Context, request *pb.GetAllReques
 	return response, nil
 }
 
-func (handler *AuthHandler) AddNewUser(ctx context.Context, request *pb.CreateNewUser) (*pb.User, error) {
+func (handler *AuthHandler) AddNewUser(ctx context.Context, request *pb.CreateNewUser) (*pb.CreateNewUser, error) {
 	user := mapUser2(request.User)
-	handler.service.AddNew(user)
-	return mapUser(user), nil
+	handler.service.AddNewUser(user)
+	response := &pb.CreateNewUser{
+		User: mapUser(user),
+	}
+	return response, nil
 }
 
 func (handler *AuthHandler) LoginUser(ctx context.Context, request *pb.CreateNewUser) (*pb.Token, error) {
@@ -53,4 +56,8 @@ func (handler *AuthHandler) LoginUser(ctx context.Context, request *pb.CreateNew
 	}
 	fmt.Println("RETURN")
 	return response, nil
+}
+
+func (handler *AuthHandler) AuthorizeJWT(ctx context.Context, request *pb.CreateNewUser) (*pb.Token, error) {
+	return nil, nil
 }
