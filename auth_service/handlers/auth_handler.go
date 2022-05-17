@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"auth_service/store"
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/auth_service/store"
@@ -69,7 +71,9 @@ func AuthorizeJWT(w http.ResponseWriter, r *http.Request) {
 		}
 		if token.Valid {
 			fmt.Println("VALID")
-			json.NewEncoder(w).Encode("valid")
+			username := token.Claims.(jwt.MapClaims)["username"]
+			str := fmt.Sprintf("%v", username)
+			json.NewEncoder(w).Encode(map[string]string{"username": str})
 		}
 	}
 }
@@ -81,7 +85,23 @@ func (ag *AuthHandler) AddNewUser(user store.User) {
 		return
 	}
 	ag.UserStore.AddNew(user)
+	err = ag.notifyProfileServiceAboutRegistration(user)
+	if err != nil {
+		println("Error while parsing json")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+}
+
+func (ag *AuthHandler) notifyProfileServiceAboutRegistration(user store.User) error {
 	fmt.Println("Post request")
+	postBody, _ := json.Marshal(user)
+	requestBody := bytes.NewBuffer(postBody)
+	_, err := http.Post("http://localhost:8081/users", "application/json", requestBody)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (ag *AuthHandler) GetAll(w http.ResponseWriter, r *http.Request) {
@@ -101,7 +121,7 @@ func GenerateJWT(dbUser store.User) (string, error) {
 	claims := token.Claims.(jwt.MapClaims)
 	claims["authorized"] = true
 	claims["username"] = dbUser.Username
-	claims["exp"] = time.Now().Add(time.Minute * 30).Unix()
+	claims["exp"] = time.Now().Add(time.Minute * 80).Unix()
 	tokenStr, err := token.SignedString(secretString)
 	if err != nil {
 		fmt.Errorf("token signing error")
