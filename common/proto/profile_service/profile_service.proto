@@ -1,0 +1,56 @@
+syntax = "proto3";
+package auth;
+option go_package = "https://github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common/prof";
+import "google/api/annotations.proto";
+
+
+service ProfileService {
+  rpc GetAll (GetAllRequest) returns (GetAllResponse){
+    option (google.api.http) = {
+      get: "/users"
+    };
+  }
+  rpc AddNewUser (CreateNewUser) returns (CreateNewUser){
+    option (google.api.http) = {
+      post: "/users"
+      body: "user"
+    };
+  }
+  rpc UpdateUser (CreateNewUser) returns (CreateNewUser){
+    option (google.api.http) = {
+      put: "/users"
+      body: "user"
+    };
+  }
+}
+
+message CreateNewUser {
+  User user = 1;
+}
+
+message GetAllRequest {
+
+}
+
+message GetAllResponse {
+  repeated User users = 1;
+}
+
+message User {
+  string username = 1;
+  string name = 2;
+  string surname = 3;
+  string password = 4;
+  string email = 5;
+  string telephone = 6;
+  string gender = 7;
+  string birthDate = 8;
+  string biography = 9;
+  repeated string expiriences = 10;
+  repeated string educations = 11;
+  repeated string skills = 12;
+  repeated string followers = 13;
+  repeated string followings = 14;
+  bool ispublic = 15;
+  repeated string followRequests = 16;
+}

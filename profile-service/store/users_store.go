@@ -32,6 +32,9 @@ type User struct {
 	FollowRequests []string           `json:"requests" bson:"requests"`
 }
 
+type ProfileStore interface {
+}
+
 type Experience struct {
 	Text string `json:"text" bson:"text"`
 }
