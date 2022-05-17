@@ -18,5 +18,10 @@ func NewAuthHandler(service *application.ProfileService) *AuthHandler {
 }
 
 func (handler *AuthHandler) AddNew(ctx context.Context, request *pb.CreateNewUser) (*pb.CreateNewUser, error) {
-
+	user := mapUser(request.User)
+	handler.service.AddUser(user)
+	response := &pb.CreateNewUser{
+		User: mapUser2(user),
+	}
+	return response, nil
 }

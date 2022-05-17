@@ -13,19 +13,19 @@ service ProfileService {
   rpc AddNewUser (CreateNewUser) returns (CreateNewUser){
     option (google.api.http) = {
       post: "/users"
-      body: "user"
+      body: "profuser"
     };
   }
   rpc UpdateUser (CreateNewUser) returns (CreateNewUser){
     option (google.api.http) = {
       put: "/users"
-      body: "user"
+      body: "profuser"
     };
   }
 }
 
 message CreateNewUser {
-  User user = 1;
+  ProfUser profuser = 1;
 }
 
 message GetAllRequest {
@@ -33,10 +33,10 @@ message GetAllRequest {
 }
 
 message GetAllResponse {
-  repeated User users = 1;
+  repeated ProfUser profuser = 1;
 }
 
-message User {
+message ProfUser {
   string username = 1;
   string name = 2;
   string surname = 3;
