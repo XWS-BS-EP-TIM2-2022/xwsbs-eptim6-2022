@@ -1,11 +1,9 @@
 package main
 
 import (
-	"fmt"
-	"log"
-	"net/http"
-	"profile-service/handlers"
-
+	"github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/profile-service/handlers"
+	"github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/profile-service/startup"
+	cfg "github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/profile-service/startup/config"
 	"github.com/gorilla/mux"
 )
 
@@ -33,7 +31,13 @@ func RegisterRouts() *mux.Router {
 }
 
 func main() {
+	config := cfg.NewConfig()
+	server := startup.NewServer(config)
+	server.Start()
+}
+
+/*func main() {
 	router := RegisterRouts()
 	fmt.Println("START Listening")
 	log.Fatal(http.ListenAndServe(":8081", router))
-}
+}*/

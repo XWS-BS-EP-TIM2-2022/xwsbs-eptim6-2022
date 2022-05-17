@@ -46,11 +46,27 @@ message User {
   string gender = 7;
   string birthDate = 8;
   string biography = 9;
-  repeated string expiriences = 10;
-  repeated string educations = 11;
-  repeated string skills = 12;
-  repeated string followers = 13;
-  repeated string followings = 14;
+  repeated Experiences experiences = 10;
+  repeated Educations educations = 11;
+  repeated Skills skills = 12;
+  repeated Followers followers = 13;
+  repeated Followings followings = 14;
   bool ispublic = 15;
   repeated string followRequests = 16;
+}
+
+message Experiences {
+  string experience = 1;
+}
+message Educations {
+  string educations = 1;
+}
+message Skills {
+  string skills = 1;
+}
+message Followers {
+  string followers = 1;
+}
+message Followings {
+  string followings = 1;
 }

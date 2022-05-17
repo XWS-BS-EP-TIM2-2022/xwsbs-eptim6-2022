@@ -3,6 +3,8 @@ cloud.google.com/go v0.34.0/go.mod h1:aQUYkXzVsufM+DwF1aE+0xfcU+56JwCaLick0ClmMT
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common v0.0.0-20220516212109-195263c948b0 h1:OUZcLHvNsCYNBHa7buhcXtgd89fdxvAC11zgGdJkVi8=
 github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common v0.0.0-20220516212109-195263c948b0/go.mod h1:hQU9H2W+IQAG4Iz0mAgvcPH3gANfnQ7ECdGJKFWPmQQ=
+github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common v0.0.0-20220517173259-bcd8a6243d79 h1:e04r90jgf9RFl+CEisbTO9GaGKcE4V8RbJnz+h+aDIU=
+github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common v0.0.0-20220517173259-bcd8a6243d79/go.mod h1:hQU9H2W+IQAG4Iz0mAgvcPH3gANfnQ7ECdGJKFWPmQQ=
 github.com/antihax/optional v1.0.0/go.mod h1:uupD/76wgC+ih3iEmQUL+0Ugr19nfwCT1kdvxnR2qWY=
 github.com/census-instrumentation/opencensus-proto v0.2.1/go.mod h1:f6KPmirojxKA12rnyqOA5BBL4O983OfeGPqjHWSTneU=
 github.com/cespare/xxhash/v2 v2.1.1/go.mod h1:VGX0DQ3Q6kWi7AoAeZDth3/j3BFtOZR5XLFGgcrjCOs=

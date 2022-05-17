@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/profile-service/store"
 	"net/http"
-	"profile-service/store"
 
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson/primitive"

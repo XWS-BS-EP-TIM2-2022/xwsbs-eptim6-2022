@@ -33,6 +33,9 @@ type User struct {
 }
 
 type ProfileStore interface {
+	AddUser(user User)
+	GetAll() []User
+	UpdateUser(user User)
 }
 
 type Experience struct {
@@ -67,17 +70,23 @@ type UsersStore struct {
 	UsersCollection *mongo.Collection
 }
 
-func InitUsersStore() *UsersStore {
-	mongoUri := "localhost:27017" //os.Getenv("MONGODB_URI")
-	clientOptions := options.Client().ApplyURI("mongodb://" + mongoUri + "/?connect=direct")
-	client, _ := mongo.Connect(context.TODO(), clientOptions)
+func GetClient(host, port string) (*mongo.Client, error) {
+	uri := fmt.Sprintf("mongodb://%s:%s/", host, port)
+	options := options.Client().ApplyURI(uri)
+	return mongo.Connect(context.TODO(), options)
+}
 
-	// Check the connection
-	err := client.Ping(context.TODO(), nil)
-
-	if err != nil {
-		log.Fatal(err)
-	}
+func InitUsersStore(client *mongo.Client) *UsersStore {
+	//mongoUri := "localhost:27017" //os.Getenv("MONGODB_URI")
+	//clientOptions := options.Client().ApplyURI("mongodb://" + mongoUri + "/?connect=direct")
+	//client, _ := mongo.Connect(context.TODO(), clientOptions)
+	//
+	//// Check the connection
+	//err := client.Ping(context.TODO(), nil)
+	//
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
 	fmt.Println("Connected to MongoDB!")
 	collection := client.Database("users_database").Collection("users")
 	fmt.Println(collection.Name())
