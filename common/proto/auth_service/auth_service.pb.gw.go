@@ -87,13 +87,6 @@ func request_AuthService_LoginUser_0(ctx context.Context, marshaler runtime.Mars
 	var protoReq CreateNewUser
 	var metadata runtime.ServerMetadata
 
-	//newReader, berr := utilities.IOReaderFactory(req.Body)
-	//if berr != nil {
-	//	return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", berr)
-	//}
-	//if err := marshaler.NewDecoder(newReader()).Decode(&protoReq); err != nil && err != io.EOF {
-	//	return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
-	//}
 	newReader, berr := utilities.IOReaderFactory(req.Body)
 	if berr != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", berr)
@@ -101,7 +94,6 @@ func request_AuthService_LoginUser_0(ctx context.Context, marshaler runtime.Mars
 	if err := marshaler.NewDecoder(newReader()).Decode(&protoReq.User); err != nil && err != io.EOF {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-
 
 	msg, err := client.LoginUser(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
@@ -112,13 +104,6 @@ func local_request_AuthService_LoginUser_0(ctx context.Context, marshaler runtim
 	var protoReq CreateNewUser
 	var metadata runtime.ServerMetadata
 
-	/*newReader, berr := utilities.IOReaderFactory(req.Body)
-	if berr != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", berr)
-	}
-	if err := marshaler.NewDecoder(newReader()).Decode(&protoReq); err != nil && err != io.EOF {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
-	}*/
 	newReader, berr := utilities.IOReaderFactory(req.Body)
 	if berr != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", berr)

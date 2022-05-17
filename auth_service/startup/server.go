@@ -35,7 +35,6 @@ func (server *Server) Start() {
 	server.startGrpcServer(productHandler)
 }
 
-//Da li je ovo initUserStore iz users_store.go ???????
 func (server *Server) initMongoClient() *mongo.Client {
 	client, err := store.GetClient(server.config.AuthDBHost, server.config.AuthDBPort)
 	if err != nil {

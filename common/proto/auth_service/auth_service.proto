@@ -19,7 +19,7 @@ service AuthService {
   rpc LoginUser (CreateNewUser) returns (Token){
     option (google.api.http) = {
       put: "/api/auth/session"
-      body: "*"
+      body: "user"
     };
   }
   rpc AuthorizeJWT (Token) returns (SecretString){
