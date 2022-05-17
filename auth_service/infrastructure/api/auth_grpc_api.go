@@ -58,6 +58,6 @@ func (handler *AuthHandler) LoginUser(ctx context.Context, request *pb.CreateNew
 	return response, nil
 }
 
-func (handler *AuthHandler) AuthorizeJWT(ctx context.Context, request *pb.CreateNewUser) (*pb.Token, error) {
+func (handler *AuthHandler) AuthorizeJWT(ctx context.Context, request *pb.Token) (*pb.SecretString, error) {
 	return nil, nil
 }
