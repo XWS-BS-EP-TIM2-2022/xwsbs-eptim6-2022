@@ -1,0 +1,210 @@
+<div class="row" style="margin-top: 2rem">
+  <div class="col-8 mx-auto">
+    <div class="card shadow-sm">
+      <h1 class="my-3" style="text-align: center">Posts</h1>
+      <div>
+        <div class="px-3">
+          <hr />
+        </div>
+        <div class="row mx-5 my-2">
+          <div class="col-11">
+            <div class="d-inline-flex">
+              <h2>User:</h2>
+              <h2 style="font-weight: bold; margin-left: 1rem">Petra Jovic</h2>
+            </div>
+          </div>
+        </div>
+        <div class="row mx-5 my-2 bg-light">
+          <div class="col-11">
+            <div class="d-inline-flex mt-3">
+              <h3 style="color: #f59494; margin-right: 1rem">Posted On:</h3>
+              <h3>25.5.2022.</h3>
+            </div>
+          </div>
+        </div>
+        <div class="row mx-5 my-3 bg-light">
+          <div class="col-11">
+            <div class="d-inline-flex mt-3">
+              <h3 style="font-weight: 400">"Text"</h3>
+            </div>
+          </div>
+        </div>
+        <div class="row my-3 mx-5">
+          <div class="col-6">
+            <div class="d-flex-inline justify-content-start mt-3">
+              <i class="fas fa-thumbs-up fa-lg me-3" style="color: #b4e197">
+                <a
+                  href=""
+                  data-bs-toggle="modal"
+                  data-bs-target="#allLikesModal"
+                  style="text-decoration: none; color: #b4e197"
+                >
+                  20</a
+                ></i
+              >
+              <i class="fas fa-thumbs-down fa-lg me-3" style="color: #b33030">
+                <a
+                  href=""
+                  data-bs-toggle="modal"
+                  data-bs-target="#allDislikesModal"
+                  style="text-decoration: none; color: #b33030"
+                >
+                  0</a
+                ></i
+              >
+              <i class="far fa-comment fa-lg me-3" style="color: gray"> 2</i>
+              <a
+                href=""
+                data-bs-toggle="modal"
+                data-bs-target="#allCommentsModal"
+                >(See comments)</a
+              >
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="d-flex justify-content-end">
+              <button class="btn btn-secondary me-2">Like</button>
+              <button class="btn btn-secondary me-2">Dislike</button>
+              <button
+                class="btn btn-secondary"
+                style="background: #f59494"
+                data-bs-toggle="modal"
+                data-bs-target="#commentModal"
+              >
+                Comment
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal For Comment -->
+<div
+  class="modal fade"
+  id="commentModal"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="exampleModalLabel">Comment post</h2>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label for="exampleFormControlTextarea1" class="form-label"
+            >Add your comment</label
+          >
+          <textarea
+            class="form-control"
+            id="exampleFormControlTextarea1"
+            rows="3"
+          ></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Cancel
+        </button>
+        <button type="button" class="btn btn-primary">Comment</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal For Displaying Comments -->
+<div
+  class="modal fade"
+  id="allCommentsModal"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabell"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="exampleModalLabell">All Comments</h2>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal For Displaying Comments -->
+<div
+  class="modal fade"
+  id="allDislikesModal"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabell"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="exampleModalLabell">People who disliked</h2>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal For Displaying Likes -->
+<div
+  class="modal fade"
+  id="allLikesModal"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabell"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="exampleModalLabell">People who liked</h2>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

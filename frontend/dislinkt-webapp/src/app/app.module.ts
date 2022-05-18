@@ -10,13 +10,15 @@ import { HomepageComponent } from './components/homepage/homepage.component';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { PostsViewComponent } from './components/posts-view/posts-view.component';
 
 
 @NgModule({
   declarations: [
     AppComponent,
     NavbarComponent,
-    HomepageComponent
+    HomepageComponent,
+    PostsViewComponent
 
   ],
   imports: [
