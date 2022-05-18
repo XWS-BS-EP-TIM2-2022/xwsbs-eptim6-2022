@@ -25,7 +25,7 @@ type AuthServiceClient interface {
 	AddNewUser(ctx context.Context, in *CreateNewUser, opts ...grpc.CallOption) (*CreateNewUser, error)
 	GetAll(ctx context.Context, in *GetAllRequest, opts ...grpc.CallOption) (*GetAllResponse, error)
 	LoginUser(ctx context.Context, in *CreateNewUser, opts ...grpc.CallOption) (*Token, error)
-	AuthorizeJWT(ctx context.Context, in *Token, opts ...grpc.CallOption) (*SecretString, error)
+	AuthorizeJWT(ctx context.Context, in *Token, opts ...grpc.CallOption) (*CreateNewUser, error)
 }
 
 type authServiceClient struct {
@@ -63,8 +63,8 @@ func (c *authServiceClient) LoginUser(ctx context.Context, in *CreateNewUser, op
 	return out, nil
 }
 
-func (c *authServiceClient) AuthorizeJWT(ctx context.Context, in *Token, opts ...grpc.CallOption) (*SecretString, error) {
-	out := new(SecretString)
+func (c *authServiceClient) AuthorizeJWT(ctx context.Context, in *Token, opts ...grpc.CallOption) (*CreateNewUser, error) {
+	out := new(CreateNewUser)
 	err := c.cc.Invoke(ctx, "/auth_service.AuthService/AuthorizeJWT", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -79,7 +79,7 @@ type AuthServiceServer interface {
 	AddNewUser(context.Context, *CreateNewUser) (*CreateNewUser, error)
 	GetAll(context.Context, *GetAllRequest) (*GetAllResponse, error)
 	LoginUser(context.Context, *CreateNewUser) (*Token, error)
-	AuthorizeJWT(context.Context, *Token) (*SecretString, error)
+	AuthorizeJWT(context.Context, *Token) (*CreateNewUser, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
 
@@ -96,7 +96,7 @@ func (UnimplementedAuthServiceServer) GetAll(context.Context, *GetAllRequest) (*
 func (UnimplementedAuthServiceServer) LoginUser(context.Context, *CreateNewUser) (*Token, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method LoginUser not implemented")
 }
-func (UnimplementedAuthServiceServer) AuthorizeJWT(context.Context, *Token) (*SecretString, error) {
+func (UnimplementedAuthServiceServer) AuthorizeJWT(context.Context, *Token) (*CreateNewUser, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AuthorizeJWT not implemented")
 }
 func (UnimplementedAuthServiceServer) mustEmbedUnimplementedAuthServiceServer() {}

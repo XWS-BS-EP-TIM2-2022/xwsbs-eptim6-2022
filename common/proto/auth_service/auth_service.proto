@@ -23,16 +23,11 @@ service AuthService {
       body: "user"
     };
   }
-  rpc AuthorizeJWT (Token) returns (SecretString){
+  rpc AuthorizeJWT (Token) returns (CreateNewUser){
     option (google.api.http) = {
       put: "/api/auth/session/validations"
-      body: "*"
     };
   }
-}
-
-message SecretString {
-  bytes secretString = 1;
 }
 
 message Token {
@@ -40,7 +35,6 @@ message Token {
 }
 
 message GetAllRequest {
-
 }
 
 message GetAllResponse {
