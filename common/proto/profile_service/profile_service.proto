@@ -29,25 +29,25 @@ service ProfileService {
 
   rpc AddSkill (SkillRequest) returns (UserResponse){
     option (google.api.http) = {
-      post: "/api/users/skill"
+      put: "/api/users/skill"
       body: "skill"
     };
   }
   rpc AddInterest (InterestRequest) returns (UserResponse){
     option (google.api.http) = {
-      post: "/api/users/interest"
+      put: "/api/users/interest"
       body: "interest"
     };
   }
   rpc AddExperience (ExperienceRequest) returns (UserResponse){
     option (google.api.http) = {
-      post: "/api/users/experience"
+      put: "/api/users/experience"
       body: "experience"
     };
   }
   rpc AddEducation (EducationRequest) returns (UserResponse){
     option (google.api.http) = {
-      post: "/api/users/education"
+      put: "/api/users/education"
       body: "education"
     };
   }
