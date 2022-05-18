@@ -21,16 +21,16 @@ import "google/api/annotations.proto";
 //	myRouter.HandleFunc("/users/reject-follow-request/{id}", uh.RejectFollow).Methods("PUT")
 //
 // *//
-service AuthService {
+service ProfileService {
   rpc GetAllUsers (EmptyRequest) returns (UsersResponse){
     option (google.api.http) = {
       get: "/api/users"
     };
   }
-  rpc AddEducation (Education) returns (UserResponse){
+  rpc AddEducation (EducationRequest) returns (UserResponse){
     option (google.api.http) = {
       post: "/api/users/education"
-      body: "text"
+      body: "education"
     };
   }
   rpc AddNewUser (UserRequest) returns (UserResponse){
@@ -44,6 +44,10 @@ message EmptyRequest{}
 message UserRequest{
   User user=1;
 }
+message EducationRequest{
+  Education education=1;
+}
+
 message UserResponse{
   User user=1;
 }
@@ -70,7 +74,7 @@ message User {
   string Gender = 7;
   string BirthDate = 8;
   string Biography = 9;
-  repeated Experience experiences = 10;
+  repeated  Experience experiences = 10;
   repeated Experience educations = 11;
   repeated Experience skills = 12;
   repeated Experience interests = 13;

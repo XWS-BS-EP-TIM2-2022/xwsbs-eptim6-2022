@@ -18,158 +18,158 @@ import (
 // Requires gRPC-Go v1.32.0 or later.
 const _ = grpc.SupportPackageIsVersion7
 
-// AuthServiceClient is the client API for AuthService service.
+// ProfileServiceClient is the client API for ProfileService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type AuthServiceClient interface {
+type ProfileServiceClient interface {
 	GetAllUsers(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*UsersResponse, error)
-	AddEducation(ctx context.Context, in *Education, opts ...grpc.CallOption) (*UserResponse, error)
+	AddEducation(ctx context.Context, in *EducationRequest, opts ...grpc.CallOption) (*UserResponse, error)
 	AddNewUser(ctx context.Context, in *UserRequest, opts ...grpc.CallOption) (*UserResponse, error)
 }
 
-type authServiceClient struct {
+type profileServiceClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewAuthServiceClient(cc grpc.ClientConnInterface) AuthServiceClient {
-	return &authServiceClient{cc}
+func NewProfileServiceClient(cc grpc.ClientConnInterface) ProfileServiceClient {
+	return &profileServiceClient{cc}
 }
 
-func (c *authServiceClient) GetAllUsers(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*UsersResponse, error) {
+func (c *profileServiceClient) GetAllUsers(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*UsersResponse, error) {
 	out := new(UsersResponse)
-	err := c.cc.Invoke(ctx, "/profile_service.AuthService/GetAllUsers", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/profile_service.ProfileService/GetAllUsers", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *authServiceClient) AddEducation(ctx context.Context, in *Education, opts ...grpc.CallOption) (*UserResponse, error) {
+func (c *profileServiceClient) AddEducation(ctx context.Context, in *EducationRequest, opts ...grpc.CallOption) (*UserResponse, error) {
 	out := new(UserResponse)
-	err := c.cc.Invoke(ctx, "/profile_service.AuthService/AddEducation", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/profile_service.ProfileService/AddEducation", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *authServiceClient) AddNewUser(ctx context.Context, in *UserRequest, opts ...grpc.CallOption) (*UserResponse, error) {
+func (c *profileServiceClient) AddNewUser(ctx context.Context, in *UserRequest, opts ...grpc.CallOption) (*UserResponse, error) {
 	out := new(UserResponse)
-	err := c.cc.Invoke(ctx, "/profile_service.AuthService/AddNewUser", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/profile_service.ProfileService/AddNewUser", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// AuthServiceServer is the server API for AuthService service.
-// All implementations must embed UnimplementedAuthServiceServer
+// ProfileServiceServer is the server API for ProfileService service.
+// All implementations must embed UnimplementedProfileServiceServer
 // for forward compatibility
-type AuthServiceServer interface {
+type ProfileServiceServer interface {
 	GetAllUsers(context.Context, *EmptyRequest) (*UsersResponse, error)
-	AddEducation(context.Context, *Education) (*UserResponse, error)
+	AddEducation(context.Context, *EducationRequest) (*UserResponse, error)
 	AddNewUser(context.Context, *UserRequest) (*UserResponse, error)
-	mustEmbedUnimplementedAuthServiceServer()
+	mustEmbedUnimplementedProfileServiceServer()
 }
 
-// UnimplementedAuthServiceServer must be embedded to have forward compatible implementations.
-type UnimplementedAuthServiceServer struct {
+// UnimplementedProfileServiceServer must be embedded to have forward compatible implementations.
+type UnimplementedProfileServiceServer struct {
 }
 
-func (UnimplementedAuthServiceServer) GetAllUsers(context.Context, *EmptyRequest) (*UsersResponse, error) {
+func (UnimplementedProfileServiceServer) GetAllUsers(context.Context, *EmptyRequest) (*UsersResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllUsers not implemented")
 }
-func (UnimplementedAuthServiceServer) AddEducation(context.Context, *Education) (*UserResponse, error) {
+func (UnimplementedProfileServiceServer) AddEducation(context.Context, *EducationRequest) (*UserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddEducation not implemented")
 }
-func (UnimplementedAuthServiceServer) AddNewUser(context.Context, *UserRequest) (*UserResponse, error) {
+func (UnimplementedProfileServiceServer) AddNewUser(context.Context, *UserRequest) (*UserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddNewUser not implemented")
 }
-func (UnimplementedAuthServiceServer) mustEmbedUnimplementedAuthServiceServer() {}
+func (UnimplementedProfileServiceServer) mustEmbedUnimplementedProfileServiceServer() {}
 
-// UnsafeAuthServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to AuthServiceServer will
+// UnsafeProfileServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to ProfileServiceServer will
 // result in compilation errors.
-type UnsafeAuthServiceServer interface {
-	mustEmbedUnimplementedAuthServiceServer()
+type UnsafeProfileServiceServer interface {
+	mustEmbedUnimplementedProfileServiceServer()
 }
 
-func RegisterAuthServiceServer(s grpc.ServiceRegistrar, srv AuthServiceServer) {
-	s.RegisterService(&AuthService_ServiceDesc, srv)
+func RegisterProfileServiceServer(s grpc.ServiceRegistrar, srv ProfileServiceServer) {
+	s.RegisterService(&ProfileService_ServiceDesc, srv)
 }
 
-func _AuthService_GetAllUsers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _ProfileService_GetAllUsers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(EmptyRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AuthServiceServer).GetAllUsers(ctx, in)
+		return srv.(ProfileServiceServer).GetAllUsers(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/profile_service.AuthService/GetAllUsers",
+		FullMethod: "/profile_service.ProfileService/GetAllUsers",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServiceServer).GetAllUsers(ctx, req.(*EmptyRequest))
+		return srv.(ProfileServiceServer).GetAllUsers(ctx, req.(*EmptyRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AuthService_AddEducation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Education)
+func _ProfileService_AddEducation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(EducationRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AuthServiceServer).AddEducation(ctx, in)
+		return srv.(ProfileServiceServer).AddEducation(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/profile_service.AuthService/AddEducation",
+		FullMethod: "/profile_service.ProfileService/AddEducation",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServiceServer).AddEducation(ctx, req.(*Education))
+		return srv.(ProfileServiceServer).AddEducation(ctx, req.(*EducationRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AuthService_AddNewUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _ProfileService_AddNewUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UserRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AuthServiceServer).AddNewUser(ctx, in)
+		return srv.(ProfileServiceServer).AddNewUser(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/profile_service.AuthService/AddNewUser",
+		FullMethod: "/profile_service.ProfileService/AddNewUser",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServiceServer).AddNewUser(ctx, req.(*UserRequest))
+		return srv.(ProfileServiceServer).AddNewUser(ctx, req.(*UserRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// AuthService_ServiceDesc is the grpc.ServiceDesc for AuthService service.
+// ProfileService_ServiceDesc is the grpc.ServiceDesc for ProfileService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var AuthService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "profile_service.AuthService",
-	HandlerType: (*AuthServiceServer)(nil),
+var ProfileService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "profile_service.ProfileService",
+	HandlerType: (*ProfileServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "GetAllUsers",
-			Handler:    _AuthService_GetAllUsers_Handler,
+			Handler:    _ProfileService_GetAllUsers_Handler,
 		},
 		{
 			MethodName: "AddEducation",
-			Handler:    _AuthService_AddEducation_Handler,
+			Handler:    _ProfileService_AddEducation_Handler,
 		},
 		{
 			MethodName: "AddNewUser",
-			Handler:    _AuthService_AddNewUser_Handler,
+			Handler:    _ProfileService_AddNewUser_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
