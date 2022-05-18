@@ -59,12 +59,12 @@ func (p *PostsHandler) GetByUser(rw http.ResponseWriter, r *http.Request) {
 }
 
 func (p *PostsHandler) CreatePost(rw http.ResponseWriter, r *http.Request) {
-	username, err := validateLoggedinUser(r)
+	/*username, err := validateLoggedinUser(r)
 	if err != nil {
 		http.Error(rw, "Login error", http.StatusBadRequest)
 		return
-	}
-	err = r.ParseMultipartForm(32 << 20)
+	}*/
+	err := r.ParseMultipartForm(32 << 20)
 	if err != nil {
 		http.Error(rw, "Form parsing error", http.StatusBadRequest)
 		return
@@ -84,14 +84,15 @@ func (p *PostsHandler) CreatePost(rw http.ResponseWriter, r *http.Request) {
 		}
 		url, err = p.imageHandler.SaveImage(buf.Bytes())
 	}
-	post := store.Post{Username: username, ImageUrl: url, Text: postText}
+
+	post := store.Post{Username: "username", ImageUrl: url, Text: postText, Liked: []string{}, Disliked: []string{}, Comments: []store.Comment{}}
 	err = p.postsStore.CreatePost(post)
 	if err != nil {
 		http.Error(rw, "Could not create post", http.StatusBadRequest)
 		return
 	}
 	rw.WriteHeader(http.StatusOK)
-	json.NewEncoder(rw).Encode(post)
+	rw.Write([]byte("Your post has been published."))
 }
 
 func (p *PostsHandler) GetOne(rw http.ResponseWriter, r *http.Request) {
