@@ -26,6 +26,7 @@ service AuthService {
   rpc AuthorizeJWT (Token) returns (CreateNewUser){
     option (google.api.http) = {
       put: "/api/auth/session/validations"
+      body: "token"
     };
   }
 }
