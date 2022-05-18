@@ -4,6 +4,7 @@ import (
 	"auth_service/store"
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"net/http"
@@ -27,56 +28,63 @@ func InitAuthHandler() *AuthHandler {
 	return &AuthHandler{UserStore: userStore}
 }
 
-func (ag *AuthHandler) LoginUser(w http.ResponseWriter, r *http.Request) {
+func (ag *AuthHandler) LoginUserRequest(w http.ResponseWriter, r *http.Request) {
 	user, err := DecodeUser(r)
 	if err != nil {
 		println("Error while parsing json")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	dbUser, err := ag.UserStore.FindByUsername(user.Username)
+	ag.LoginUser(user)
+}
+func (ah *AuthHandler) LoginUser(user store.User) (JWT, error) {
+	dbUser, err := ah.UserStore.FindByUsername(user.Username)
 	if err != nil {
 		fmt.Println("User not found")
-		w.WriteHeader(http.StatusNotFound)
-		return
+		return JWT{Token: ""}, err
 	}
-	if dbUser.Password == user.Password {
-		tokenStr, err := GenerateJWT(dbUser)
-		if err != nil {
-			fmt.Printf("Token generation failed %s\n", err.Error())
-			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
-		json.NewEncoder(w).Encode(JWT{Token: tokenStr})
-	} else {
-		fmt.Println("Login failed")
-		w.WriteHeader(http.StatusBadRequest)
+	if dbUser.Password != user.Password {
+		fmt.Println("User not found")
+		return JWT{Token: ""}, err
 	}
+	tokenStr, err := GenerateJWT(dbUser)
+	if err != nil {
+		fmt.Printf("Token generation failed %s\n", err.Error())
+		return JWT{Token: ""}, err
+	}
+	return JWT{Token: tokenStr}, nil
+
 }
 
 func (ag *AuthHandler) AuthorizeJWT(w http.ResponseWriter, r *http.Request) {
 	if r.Header["Authorization"] != nil {
 		tokenStr := strings.Split(r.Header["Authorization"][0], " ")[1]
-		token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
-			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-				return nil, fmt.Errorf("error")
-			}
-			return secretString, nil
-		})
-		if err != nil {
-			fmt.Println("Error")
-			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
-		if token.Valid {
-			fmt.Println("VALID")
-			username := token.Claims.(jwt.MapClaims)["username"]
-			str := fmt.Sprintf("%v", username)
-			json.NewEncoder(w).Encode(map[string]string{"username": str})
-		}
+		ag.ValidateToken(tokenStr)
 	}
 }
 
+//TODO: Validarati korisnika u bazi dodatno mozda je u medjuvremenu obrisan ili mijenjao lozinku itd.
+func (ag *AuthHandler) ValidateToken(tokenStr string) (*store.User, error) {
+	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("error")
+		}
+		return secretString, nil
+	})
+	if err != nil {
+		fmt.Println("Error")
+		return nil, err
+	}
+	if !token.Valid {
+		return nil, errors.New("JWT not valid")
+	}
+	fmt.Println("VALID")
+	username := token.Claims.(jwt.MapClaims)["username"]
+	str := fmt.Sprintf("%v", username)
+	fmt.Println(str)
+	return &store.User{Username: str}, nil
+
+}
 func (ag *AuthHandler) AddNewUser(w http.ResponseWriter, r *http.Request) {
 	user, err := DecodeUser(r)
 	if _, err := ag.UserStore.FindByUsername(user.Username); err == nil {
