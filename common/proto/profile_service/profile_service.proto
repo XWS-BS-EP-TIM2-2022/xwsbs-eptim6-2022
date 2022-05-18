@@ -1,0 +1,81 @@
+syntax = "proto3";
+
+option go_package = "github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common/proto/profile_service";
+
+package profile_service;
+import "google/api/annotations.proto";
+//**
+// 	myRouter.HandleFunc("/user", uh.GetUser).Methods("GET")
+//	myRouter.HandleFunc("/users", uh.AddNewUser).Methods("POST")
+//	myRouter.HandleFunc("/users", uh.GetAll).Methods("GET")
+//	myRouter.HandleFunc("/users", uh.UpdateUser).Methods("PUT")
+//
+//	myRouter.HandleFunc("/users/experience", uh.AddExperience).Methods("POST")
+//	myRouter.HandleFunc("/users/education", uh.AddEducation).Methods("POST")
+//	myRouter.HandleFunc("/users/skill", uh.AddSkill).Methods("POST")
+//	myRouter.HandleFunc("/users/interest", uh.AddInterest).Methods("POST")
+//
+//	myRouter.HandleFunc("/users/follow/{id}", uh.FollowUser).Methods("PUT")
+//	myRouter.HandleFunc("/users/unfollow/{id}", uh.UnfollowUser).Methods("PUT")
+//	myRouter.HandleFunc("/users/accept-follow-request/{id}", uh.AcceptFollow).Methods("PUT")
+//	myRouter.HandleFunc("/users/reject-follow-request/{id}", uh.RejectFollow).Methods("PUT")
+//
+// *//
+service AuthService {
+  rpc GetAllUsers (EmptyRequest) returns (UsersResponse){
+    option (google.api.http) = {
+      get: "/api/users"
+    };
+  }
+  rpc AddEducation (Education) returns (UserResponse){
+    option (google.api.http) = {
+      post: "/api/users/education"
+      body: "text"
+    };
+  }
+  rpc AddNewUser (UserRequest) returns (UserResponse){
+    option (google.api.http) = {
+      post: "/api/users"
+      body: "user"
+    };
+  }
+}
+message EmptyRequest{}
+message UserRequest{
+  User user=1;
+}
+message UserResponse{
+  User user=1;
+}
+
+message UsersResponse{
+  repeated User users=1;
+}
+message Follower{
+  string username = 1;
+}
+message Experience{
+  string text = 1;
+}
+message Education{
+  string text = 1;
+}
+message User {
+  string username = 1;
+  string name = 2;
+  string surname = 3;
+  string password = 4;
+  string email = 5;
+  string Telephone = 6;
+  string Gender = 7;
+  string BirthDate = 8;
+  string Biography = 9;
+  repeated Experience experiences = 10;
+  repeated Experience educations = 11;
+  repeated Experience skills = 12;
+  repeated Experience interests = 13;
+  repeated Follower followers = 14;
+  repeated Follower followings = 16;
+  bool IsPublic = 17;
+  repeated Follower followRequests = 18;
+}
