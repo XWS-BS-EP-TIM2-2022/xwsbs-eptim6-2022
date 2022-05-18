@@ -6,14 +6,7 @@ package profile_service;
 import "google/api/annotations.proto";
 //**
 // 	myRouter.HandleFunc("/user", uh.GetUser).Methods("GET")
-//	myRouter.HandleFunc("/users", uh.AddNewUser).Methods("POST")
-//	myRouter.HandleFunc("/users", uh.GetAll).Methods("GET")
 //	myRouter.HandleFunc("/users", uh.UpdateUser).Methods("PUT")
-//
-//	myRouter.HandleFunc("/users/experience", uh.AddExperience).Methods("POST")
-//	myRouter.HandleFunc("/users/education", uh.AddEducation).Methods("POST")
-//	myRouter.HandleFunc("/users/skill", uh.AddSkill).Methods("POST")
-//	myRouter.HandleFunc("/users/interest", uh.AddInterest).Methods("POST")
 //
 //	myRouter.HandleFunc("/users/follow/{id}", uh.FollowUser).Methods("PUT")
 //	myRouter.HandleFunc("/users/unfollow/{id}", uh.UnfollowUser).Methods("PUT")
@@ -27,43 +20,109 @@ service ProfileService {
       get: "/api/users"
     };
   }
-  rpc AddEducation (EducationRequest) returns (UserResponse){
-    option (google.api.http) = {
-      post: "/api/users/education"
-      body: "education"
-    };
-  }
   rpc AddNewUser (UserRequest) returns (UserResponse){
     option (google.api.http) = {
       post: "/api/users"
       body: "user"
     };
   }
+
+  rpc AddSkill (SkillRequest) returns (UserResponse){
+    option (google.api.http) = {
+      post: "/api/users/skill"
+      body: "skill"
+    };
+  }
+  rpc AddInterest (InterestRequest) returns (UserResponse){
+    option (google.api.http) = {
+      post: "/api/users/interest"
+      body: "interest"
+    };
+  }
+  rpc AddExperience (ExperienceRequest) returns (UserResponse){
+    option (google.api.http) = {
+      post: "/api/users/experience"
+      body: "experience"
+    };
+  }
+  rpc AddEducation (EducationRequest) returns (UserResponse){
+    option (google.api.http) = {
+      post: "/api/users/education"
+      body: "education"
+    };
+  }
+
+  rpc FollowUser (FollowUserRequest) returns (UserResponse){
+    option (google.api.http) = {
+      put: "/users/follow/{id}"
+    };
+  }
+  rpc UnFollowUser (FollowUserRequest) returns (UserResponse){
+    option (google.api.http) = {
+      put: "/users/unfollow/{id}"
+    };
+  }
+
+  rpc AcceptFollow (FollowUserRequest) returns (UserResponse){
+    option (google.api.http) = {
+      put: "/users/unfollow/{id}"
+    };
+  }
+  rpc RejectFollow (FollowUserRequest) returns (UserResponse){
+    option (google.api.http) = {
+      put: "/users/unfollow/{id}"
+    };
+  }
 }
+
+
 message EmptyRequest{}
+message FollowUserRequest{
+  string id=1;
+}
+
 message UserRequest{
   User user=1;
+}
+message UserResponse{
+  User user=1;
+}
+message UsersResponse{
+  repeated User users=1;
+}
+
+message Follower{
+  string username = 1;
+}
+
+message Experience{
+  string text = 1;
+}
+message ExperienceRequest{
+  Experience experience=1;
+}
+
+message Skill{
+  string text = 1;
+}
+message SkillRequest{
+  Skill skill=1;
+}
+
+message Interest{
+  string text = 1;
+}
+message InterestRequest{
+  Interest interest = 1;
+}
+
+message Education{
+  string text = 1;
 }
 message EducationRequest{
   Education education=1;
 }
 
-message UserResponse{
-  User user=1;
-}
-
-message UsersResponse{
-  repeated User users=1;
-}
-message Follower{
-  string username = 1;
-}
-message Experience{
-  string text = 1;
-}
-message Education{
-  string text = 1;
-}
 message User {
   string username = 1;
   string name = 2;
@@ -75,9 +134,9 @@ message User {
   string BirthDate = 8;
   string Biography = 9;
   repeated  Experience experiences = 10;
-  repeated Experience educations = 11;
-  repeated Experience skills = 12;
-  repeated Experience interests = 13;
+  repeated Education educations = 11;
+  repeated Skill skills = 12;
+  repeated Interest interests = 13;
   repeated Follower followers = 14;
   repeated Follower followings = 16;
   bool IsPublic = 17;
