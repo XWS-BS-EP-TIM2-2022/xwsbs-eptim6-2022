@@ -5,7 +5,7 @@ option go_package = "github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common/pro
 package posts_service;
 import "google/api/annotations.proto";
 
-service ProfileService {
+service PostsService {
   rpc GetAllPosts (EmptyRequest) returns (PostsResponse){
     option (google.api.http) = {
       get: "/api/posts"

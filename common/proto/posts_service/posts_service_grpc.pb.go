@@ -18,10 +18,10 @@ import (
 // Requires gRPC-Go v1.32.0 or later.
 const _ = grpc.SupportPackageIsVersion7
 
-// ProfileServiceClient is the client API for ProfileService service.
+// PostsServiceClient is the client API for PostsService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type ProfileServiceClient interface {
+type PostsServiceClient interface {
 	GetAllPosts(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*PostsResponse, error)
 	GetAllPostsByUser(ctx context.Context, in *GetByUsernameRequest, opts ...grpc.CallOption) (*PostsResponse, error)
 	GetPostById(ctx context.Context, in *GetByIdRequest, opts ...grpc.CallOption) (*PostResponse, error)
@@ -31,81 +31,81 @@ type ProfileServiceClient interface {
 	AddNewComment(ctx context.Context, in *CommentRequest, opts ...grpc.CallOption) (*PostResponse, error)
 }
 
-type profileServiceClient struct {
+type postsServiceClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewProfileServiceClient(cc grpc.ClientConnInterface) ProfileServiceClient {
-	return &profileServiceClient{cc}
+func NewPostsServiceClient(cc grpc.ClientConnInterface) PostsServiceClient {
+	return &postsServiceClient{cc}
 }
 
-func (c *profileServiceClient) GetAllPosts(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*PostsResponse, error) {
+func (c *postsServiceClient) GetAllPosts(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*PostsResponse, error) {
 	out := new(PostsResponse)
-	err := c.cc.Invoke(ctx, "/posts_service.ProfileService/GetAllPosts", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/posts_service.PostsService/GetAllPosts", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *profileServiceClient) GetAllPostsByUser(ctx context.Context, in *GetByUsernameRequest, opts ...grpc.CallOption) (*PostsResponse, error) {
+func (c *postsServiceClient) GetAllPostsByUser(ctx context.Context, in *GetByUsernameRequest, opts ...grpc.CallOption) (*PostsResponse, error) {
 	out := new(PostsResponse)
-	err := c.cc.Invoke(ctx, "/posts_service.ProfileService/GetAllPostsByUser", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/posts_service.PostsService/GetAllPostsByUser", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *profileServiceClient) GetPostById(ctx context.Context, in *GetByIdRequest, opts ...grpc.CallOption) (*PostResponse, error) {
+func (c *postsServiceClient) GetPostById(ctx context.Context, in *GetByIdRequest, opts ...grpc.CallOption) (*PostResponse, error) {
 	out := new(PostResponse)
-	err := c.cc.Invoke(ctx, "/posts_service.ProfileService/GetPostById", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/posts_service.PostsService/GetPostById", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *profileServiceClient) LikePost(ctx context.Context, in *GetByIdRequest, opts ...grpc.CallOption) (*PostResponse, error) {
+func (c *postsServiceClient) LikePost(ctx context.Context, in *GetByIdRequest, opts ...grpc.CallOption) (*PostResponse, error) {
 	out := new(PostResponse)
-	err := c.cc.Invoke(ctx, "/posts_service.ProfileService/LikePost", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/posts_service.PostsService/LikePost", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *profileServiceClient) DislikePost(ctx context.Context, in *GetByIdRequest, opts ...grpc.CallOption) (*PostResponse, error) {
+func (c *postsServiceClient) DislikePost(ctx context.Context, in *GetByIdRequest, opts ...grpc.CallOption) (*PostResponse, error) {
 	out := new(PostResponse)
-	err := c.cc.Invoke(ctx, "/posts_service.ProfileService/DislikePost", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/posts_service.PostsService/DislikePost", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *profileServiceClient) AddNewPost(ctx context.Context, in *PostRequest, opts ...grpc.CallOption) (*PostResponse, error) {
+func (c *postsServiceClient) AddNewPost(ctx context.Context, in *PostRequest, opts ...grpc.CallOption) (*PostResponse, error) {
 	out := new(PostResponse)
-	err := c.cc.Invoke(ctx, "/posts_service.ProfileService/AddNewPost", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/posts_service.PostsService/AddNewPost", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *profileServiceClient) AddNewComment(ctx context.Context, in *CommentRequest, opts ...grpc.CallOption) (*PostResponse, error) {
+func (c *postsServiceClient) AddNewComment(ctx context.Context, in *CommentRequest, opts ...grpc.CallOption) (*PostResponse, error) {
 	out := new(PostResponse)
-	err := c.cc.Invoke(ctx, "/posts_service.ProfileService/AddNewComment", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/posts_service.PostsService/AddNewComment", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// ProfileServiceServer is the server API for ProfileService service.
-// All implementations must embed UnimplementedProfileServiceServer
+// PostsServiceServer is the server API for PostsService service.
+// All implementations must embed UnimplementedPostsServiceServer
 // for forward compatibility
-type ProfileServiceServer interface {
+type PostsServiceServer interface {
 	GetAllPosts(context.Context, *EmptyRequest) (*PostsResponse, error)
 	GetAllPostsByUser(context.Context, *GetByUsernameRequest) (*PostsResponse, error)
 	GetPostById(context.Context, *GetByIdRequest) (*PostResponse, error)
@@ -113,207 +113,207 @@ type ProfileServiceServer interface {
 	DislikePost(context.Context, *GetByIdRequest) (*PostResponse, error)
 	AddNewPost(context.Context, *PostRequest) (*PostResponse, error)
 	AddNewComment(context.Context, *CommentRequest) (*PostResponse, error)
-	mustEmbedUnimplementedProfileServiceServer()
+	mustEmbedUnimplementedPostsServiceServer()
 }
 
-// UnimplementedProfileServiceServer must be embedded to have forward compatible implementations.
-type UnimplementedProfileServiceServer struct {
+// UnimplementedPostsServiceServer must be embedded to have forward compatible implementations.
+type UnimplementedPostsServiceServer struct {
 }
 
-func (UnimplementedProfileServiceServer) GetAllPosts(context.Context, *EmptyRequest) (*PostsResponse, error) {
+func (UnimplementedPostsServiceServer) GetAllPosts(context.Context, *EmptyRequest) (*PostsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllPosts not implemented")
 }
-func (UnimplementedProfileServiceServer) GetAllPostsByUser(context.Context, *GetByUsernameRequest) (*PostsResponse, error) {
+func (UnimplementedPostsServiceServer) GetAllPostsByUser(context.Context, *GetByUsernameRequest) (*PostsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllPostsByUser not implemented")
 }
-func (UnimplementedProfileServiceServer) GetPostById(context.Context, *GetByIdRequest) (*PostResponse, error) {
+func (UnimplementedPostsServiceServer) GetPostById(context.Context, *GetByIdRequest) (*PostResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPostById not implemented")
 }
-func (UnimplementedProfileServiceServer) LikePost(context.Context, *GetByIdRequest) (*PostResponse, error) {
+func (UnimplementedPostsServiceServer) LikePost(context.Context, *GetByIdRequest) (*PostResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method LikePost not implemented")
 }
-func (UnimplementedProfileServiceServer) DislikePost(context.Context, *GetByIdRequest) (*PostResponse, error) {
+func (UnimplementedPostsServiceServer) DislikePost(context.Context, *GetByIdRequest) (*PostResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DislikePost not implemented")
 }
-func (UnimplementedProfileServiceServer) AddNewPost(context.Context, *PostRequest) (*PostResponse, error) {
+func (UnimplementedPostsServiceServer) AddNewPost(context.Context, *PostRequest) (*PostResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddNewPost not implemented")
 }
-func (UnimplementedProfileServiceServer) AddNewComment(context.Context, *CommentRequest) (*PostResponse, error) {
+func (UnimplementedPostsServiceServer) AddNewComment(context.Context, *CommentRequest) (*PostResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddNewComment not implemented")
 }
-func (UnimplementedProfileServiceServer) mustEmbedUnimplementedProfileServiceServer() {}
+func (UnimplementedPostsServiceServer) mustEmbedUnimplementedPostsServiceServer() {}
 
-// UnsafeProfileServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to ProfileServiceServer will
+// UnsafePostsServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to PostsServiceServer will
 // result in compilation errors.
-type UnsafeProfileServiceServer interface {
-	mustEmbedUnimplementedProfileServiceServer()
+type UnsafePostsServiceServer interface {
+	mustEmbedUnimplementedPostsServiceServer()
 }
 
-func RegisterProfileServiceServer(s grpc.ServiceRegistrar, srv ProfileServiceServer) {
-	s.RegisterService(&ProfileService_ServiceDesc, srv)
+func RegisterPostsServiceServer(s grpc.ServiceRegistrar, srv PostsServiceServer) {
+	s.RegisterService(&PostsService_ServiceDesc, srv)
 }
 
-func _ProfileService_GetAllPosts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _PostsService_GetAllPosts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(EmptyRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ProfileServiceServer).GetAllPosts(ctx, in)
+		return srv.(PostsServiceServer).GetAllPosts(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/posts_service.ProfileService/GetAllPosts",
+		FullMethod: "/posts_service.PostsService/GetAllPosts",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ProfileServiceServer).GetAllPosts(ctx, req.(*EmptyRequest))
+		return srv.(PostsServiceServer).GetAllPosts(ctx, req.(*EmptyRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ProfileService_GetAllPostsByUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _PostsService_GetAllPostsByUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetByUsernameRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ProfileServiceServer).GetAllPostsByUser(ctx, in)
+		return srv.(PostsServiceServer).GetAllPostsByUser(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/posts_service.ProfileService/GetAllPostsByUser",
+		FullMethod: "/posts_service.PostsService/GetAllPostsByUser",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ProfileServiceServer).GetAllPostsByUser(ctx, req.(*GetByUsernameRequest))
+		return srv.(PostsServiceServer).GetAllPostsByUser(ctx, req.(*GetByUsernameRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ProfileService_GetPostById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _PostsService_GetPostById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetByIdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ProfileServiceServer).GetPostById(ctx, in)
+		return srv.(PostsServiceServer).GetPostById(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/posts_service.ProfileService/GetPostById",
+		FullMethod: "/posts_service.PostsService/GetPostById",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ProfileServiceServer).GetPostById(ctx, req.(*GetByIdRequest))
+		return srv.(PostsServiceServer).GetPostById(ctx, req.(*GetByIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ProfileService_LikePost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _PostsService_LikePost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetByIdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ProfileServiceServer).LikePost(ctx, in)
+		return srv.(PostsServiceServer).LikePost(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/posts_service.ProfileService/LikePost",
+		FullMethod: "/posts_service.PostsService/LikePost",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ProfileServiceServer).LikePost(ctx, req.(*GetByIdRequest))
+		return srv.(PostsServiceServer).LikePost(ctx, req.(*GetByIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ProfileService_DislikePost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _PostsService_DislikePost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetByIdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ProfileServiceServer).DislikePost(ctx, in)
+		return srv.(PostsServiceServer).DislikePost(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/posts_service.ProfileService/DislikePost",
+		FullMethod: "/posts_service.PostsService/DislikePost",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ProfileServiceServer).DislikePost(ctx, req.(*GetByIdRequest))
+		return srv.(PostsServiceServer).DislikePost(ctx, req.(*GetByIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ProfileService_AddNewPost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _PostsService_AddNewPost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(PostRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ProfileServiceServer).AddNewPost(ctx, in)
+		return srv.(PostsServiceServer).AddNewPost(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/posts_service.ProfileService/AddNewPost",
+		FullMethod: "/posts_service.PostsService/AddNewPost",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ProfileServiceServer).AddNewPost(ctx, req.(*PostRequest))
+		return srv.(PostsServiceServer).AddNewPost(ctx, req.(*PostRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ProfileService_AddNewComment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _PostsService_AddNewComment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CommentRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ProfileServiceServer).AddNewComment(ctx, in)
+		return srv.(PostsServiceServer).AddNewComment(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/posts_service.ProfileService/AddNewComment",
+		FullMethod: "/posts_service.PostsService/AddNewComment",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ProfileServiceServer).AddNewComment(ctx, req.(*CommentRequest))
+		return srv.(PostsServiceServer).AddNewComment(ctx, req.(*CommentRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// ProfileService_ServiceDesc is the grpc.ServiceDesc for ProfileService service.
+// PostsService_ServiceDesc is the grpc.ServiceDesc for PostsService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var ProfileService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "posts_service.ProfileService",
-	HandlerType: (*ProfileServiceServer)(nil),
+var PostsService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "posts_service.PostsService",
+	HandlerType: (*PostsServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "GetAllPosts",
-			Handler:    _ProfileService_GetAllPosts_Handler,
+			Handler:    _PostsService_GetAllPosts_Handler,
 		},
 		{
 			MethodName: "GetAllPostsByUser",
-			Handler:    _ProfileService_GetAllPostsByUser_Handler,
+			Handler:    _PostsService_GetAllPostsByUser_Handler,
 		},
 		{
 			MethodName: "GetPostById",
-			Handler:    _ProfileService_GetPostById_Handler,
+			Handler:    _PostsService_GetPostById_Handler,
 		},
 		{
 			MethodName: "LikePost",
-			Handler:    _ProfileService_LikePost_Handler,
+			Handler:    _PostsService_LikePost_Handler,
 		},
 		{
 			MethodName: "DislikePost",
-			Handler:    _ProfileService_DislikePost_Handler,
+			Handler:    _PostsService_DislikePost_Handler,
 		},
 		{
 			MethodName: "AddNewPost",
-			Handler:    _ProfileService_AddNewPost_Handler,
+			Handler:    _PostsService_AddNewPost_Handler,
 		},
 		{
 			MethodName: "AddNewComment",
-			Handler:    _ProfileService_AddNewComment_Handler,
+			Handler:    _PostsService_AddNewComment_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

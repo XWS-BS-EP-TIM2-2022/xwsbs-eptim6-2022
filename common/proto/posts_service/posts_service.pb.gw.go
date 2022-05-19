@@ -33,7 +33,7 @@ var _ = utilities.NewDoubleArray
 var _ = descriptor.ForMessage
 var _ = metadata.Join
 
-func request_ProfileService_GetAllPosts_0(ctx context.Context, marshaler runtime.Marshaler, client ProfileServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_PostsService_GetAllPosts_0(ctx context.Context, marshaler runtime.Marshaler, client PostsServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq EmptyRequest
 	var metadata runtime.ServerMetadata
 
@@ -42,7 +42,7 @@ func request_ProfileService_GetAllPosts_0(ctx context.Context, marshaler runtime
 
 }
 
-func local_request_ProfileService_GetAllPosts_0(ctx context.Context, marshaler runtime.Marshaler, server ProfileServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_PostsService_GetAllPosts_0(ctx context.Context, marshaler runtime.Marshaler, server PostsServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq EmptyRequest
 	var metadata runtime.ServerMetadata
 
@@ -51,7 +51,7 @@ func local_request_ProfileService_GetAllPosts_0(ctx context.Context, marshaler r
 
 }
 
-func request_ProfileService_GetAllPostsByUser_0(ctx context.Context, marshaler runtime.Marshaler, client ProfileServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_PostsService_GetAllPostsByUser_0(ctx context.Context, marshaler runtime.Marshaler, client PostsServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq GetByUsernameRequest
 	var metadata runtime.ServerMetadata
 
@@ -78,7 +78,7 @@ func request_ProfileService_GetAllPostsByUser_0(ctx context.Context, marshaler r
 
 }
 
-func local_request_ProfileService_GetAllPostsByUser_0(ctx context.Context, marshaler runtime.Marshaler, server ProfileServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_PostsService_GetAllPostsByUser_0(ctx context.Context, marshaler runtime.Marshaler, server PostsServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq GetByUsernameRequest
 	var metadata runtime.ServerMetadata
 
@@ -105,7 +105,7 @@ func local_request_ProfileService_GetAllPostsByUser_0(ctx context.Context, marsh
 
 }
 
-func request_ProfileService_GetPostById_0(ctx context.Context, marshaler runtime.Marshaler, client ProfileServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_PostsService_GetPostById_0(ctx context.Context, marshaler runtime.Marshaler, client PostsServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq GetByIdRequest
 	var metadata runtime.ServerMetadata
 
@@ -132,7 +132,7 @@ func request_ProfileService_GetPostById_0(ctx context.Context, marshaler runtime
 
 }
 
-func local_request_ProfileService_GetPostById_0(ctx context.Context, marshaler runtime.Marshaler, server ProfileServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_PostsService_GetPostById_0(ctx context.Context, marshaler runtime.Marshaler, server PostsServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq GetByIdRequest
 	var metadata runtime.ServerMetadata
 
@@ -159,7 +159,7 @@ func local_request_ProfileService_GetPostById_0(ctx context.Context, marshaler r
 
 }
 
-func request_ProfileService_LikePost_0(ctx context.Context, marshaler runtime.Marshaler, client ProfileServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_PostsService_LikePost_0(ctx context.Context, marshaler runtime.Marshaler, client PostsServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq GetByIdRequest
 	var metadata runtime.ServerMetadata
 
@@ -186,7 +186,7 @@ func request_ProfileService_LikePost_0(ctx context.Context, marshaler runtime.Ma
 
 }
 
-func local_request_ProfileService_LikePost_0(ctx context.Context, marshaler runtime.Marshaler, server ProfileServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_PostsService_LikePost_0(ctx context.Context, marshaler runtime.Marshaler, server PostsServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq GetByIdRequest
 	var metadata runtime.ServerMetadata
 
@@ -213,7 +213,7 @@ func local_request_ProfileService_LikePost_0(ctx context.Context, marshaler runt
 
 }
 
-func request_ProfileService_DislikePost_0(ctx context.Context, marshaler runtime.Marshaler, client ProfileServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_PostsService_DislikePost_0(ctx context.Context, marshaler runtime.Marshaler, client PostsServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq GetByIdRequest
 	var metadata runtime.ServerMetadata
 
@@ -240,7 +240,7 @@ func request_ProfileService_DislikePost_0(ctx context.Context, marshaler runtime
 
 }
 
-func local_request_ProfileService_DislikePost_0(ctx context.Context, marshaler runtime.Marshaler, server ProfileServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_PostsService_DislikePost_0(ctx context.Context, marshaler runtime.Marshaler, server PostsServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq GetByIdRequest
 	var metadata runtime.ServerMetadata
 
@@ -267,7 +267,7 @@ func local_request_ProfileService_DislikePost_0(ctx context.Context, marshaler r
 
 }
 
-func request_ProfileService_AddNewPost_0(ctx context.Context, marshaler runtime.Marshaler, client ProfileServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_PostsService_AddNewPost_0(ctx context.Context, marshaler runtime.Marshaler, client PostsServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq PostRequest
 	var metadata runtime.ServerMetadata
 
@@ -284,7 +284,7 @@ func request_ProfileService_AddNewPost_0(ctx context.Context, marshaler runtime.
 
 }
 
-func local_request_ProfileService_AddNewPost_0(ctx context.Context, marshaler runtime.Marshaler, server ProfileServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_PostsService_AddNewPost_0(ctx context.Context, marshaler runtime.Marshaler, server PostsServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq PostRequest
 	var metadata runtime.ServerMetadata
 
@@ -301,7 +301,7 @@ func local_request_ProfileService_AddNewPost_0(ctx context.Context, marshaler ru
 
 }
 
-func request_ProfileService_AddNewComment_0(ctx context.Context, marshaler runtime.Marshaler, client ProfileServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_PostsService_AddNewComment_0(ctx context.Context, marshaler runtime.Marshaler, client PostsServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq CommentRequest
 	var metadata runtime.ServerMetadata
 
@@ -336,7 +336,7 @@ func request_ProfileService_AddNewComment_0(ctx context.Context, marshaler runti
 
 }
 
-func local_request_ProfileService_AddNewComment_0(ctx context.Context, marshaler runtime.Marshaler, server ProfileServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_PostsService_AddNewComment_0(ctx context.Context, marshaler runtime.Marshaler, server PostsServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq CommentRequest
 	var metadata runtime.ServerMetadata
 
@@ -371,13 +371,13 @@ func local_request_ProfileService_AddNewComment_0(ctx context.Context, marshaler
 
 }
 
-// RegisterProfileServiceHandlerServer registers the http handlers for service ProfileService to "mux".
-// UnaryRPC     :call ProfileServiceServer directly.
+// RegisterPostsServiceHandlerServer registers the http handlers for service PostsService to "mux".
+// UnaryRPC     :call PostsServiceServer directly.
 // StreamingRPC :currently unsupported pending https://github.com/grpc/grpc-go/issues/906.
-// Note that using this registration option will cause many gRPC library features to stop working. Consider using RegisterProfileServiceHandlerFromEndpoint instead.
-func RegisterProfileServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux, server ProfileServiceServer) error {
+// Note that using this registration option will cause many gRPC library features to stop working. Consider using RegisterPostsServiceHandlerFromEndpoint instead.
+func RegisterPostsServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux, server PostsServiceServer) error {
 
-	mux.Handle("GET", pattern_ProfileService_GetAllPosts_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_PostsService_GetAllPosts_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -388,7 +388,7 @@ func RegisterProfileServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ProfileService_GetAllPosts_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_PostsService_GetAllPosts_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -396,11 +396,11 @@ func RegisterProfileServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 			return
 		}
 
-		forward_ProfileService_GetAllPosts_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_PostsService_GetAllPosts_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_ProfileService_GetAllPostsByUser_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_PostsService_GetAllPostsByUser_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -411,7 +411,7 @@ func RegisterProfileServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ProfileService_GetAllPostsByUser_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_PostsService_GetAllPostsByUser_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -419,11 +419,11 @@ func RegisterProfileServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 			return
 		}
 
-		forward_ProfileService_GetAllPostsByUser_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_PostsService_GetAllPostsByUser_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_ProfileService_GetPostById_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_PostsService_GetPostById_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -434,7 +434,7 @@ func RegisterProfileServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ProfileService_GetPostById_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_PostsService_GetPostById_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -442,11 +442,11 @@ func RegisterProfileServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 			return
 		}
 
-		forward_ProfileService_GetPostById_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_PostsService_GetPostById_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("PUT", pattern_ProfileService_LikePost_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("PUT", pattern_PostsService_LikePost_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -457,7 +457,7 @@ func RegisterProfileServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ProfileService_LikePost_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_PostsService_LikePost_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -465,11 +465,11 @@ func RegisterProfileServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 			return
 		}
 
-		forward_ProfileService_LikePost_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_PostsService_LikePost_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("PUT", pattern_ProfileService_DislikePost_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("PUT", pattern_PostsService_DislikePost_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -480,7 +480,7 @@ func RegisterProfileServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ProfileService_DislikePost_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_PostsService_DislikePost_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -488,11 +488,11 @@ func RegisterProfileServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 			return
 		}
 
-		forward_ProfileService_DislikePost_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_PostsService_DislikePost_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("POST", pattern_ProfileService_AddNewPost_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_PostsService_AddNewPost_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -503,7 +503,7 @@ func RegisterProfileServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ProfileService_AddNewPost_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_PostsService_AddNewPost_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -511,11 +511,11 @@ func RegisterProfileServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 			return
 		}
 
-		forward_ProfileService_AddNewPost_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_PostsService_AddNewPost_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("POST", pattern_ProfileService_AddNewComment_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_PostsService_AddNewComment_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -526,7 +526,7 @@ func RegisterProfileServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ProfileService_AddNewComment_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_PostsService_AddNewComment_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -534,16 +534,16 @@ func RegisterProfileServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 			return
 		}
 
-		forward_ProfileService_AddNewComment_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_PostsService_AddNewComment_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
 	return nil
 }
 
-// RegisterProfileServiceHandlerFromEndpoint is same as RegisterProfileServiceHandler but
+// RegisterPostsServiceHandlerFromEndpoint is same as RegisterPostsServiceHandler but
 // automatically dials to "endpoint" and closes the connection when "ctx" gets done.
-func RegisterProfileServiceHandlerFromEndpoint(ctx context.Context, mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) (err error) {
+func RegisterPostsServiceHandlerFromEndpoint(ctx context.Context, mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) (err error) {
 	conn, err := grpc.Dial(endpoint, opts...)
 	if err != nil {
 		return err
@@ -563,23 +563,23 @@ func RegisterProfileServiceHandlerFromEndpoint(ctx context.Context, mux *runtime
 		}()
 	}()
 
-	return RegisterProfileServiceHandler(ctx, mux, conn)
+	return RegisterPostsServiceHandler(ctx, mux, conn)
 }
 
-// RegisterProfileServiceHandler registers the http handlers for service ProfileService to "mux".
+// RegisterPostsServiceHandler registers the http handlers for service PostsService to "mux".
 // The handlers forward requests to the grpc endpoint over "conn".
-func RegisterProfileServiceHandler(ctx context.Context, mux *runtime.ServeMux, conn *grpc.ClientConn) error {
-	return RegisterProfileServiceHandlerClient(ctx, mux, NewProfileServiceClient(conn))
+func RegisterPostsServiceHandler(ctx context.Context, mux *runtime.ServeMux, conn *grpc.ClientConn) error {
+	return RegisterPostsServiceHandlerClient(ctx, mux, NewPostsServiceClient(conn))
 }
 
-// RegisterProfileServiceHandlerClient registers the http handlers for service ProfileService
-// to "mux". The handlers forward requests to the grpc endpoint over the given implementation of "ProfileServiceClient".
-// Note: the gRPC framework executes interceptors within the gRPC handler. If the passed in "ProfileServiceClient"
+// RegisterPostsServiceHandlerClient registers the http handlers for service PostsService
+// to "mux". The handlers forward requests to the grpc endpoint over the given implementation of "PostsServiceClient".
+// Note: the gRPC framework executes interceptors within the gRPC handler. If the passed in "PostsServiceClient"
 // doesn't go through the normal gRPC flow (creating a gRPC client etc.) then it will be up to the passed in
-// "ProfileServiceClient" to call the correct interceptors.
-func RegisterProfileServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux, client ProfileServiceClient) error {
+// "PostsServiceClient" to call the correct interceptors.
+func RegisterPostsServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux, client PostsServiceClient) error {
 
-	mux.Handle("GET", pattern_ProfileService_GetAllPosts_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_PostsService_GetAllPosts_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -588,18 +588,18 @@ func RegisterProfileServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ProfileService_GetAllPosts_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_PostsService_GetAllPosts_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_ProfileService_GetAllPosts_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_PostsService_GetAllPosts_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_ProfileService_GetAllPostsByUser_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_PostsService_GetAllPostsByUser_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -608,18 +608,18 @@ func RegisterProfileServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ProfileService_GetAllPostsByUser_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_PostsService_GetAllPostsByUser_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_ProfileService_GetAllPostsByUser_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_PostsService_GetAllPostsByUser_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_ProfileService_GetPostById_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_PostsService_GetPostById_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -628,18 +628,18 @@ func RegisterProfileServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ProfileService_GetPostById_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_PostsService_GetPostById_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_ProfileService_GetPostById_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_PostsService_GetPostById_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("PUT", pattern_ProfileService_LikePost_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("PUT", pattern_PostsService_LikePost_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -648,18 +648,18 @@ func RegisterProfileServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ProfileService_LikePost_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_PostsService_LikePost_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_ProfileService_LikePost_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_PostsService_LikePost_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("PUT", pattern_ProfileService_DislikePost_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("PUT", pattern_PostsService_DislikePost_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -668,18 +668,18 @@ func RegisterProfileServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ProfileService_DislikePost_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_PostsService_DislikePost_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_ProfileService_DislikePost_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_PostsService_DislikePost_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("POST", pattern_ProfileService_AddNewPost_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_PostsService_AddNewPost_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -688,18 +688,18 @@ func RegisterProfileServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ProfileService_AddNewPost_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_PostsService_AddNewPost_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_ProfileService_AddNewPost_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_PostsService_AddNewPost_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("POST", pattern_ProfileService_AddNewComment_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_PostsService_AddNewComment_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -708,14 +708,14 @@ func RegisterProfileServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ProfileService_AddNewComment_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_PostsService_AddNewComment_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_ProfileService_AddNewComment_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_PostsService_AddNewComment_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -723,33 +723,33 @@ func RegisterProfileServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 }
 
 var (
-	pattern_ProfileService_GetAllPosts_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"api", "posts"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_PostsService_GetAllPosts_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"api", "posts"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_ProfileService_GetAllPostsByUser_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"api", "users", "username", "posts"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_PostsService_GetAllPostsByUser_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"api", "users", "username", "posts"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_ProfileService_GetPostById_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"api", "posts", "id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_PostsService_GetPostById_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"api", "posts", "id"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_ProfileService_LikePost_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"api", "posts", "id", "likes"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_PostsService_LikePost_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"api", "posts", "id", "likes"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_ProfileService_DislikePost_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"api", "posts", "id", "dislikes"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_PostsService_DislikePost_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"api", "posts", "id", "dislikes"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_ProfileService_AddNewPost_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"api", "posts"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_PostsService_AddNewPost_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"api", "posts"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_ProfileService_AddNewComment_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"api", "posts", "id", "comments"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_PostsService_AddNewComment_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"api", "posts", "id", "comments"}, "", runtime.AssumeColonVerbOpt(true)))
 )
 
 var (
-	forward_ProfileService_GetAllPosts_0 = runtime.ForwardResponseMessage
+	forward_PostsService_GetAllPosts_0 = runtime.ForwardResponseMessage
 
-	forward_ProfileService_GetAllPostsByUser_0 = runtime.ForwardResponseMessage
+	forward_PostsService_GetAllPostsByUser_0 = runtime.ForwardResponseMessage
 
-	forward_ProfileService_GetPostById_0 = runtime.ForwardResponseMessage
+	forward_PostsService_GetPostById_0 = runtime.ForwardResponseMessage
 
-	forward_ProfileService_LikePost_0 = runtime.ForwardResponseMessage
+	forward_PostsService_LikePost_0 = runtime.ForwardResponseMessage
 
-	forward_ProfileService_DislikePost_0 = runtime.ForwardResponseMessage
+	forward_PostsService_DislikePost_0 = runtime.ForwardResponseMessage
 
-	forward_ProfileService_AddNewPost_0 = runtime.ForwardResponseMessage
+	forward_PostsService_AddNewPost_0 = runtime.ForwardResponseMessage
 
-	forward_ProfileService_AddNewComment_0 = runtime.ForwardResponseMessage
+	forward_PostsService_AddNewComment_0 = runtime.ForwardResponseMessage
 )
