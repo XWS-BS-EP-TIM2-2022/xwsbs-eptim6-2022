@@ -129,16 +129,16 @@ message User {
   string surname = 3;
   string password = 4;
   string email = 5;
-  string Telephone = 6;
-  string Gender = 7;
-  string BirthDate = 8;
-  string Biography = 9;
+  string telephone = 6;
+  string gender = 7;
+  string birthDate = 8;
+  string biography = 9;
   repeated  Experience experiences = 10;
   repeated Education educations = 11;
   repeated Skill skills = 12;
   repeated Interest interests = 13;
   repeated Follower followers = 14;
   repeated Follower followings = 16;
-  bool IsPublic = 17;
+  bool isPublic = 17;
   repeated Follower followRequests = 18;
 }

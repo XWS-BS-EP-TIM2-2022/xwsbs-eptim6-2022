@@ -62,6 +62,7 @@ message User {
   string name = 2;
   string surname = 3;
   string password = 4;
+  string email = 5;
 }
 
 message CreateNewUser {
