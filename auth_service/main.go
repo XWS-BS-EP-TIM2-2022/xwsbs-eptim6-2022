@@ -18,7 +18,8 @@ import (
 
 type Server struct {
 	authServicePb.UnimplementedAuthServiceServer
-	authHandler *handlers.AuthHandler
+	authHandler     *handlers.AuthHandler
+	permissionStore *store.PermissionsStore
 }
 
 func mapUser(user *store.User) *authServicePb.User {
@@ -41,8 +42,12 @@ func mapPbToUser(user *authServicePb.User) store.User {
 	}
 	return userPb
 }
+
+//TODO: Povuci novu verziju
 func (s *Server) AddNewUser(ctx context.Context, in *authServicePb.CreateNewUser) (*authServicePb.CreateNewUser, error) {
-	s.authHandler.UserStore.AddNew(mapPbToUser(in.User))
+	user := mapPbToUser(in.User)
+	user.Role = "USER"
+	s.authHandler.UserStore.AddNew(user)
 	return in, nil
 }
 func (s *Server) GetAll(ctx context.Context, in *authServicePb.GetAllRequest) (*authServicePb.GetAllResponse, error) {
@@ -58,6 +63,28 @@ func (s *Server) AuthorizeJWT(ctx context.Context, token *authServicePb.Validate
 		return nil, err
 	}
 	return &authServicePb.CreateNewUser{User: mapUser(user)}, err
+}
+func mapPermissions(permissions *store.UserPermission) *authServicePb.UserPermissions {
+	var permissionsResponse authServicePb.UserPermissions
+	for i := 0; i < len(permissions.Permissions); i++ {
+		permissionsResponse.Permissions = append(permissionsResponse.Permissions, &authServicePb.Permission{Value: permissions.Permissions[i]})
+	}
+	return &permissionsResponse
+}
+func (s *Server) GetUserPermissions(ctx context.Context, in *authServicePb.ValidateToken) (*authServicePb.UserPermissions, error) {
+	user, err := s.authHandler.ValidateToken(in.Token.Token)
+	if err != nil {
+		return nil, err
+	}
+	userDb, err := s.authHandler.UserStore.FindByUsername(user.Username)
+	if err != nil {
+		return nil, err
+	}
+	permission, err := s.permissionStore.FindByUserRole(userDb.Role)
+	if err != nil {
+		return nil, err
+	}
+	return mapPermissions(permission), nil
 }
 func main() {
 	//router := RegisterRouts()
@@ -77,6 +104,7 @@ func main() {
 		log.Fatal(err.Error())
 		return
 	}
+
 	authServicePb.RegisterAuthServiceServer(s, service)
 	log.Println("Serving gRPC on 0.0.0.0:8080")
 	go func() {
@@ -110,7 +138,7 @@ func main() {
 	log.Fatalln(gwServer.ListenAndServe())
 }
 func NewServer() (*Server, error) {
-	return &Server{authHandler: handlers.InitAuthHandler()}, nil
+	return &Server{authHandler: handlers.InitAuthHandler(), permissionStore: store.InitPermissionsStore()}, nil
 }
 func RegisterRouts() *mux.Router {
 	router := mux.NewRouter().StrictSlash(true)

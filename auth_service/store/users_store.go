@@ -14,6 +14,7 @@ type User struct {
 	Name     string `json:"name"`
 	Surname  string `json:"surname"`
 	Password string `json:"password"`
+	Role     string `json:"role"`
 }
 
 type UsersStore struct {
@@ -55,17 +56,8 @@ func (us *UsersStore) FindAll() []User {
 
 func InitUsersStore() *UsersStore {
 	mongoUri := "localhost:27017" //os.Getenv("MONGODB_URI")
-	clientOptions := options.Client().ApplyURI("mongodb://" + mongoUri + "/?connect=direct")
-	client, err := mongo.Connect(context.TODO(), clientOptions)
-
-	// Check the connection
-	err = client.Ping(context.TODO(), nil)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println("Connected to MongoDB!")
-	collection := client.Database("users_database1").Collection("users")
+	client := CreateMongoDBConnection(mongoUri)
+	collection := client.Database("users_database").Collection("users")
 	fmt.Println(collection.Name())
 	return &UsersStore{UsersCollection: collection}
 }
