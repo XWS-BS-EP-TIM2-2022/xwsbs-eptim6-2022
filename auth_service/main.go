@@ -16,7 +16,7 @@ func main() {
 	//ttl := han.MaxAge(3600)
 	origins := han.AllowedOrigins([]string{"http://localhost:4200/**", "http://localhost:4200"})
 	fmt.Println("START Listening")
-	log.Fatal(http.ListenAndServe(":8080", han.CORS(credentials, methods, origins)(router)))
+	log.Fatal(http.ListenAndServe(":8081", han.CORS(credentials, methods, origins)(router)))
 }
 
 func RegisterRouts() *mux.Router {

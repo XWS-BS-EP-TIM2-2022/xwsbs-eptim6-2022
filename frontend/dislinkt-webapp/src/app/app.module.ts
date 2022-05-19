@@ -13,6 +13,7 @@ import { MatInputModule } from '@angular/material/input';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { PostsViewComponent } from './components/posts-view/posts-view.component';
 import { LoginComponent } from './components/login/login.component';
+import { RegistrationComponent } from './components/registration/registration.component';
 
 
 @NgModule({
@@ -21,7 +22,8 @@ import { LoginComponent } from './components/login/login.component';
     NavbarComponent,
     HomepageComponent,
     PostsViewComponent,
-    LoginComponent
+    LoginComponent,
+    RegistrationComponent
 
   ],
   imports: [

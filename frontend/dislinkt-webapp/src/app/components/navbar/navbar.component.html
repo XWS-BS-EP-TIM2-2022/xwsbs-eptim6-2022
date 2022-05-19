@@ -31,7 +31,7 @@
       </form>
       <button class="btn btn-primary mx-2" *ngIf="logged">Logout</button>
       <button class="btn btn-primary mx-2" routerLink="/login" *ngIf="!logged">Login</button>
-      <button class="btn btn-primary mx-2" *ngIf="!logged">Sign Up</button>
+      <button class="btn btn-primary mx-2" *ngIf="!logged" routerLink="/registration">Sign Up</button>
     </div>
   </div>
 </nav>
