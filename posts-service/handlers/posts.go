@@ -60,12 +60,12 @@ func (p *PostsHandler) GetByUser(rw http.ResponseWriter, r *http.Request) {
 }
 
 func (p *PostsHandler) CreatePost(rw http.ResponseWriter, r *http.Request) {
-	/*username, err := validateLoggedinUser(r)
+	username, err := validateLoggedinUser(r)
 	if err != nil {
 		http.Error(rw, "Login error", http.StatusBadRequest)
 		return
-	}*/
-	err := r.ParseMultipartForm(32 << 20)
+	}
+	err = r.ParseMultipartForm(32 << 20)
 	if err != nil {
 		http.Error(rw, "Form parsing error", http.StatusBadRequest)
 		return
@@ -85,8 +85,8 @@ func (p *PostsHandler) CreatePost(rw http.ResponseWriter, r *http.Request) {
 		}
 		url, err = p.imageHandler.SaveImage(buf.Bytes())
 	}
-	currentTime := time.Now()
-	post := store.Post{Username: "username", ImageUrl: url, Text: postText, Liked: []string{}, Disliked: []string{}, Comments: []store.Comment{}, CreatedOn: currentTime.String()}
+	currentTime := time.Now().Format("02.01.2006 15:04")
+	post := store.Post{Username: username, ImageUrl: url, Text: postText, Liked: []string{}, Disliked: []string{}, Comments: []store.Comment{}, CreatedOn: currentTime}
 	err = p.postsStore.CreatePost(post)
 	if err != nil {
 		http.Error(rw, "Could not create post", http.StatusBadRequest)
@@ -116,13 +116,11 @@ func (p *PostsHandler) LikePost(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 
-	/*curUser, err := validateLoggedinUser(r)
+	curUser, err := validateLoggedinUser(r)
 	if err != nil {
 		http.Error(rw, "Login error", http.StatusBadRequest)
 		return
-	}*/
-
-	curUser := "neko"
+	}
 
 	liked := p.postsStore.IsAlreadyLiked(getObjectId(id), curUser)
 	if liked == false {
@@ -155,12 +153,11 @@ func (p *PostsHandler) DislikePost(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 
-	/*curUser, err := validateLoggedinUser(r)
+	curUser, err := validateLoggedinUser(r)
 	if err != nil {
 		http.Error(rw, "Login error", http.StatusBadRequest)
 		return
-	}*/
-	curUser := "neko"
+	}
 
 	disliked := p.postsStore.IsAlreadyDisliked(getObjectId(id), curUser)
 
@@ -194,16 +191,14 @@ func (p *PostsHandler) CommentOnPost(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 
-	/*curUser, err := validateLoggedinUser(r)
+	curUser, err := validateLoggedinUser(r)
 	if err != nil {
 		http.Error(rw, "Login error", http.StatusBadRequest)
 		return
-	}*/
-
-	curUser := "neko"
+	}
 
 	comment := store.Comment{}
-	err := json.NewDecoder(r.Body).Decode(&comment)
+	err = json.NewDecoder(r.Body).Decode(&comment)
 	if err != nil {
 		http.Error(rw, "Error while commenting post", http.StatusBadRequest)
 	}

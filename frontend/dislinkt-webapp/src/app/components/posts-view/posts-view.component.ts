@@ -19,6 +19,7 @@ export class PostsViewComponent implements OnInit {
   constructor(public service : PostsService, private _snackBar: MatSnackBar) { }
 
   ngOnInit(): void {
+    this.commentText = ''
     this.service.getAllPosts().subscribe( res => this.posts = res);
   }
 
