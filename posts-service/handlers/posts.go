@@ -194,14 +194,16 @@ func (p *PostsHandler) CommentOnPost(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 
-	curUser, err := validateLoggedinUser(r)
+	/*curUser, err := validateLoggedinUser(r)
 	if err != nil {
 		http.Error(rw, "Login error", http.StatusBadRequest)
 		return
-	}
+	}*/
+
+	curUser := "neko"
 
 	comment := store.Comment{}
-	err = json.NewDecoder(r.Body).Decode(&comment)
+	err := json.NewDecoder(r.Body).Decode(&comment)
 	if err != nil {
 		http.Error(rw, "Error while commenting post", http.StatusBadRequest)
 	}

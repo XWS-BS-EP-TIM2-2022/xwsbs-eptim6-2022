@@ -11,7 +11,7 @@ export interface Post {
 	Comments  : Comment[]
 }
 
-export interface Comment {
-    Username : string,
-    Text     : string
+export class Comment {
+    Username! : string;
+    Text !    : string;
 }

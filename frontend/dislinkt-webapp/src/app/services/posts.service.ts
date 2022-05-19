@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Post } from '../model/post';
+import { Comment, Post } from '../model/post';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -20,7 +20,7 @@ export class PostsService {
   public commentPost(comment : Comment, id : string){
     return this.http
       .post(
-        '/posts/new-comment/{id}',
+        '/posts/new-comment/'+ encodeURIComponent(id),
         comment, { observe: 'response', responseType: 'text' });
   }
 
