@@ -3,16 +3,20 @@ package main
 import (
 	"auth_service/handlers"
 	"fmt"
+	han "github.com/gorilla/handlers"
+	"github.com/gorilla/mux"
 	"log"
 	"net/http"
-
-	"github.com/gorilla/mux"
 )
 
 func main() {
 	router := RegisterRouts()
+	credentials := han.AllowCredentials()
+	methods := han.AllowedMethods([]string{"POST", "PUT", "GET", "DELETE"})
+	//ttl := han.MaxAge(3600)
+	origins := han.AllowedOrigins([]string{"http://localhost:4200/**", "http://localhost:4200"})
 	fmt.Println("START Listening")
-	log.Fatal(http.ListenAndServe(":8080", router))
+	log.Fatal(http.ListenAndServe(":8080", han.CORS(credentials, methods, origins)(router)))
 }
 
 func RegisterRouts() *mux.Router {
