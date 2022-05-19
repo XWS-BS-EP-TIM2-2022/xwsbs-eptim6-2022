@@ -26,6 +26,7 @@ type AuthServiceClient interface {
 	GetAll(ctx context.Context, in *GetAllRequest, opts ...grpc.CallOption) (*GetAllResponse, error)
 	LoginUser(ctx context.Context, in *CreateNewUser, opts ...grpc.CallOption) (*Token, error)
 	AuthorizeJWT(ctx context.Context, in *ValidateToken, opts ...grpc.CallOption) (*CreateNewUser, error)
+	GetUserPermissions(ctx context.Context, in *ValidateToken, opts ...grpc.CallOption) (*UserPermissions, error)
 }
 
 type authServiceClient struct {
@@ -72,6 +73,15 @@ func (c *authServiceClient) AuthorizeJWT(ctx context.Context, in *ValidateToken,
 	return out, nil
 }
 
+func (c *authServiceClient) GetUserPermissions(ctx context.Context, in *ValidateToken, opts ...grpc.CallOption) (*UserPermissions, error) {
+	out := new(UserPermissions)
+	err := c.cc.Invoke(ctx, "/auth_service.AuthService/GetUserPermissions", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AuthServiceServer is the server API for AuthService service.
 // All implementations must embed UnimplementedAuthServiceServer
 // for forward compatibility
@@ -80,6 +90,7 @@ type AuthServiceServer interface {
 	GetAll(context.Context, *GetAllRequest) (*GetAllResponse, error)
 	LoginUser(context.Context, *CreateNewUser) (*Token, error)
 	AuthorizeJWT(context.Context, *ValidateToken) (*CreateNewUser, error)
+	GetUserPermissions(context.Context, *ValidateToken) (*UserPermissions, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
 
@@ -98,6 +109,9 @@ func (UnimplementedAuthServiceServer) LoginUser(context.Context, *CreateNewUser)
 }
 func (UnimplementedAuthServiceServer) AuthorizeJWT(context.Context, *ValidateToken) (*CreateNewUser, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AuthorizeJWT not implemented")
+}
+func (UnimplementedAuthServiceServer) GetUserPermissions(context.Context, *ValidateToken) (*UserPermissions, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserPermissions not implemented")
 }
 func (UnimplementedAuthServiceServer) mustEmbedUnimplementedAuthServiceServer() {}
 
@@ -184,6 +198,24 @@ func _AuthService_AuthorizeJWT_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_GetUserPermissions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ValidateToken)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).GetUserPermissions(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/auth_service.AuthService/GetUserPermissions",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).GetUserPermissions(ctx, req.(*ValidateToken))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AuthService_ServiceDesc is the grpc.ServiceDesc for AuthService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -206,6 +238,10 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AuthorizeJWT",
 			Handler:    _AuthService_AuthorizeJWT_Handler,
+		},
+		{
+			MethodName: "GetUserPermissions",
+			Handler:    _AuthService_GetUserPermissions_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -29,10 +29,22 @@ service AuthService {
       body: "token"
     };
   }
+  rpc GetUserPermissions(ValidateToken) returns (UserPermissions){
+    option (google.api.http) = {
+      put: "/api/auth/session/permissions"
+      body: "token"
+    };
+  }
 }
 
 message Token {
   string token = 1;
+}
+message Permission{
+  string value=1;
+}
+message UserPermissions{
+  repeated Permission permissions=1;
 }
 message ValidateToken{
   Token token=1;
