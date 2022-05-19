@@ -1,6 +1,6 @@
 <div class="row" style="margin-top: 2rem">
   <div class="col-8 mx-auto">
-    <div class="card shadow-sm">
+    <div class="card shadow-sm mb-3" *ngFor="let post of posts">
       <h1 class="my-3" style="text-align: center">Posts</h1>
       <div>
         <div class="px-3">
@@ -10,7 +10,9 @@
           <div class="col-11">
             <div class="d-inline-flex">
               <h2>User:</h2>
-              <h2 style="font-weight: bold; margin-left: 1rem">Petra Jovic</h2>
+              <h2 style="font-weight: bold; margin-left: 1rem">
+                {{ post.Username }}
+              </h2>
             </div>
           </div>
         </div>
@@ -18,14 +20,14 @@
           <div class="col-11">
             <div class="d-inline-flex mt-3">
               <h3 style="color: #f59494; margin-right: 1rem">Posted On:</h3>
-              <h3>25.5.2022.</h3>
+              <h3>{{ post.CreatedOn }}</h3>
             </div>
           </div>
         </div>
         <div class="row mx-5 my-3 bg-light">
           <div class="col-11">
             <div class="d-inline-flex mt-3">
-              <h3 style="font-weight: 400">"Text"</h3>
+              <h3 style="font-weight: 400">"{{ post.Text }}"</h3>
             </div>
           </div>
         </div>
@@ -39,7 +41,7 @@
                   data-bs-target="#allLikesModal"
                   style="text-decoration: none; color: #b4e197"
                 >
-                  20</a
+                  {{ post.Likes }}</a
                 ></i
               >
               <i class="fas fa-thumbs-down fa-lg me-3" style="color: #b33030">
@@ -49,10 +51,10 @@
                   data-bs-target="#allDislikesModal"
                   style="text-decoration: none; color: #b33030"
                 >
-                  0</a
+                  {{ post.Dislikes }}</a
                 ></i
               >
-              <i class="far fa-comment fa-lg me-3" style="color: gray"> 2</i>
+              <i class="far fa-comment fa-lg me-3" style="color: gray"> </i>
               <a
                 href=""
                 data-bs-toggle="modal"

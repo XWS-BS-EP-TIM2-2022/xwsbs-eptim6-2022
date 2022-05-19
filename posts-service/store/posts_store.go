@@ -24,7 +24,7 @@ type Post struct {
 	Liked     []string           `bson:"liked"`
 	Dislikes  int                `bson:"dislikes"`
 	Disliked  []string           `bson:"disliked"`
-	CreatedOn string             `bson:"-"`
+	CreatedOn string             `bson:"createdOn"`
 	ImageUrl  string             `bson:"url"`
 	Comments  []Comment          `bson:"comments"`
 }

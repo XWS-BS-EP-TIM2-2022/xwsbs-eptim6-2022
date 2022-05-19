@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Post } from '../model/post';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -11,8 +13,13 @@ export class PostsService {
   public createNewPost(post : FormData){
     return this.http
       .post(
-        'http://localhost:9090/posts/new-post',
+        '/posts/new-post',
         post, { observe: 'response', responseType: 'text' });
+  }
+
+  public getAllPosts() : Observable<Post[]> {
+   return this.http.get<Post[]>('/posts');
+
   }
 
 }
