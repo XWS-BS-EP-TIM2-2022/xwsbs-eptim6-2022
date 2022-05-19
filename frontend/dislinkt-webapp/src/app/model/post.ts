@@ -1,5 +1,5 @@
 export interface Post {
-    ID        : string,
+    _id        : string,
 	Username  : string,
 	Text      : string,
 	Likes     : number,

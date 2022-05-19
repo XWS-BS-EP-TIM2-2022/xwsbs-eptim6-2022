@@ -10,6 +10,7 @@ import (
 	"image/jpeg"
 	"log"
 	"net/http"
+	"time"
 	"xwsbs-eptim6-2022/posts-service/store"
 )
 
@@ -84,8 +85,8 @@ func (p *PostsHandler) CreatePost(rw http.ResponseWriter, r *http.Request) {
 		}
 		url, err = p.imageHandler.SaveImage(buf.Bytes())
 	}
-
-	post := store.Post{Username: "username", ImageUrl: url, Text: postText, Liked: []string{}, Disliked: []string{}, Comments: []store.Comment{}}
+	currentTime := time.Now()
+	post := store.Post{Username: "username", ImageUrl: url, Text: postText, Liked: []string{}, Disliked: []string{}, Comments: []store.Comment{}, CreatedOn: currentTime.String()}
 	err = p.postsStore.CreatePost(post)
 	if err != nil {
 		http.Error(rw, "Could not create post", http.StatusBadRequest)
@@ -115,11 +116,13 @@ func (p *PostsHandler) LikePost(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 
-	curUser, err := validateLoggedinUser(r)
+	/*curUser, err := validateLoggedinUser(r)
 	if err != nil {
 		http.Error(rw, "Login error", http.StatusBadRequest)
 		return
-	}
+	}*/
+
+	curUser := "neko"
 
 	liked := p.postsStore.IsAlreadyLiked(getObjectId(id), curUser)
 	if liked == false {
@@ -152,11 +155,12 @@ func (p *PostsHandler) DislikePost(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 
-	curUser, err := validateLoggedinUser(r)
+	/*curUser, err := validateLoggedinUser(r)
 	if err != nil {
 		http.Error(rw, "Login error", http.StatusBadRequest)
 		return
-	}
+	}*/
+	curUser := "neko"
 
 	disliked := p.postsStore.IsAlreadyDisliked(getObjectId(id), curUser)
 
