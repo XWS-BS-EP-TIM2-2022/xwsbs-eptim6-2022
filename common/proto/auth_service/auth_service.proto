@@ -63,6 +63,11 @@ message User {
   string surname = 3;
   string password = 4;
   string email = 5;
+  string telephone = 6;
+  string gender = 7;
+  string birthDate = 8;
+  string biography = 9;
+  bool isPublic = 17;
 }
 
 message CreateNewUser {
