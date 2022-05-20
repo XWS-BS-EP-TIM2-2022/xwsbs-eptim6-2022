@@ -1,9 +1,12 @@
 package config
 
-import "os"
+import (
+	"os"
+	"regexp"
+)
 
 type SecurityPermissions struct {
-	permissions map[string]string
+	permissions map[string][]string
 }
 
 type Config struct {
@@ -31,31 +34,42 @@ const (
 )
 
 func (secPermissions *SecurityPermissions) ValidateUnauthorizedRequest(request string) bool {
-	if _, ok := secPermissions.permissions[request]; !ok {
-		return true
+	for _, values := range secPermissions.permissions {
+		for i := 0; i < len(values); i++ {
+			reg := regexp.MustCompile(values[i])
+			matchString := reg.FindString(request)
+			if matchString != "" {
+				return false
+			}
+		}
 	}
-	return false
+	return true
 }
 
 func (secPermissions *SecurityPermissions) ValidatePermission(userPermissions []string, request string) bool {
-	if _, ok := secPermissions.permissions[request]; !ok {
+	if secPermissions.ValidateUnauthorizedRequest(request) {
 		return true
 	}
 	for i := 0; i < len(userPermissions); i++ {
-		if userPermissions[i] == secPermissions.permissions[request] {
-			return true
+		requests := secPermissions.permissions[userPermissions[i]]
+		for i := 0; i < len(requests); i++ {
+			reg := regexp.MustCompile(requests[i])
+			matchString := reg.FindString(request)
+			if matchString != "" {
+				return true
+			}
 		}
 	}
 	return false
 }
 
 func NewConfig() *Config {
-	permissions := SecurityPermissions{permissions: map[string]string{}}
-	permissions.permissions["GET/api/auth/users"] = string(VIEW_USER)
-	permissions.permissions["POST/api/posts"] = string(CREATE_POSTS)
-	permissions.permissions["GET/api/posts"] = string(VIEW_POSTS)
-	permissions.permissions["PUT/api/users/experience"] = string(UPDATE_USER)
-	permissions.permissions["PUT/users/follow/{id}"] = string(UPDATE_USER) //TODO: VIDITI KAKO KORISTITI REGEX
+	permissions := SecurityPermissions{permissions: map[string][]string{}}
+	permissions.permissions[string(VIEW_USER)] = []string{"GET/api/auth/users", "GET/api/users"}
+	permissions.permissions[string(CREATE_POSTS)] = []string{"POST/api/posts"}
+	permissions.permissions[string(VIEW_POSTS)] = []string{"GET/api/posts"}
+	permissions.permissions[string(UPDATE_USER)] = []string{"PUT/api/users/experience", "PUT/users/follow/[a-zA-Z0-9]+"}
+	permissions.permissions[string(DELETE_USER)] = []string{"DELETE/api/users/[a-zA-Z0-9]+"}
 
 	return &Config{
 		SecurityPermissions: &permissions,
