@@ -75,7 +75,7 @@ func NewConfig() *Config {
 		SecurityPermissions: &permissions,
 		Port:                "5000",      ///os.Getenv("GATEWAY_PORT"),
 		AuthHost:            "localhost", //os.Getenv("AUTH_SERVICE_HOST"),
-		AuthPort:            "8080",      //os.Getenv("AUTH_SERVICE_PORT"),
+		AuthPort:            "8051",      //os.Getenv("AUTH_SERVICE_PORT"),
 		PostsHost:           os.Getenv("ORDERING_SERVICE_HOST"),
 		PostsPort:           os.Getenv("ORDERING_SERVICE_PORT"),
 		ProfileHost:         os.Getenv("SHIPPING_SERVICE_HOST"),

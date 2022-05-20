@@ -3,7 +3,7 @@ module github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/api_gateway
 go 1.18
 
 require (
-	github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022 v0.0.0-20220519141220-e7629ce84c4a
+	github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022 v0.0.0-20220520144311-eac78979020e
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	google.golang.org/grpc v1.46.2
 )

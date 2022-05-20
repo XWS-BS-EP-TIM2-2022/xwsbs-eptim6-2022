@@ -35,8 +35,7 @@ type PermissionsStore struct {
 	PermissionsCollection *mongo.Collection
 }
 
-func InitPermissionsStore() *PermissionsStore {
-	mongoUri := "localhost:27017" //os.Getenv("MONGODB_URI")
+func InitPermissionsStore(mongoUri string) *PermissionsStore {
 	mongoDbName := "permissions_database"
 	mongoCollectionName := "permissions"
 	client := CreateMongoDBConnection(mongoUri)

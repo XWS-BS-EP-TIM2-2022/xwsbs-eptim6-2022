@@ -54,8 +54,8 @@ func (us *UsersStore) FindAll() []User {
 	return users
 }
 
-func InitUsersStore() *UsersStore {
-	mongoUri := "localhost:27017" //os.Getenv("MONGODB_URI")
+func InitUsersStore(mongoUri string) *UsersStore {
+	//mongoUri := "localhost:27017" //os.Getenv("MONGODB_URI")
 	client := CreateMongoDBConnection(mongoUri)
 	collection := client.Database("users_database").Collection("users")
 	fmt.Println(collection.Name())

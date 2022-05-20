@@ -1,12 +1,10 @@
 package main
 
 import (
-	"auth_service/handlers"
-	"auth_service/store"
 	"context"
-	"fmt"
+	"github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/auth_service/startup"
+	"github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/auth_service/startup/config"
 	authServicePb "github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common/proto/auth_service"
-	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	otgo "github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/ext"
@@ -16,105 +14,20 @@ import (
 	"net/http"
 )
 
-type Server struct {
-	authServicePb.UnimplementedAuthServiceServer
-	authHandler     *handlers.AuthHandler
-	permissionStore *store.PermissionsStore
-}
-
-func mapUser(user *store.User) *authServicePb.User {
-	userPb := &authServicePb.User{
-		Username: user.Username,
-		Name:     user.Name,
-		Surname:  user.Surname,
-		Password: user.Password,
-	}
-
-	return userPb
-}
-func mapPbToUser(user *authServicePb.User) store.User {
-	fmt.Println("MAP USER" + user.Username)
-	userPb := store.User{
-		Username: user.Username,
-		Name:     user.Name,
-		Surname:  user.Surname,
-		Password: user.Password,
-	}
-	return userPb
-}
-
-//TODO: Povuci novu verziju
-func (s *Server) AddNewUser(ctx context.Context, in *authServicePb.CreateNewUser) (*authServicePb.CreateNewUser, error) {
-	user := mapPbToUser(in.User)
-	user.Role = "USER"
-	s.authHandler.UserStore.AddNew(user)
-	return in, nil
-}
-func (s *Server) GetAll(ctx context.Context, in *authServicePb.GetAllRequest) (*authServicePb.GetAllResponse, error) {
-	return nil, nil
-}
-func (s *Server) LoginUser(ctx context.Context, user *authServicePb.CreateNewUser) (*authServicePb.Token, error) {
-	jwt, err := s.authHandler.LoginUser(mapPbToUser(user.User))
-	return &authServicePb.Token{Token: jwt.Token}, err
-}
-func (s *Server) AuthorizeJWT(ctx context.Context, token *authServicePb.ValidateToken) (*authServicePb.CreateNewUser, error) {
-	user, err := s.authHandler.ValidateToken(token.Token.Token)
-	if err != nil {
-		return nil, err
-	}
-	return &authServicePb.CreateNewUser{User: mapUser(user)}, err
-}
-func mapPermissions(permissions *store.UserPermission) *authServicePb.UserPermissions {
-	var permissionsResponse authServicePb.UserPermissions
-	for i := 0; i < len(permissions.Permissions); i++ {
-		permissionsResponse.Permissions = append(permissionsResponse.Permissions, &authServicePb.Permission{Value: permissions.Permissions[i]})
-	}
-	return &permissionsResponse
-}
-func (s *Server) GetUserPermissions(ctx context.Context, in *authServicePb.ValidateToken) (*authServicePb.UserPermissions, error) {
-	user, err := s.authHandler.ValidateToken(in.Token.Token)
-	if err != nil {
-		return nil, err
-	}
-	userDb, err := s.authHandler.UserStore.FindByUsername(user.Username)
-	if err != nil {
-		return nil, err
-	}
-	permission, err := s.permissionStore.FindByUserRole(userDb.Role)
-	if err != nil {
-		return nil, err
-	}
-	return mapPermissions(permission), nil
-}
 func main() {
-	//router := RegisterRouts()
-	//fmt.Println("START Listening")
-	//log.Fatal(http.ListenAndServe(":8080", router))
-	// Create a listener on TCP port
-	lis, err := net.Listen("tcp", ":8080")
-	if err != nil {
-		log.Fatalln("Failed to listen:", err)
-	}
 
-	// Create a gRPC server object
-	s := grpc.NewServer()
-
-	service, err := NewServer()
-	if err != nil {
-		log.Fatal(err.Error())
+	serverConfig := config.NewConfig()
+	_, done := createGrpcServer(serverConfig)
+	if done {
 		return
 	}
+	creategRPCGateway(serverConfig)
+}
 
-	authServicePb.RegisterAuthServiceServer(s, service)
-	log.Println("Serving gRPC on 0.0.0.0:8080")
-	go func() {
-		log.Fatalln(s.Serve(lis))
-	}()
-	// Create a client connection to the gRPC server we just started
-	// This is where the gRPC-Gateway proxies the requests
+func creategRPCGateway(serverConfig *config.Config) {
 	conn, err := grpc.DialContext(
 		context.Background(),
-		"0.0.0.0:8080",
+		serverConfig.Host+":"+serverConfig.GrpcPort,
 		grpc.WithBlock(),
 		grpc.WithInsecure(),
 	)
@@ -130,24 +43,35 @@ func main() {
 	}
 
 	gwServer := &http.Server{
-		Addr:    ":8090",
+		Addr:    serverConfig.GatewayPort,
 		Handler: tracingWrapper(gwmux),
 	}
 
-	log.Println("Serving gRPC-Gateway on http://0.0.0.0:8090")
+	log.Println("Serving gRPC-Gateway on http://0.0.0.0:" + serverConfig.GatewayPort)
 	log.Fatalln(gwServer.ListenAndServe())
 }
-func NewServer() (*Server, error) {
-	return &Server{authHandler: handlers.InitAuthHandler(), permissionStore: store.InitPermissionsStore()}, nil
-}
-func RegisterRouts() *mux.Router {
-	router := mux.NewRouter().StrictSlash(true)
-	rg := handlers.InitAuthHandler()
-	router.HandleFunc("/api/auth/users", rg.GetAll).Methods("GET")
-	router.HandleFunc("/api/auth/users", rg.AddNewUser).Methods("POST")
-	router.HandleFunc("/api/auth/session", rg.LoginUserRequest).Methods("PUT")
-	router.HandleFunc("/api/auth/session/validations", rg.AuthorizeJWT).Methods("PUT")
-	return router
+
+func createGrpcServer(serverConfig *config.Config) (error, bool) {
+	lis, err := net.Listen("tcp", ":"+serverConfig.GrpcPort)
+	if err != nil {
+		log.Fatalln("Failed to listen:", err)
+	}
+
+	// Create a gRPC server object
+	s := grpc.NewServer()
+
+	service, err := startup.NewServer(serverConfig)
+	if err != nil {
+		log.Fatal(err.Error())
+		return nil, true
+	}
+
+	authServicePb.RegisterAuthServiceServer(s, service)
+	log.Println("Serving gRPC on:" + serverConfig.GrpcPort)
+	go func() {
+		log.Fatalln(s.Serve(lis))
+	}()
+	return err, false
 }
 
 var grpcGatewayTag = otgo.Tag{Key: string(ext.Component), Value: "grpc-gateway"}
@@ -170,3 +94,14 @@ func tracingWrapper(h http.Handler) http.Handler {
 		h.ServeHTTP(w, r)
 	})
 }
+
+/*func RegisterRouts() *mux.Router {
+	router := mux.NewRouter().StrictSlash(true)
+	rg := handlers.InitAuthHandler()
+	router.HandleFunc("/api/auth/users", rg.GetAll).Methods("GET")
+	router.HandleFunc("/api/auth/users", rg.AddNewUser).Methods("POST")
+	router.HandleFunc("/api/auth/session", rg.LoginUserRequest).Methods("PUT")
+	router.HandleFunc("/api/auth/session/validations", rg.AuthorizeJWT).Methods("PUT")
+	return router
+}
+*/

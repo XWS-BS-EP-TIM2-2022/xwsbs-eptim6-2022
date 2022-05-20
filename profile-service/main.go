@@ -78,7 +78,7 @@ func main() {
 	//fmt.Println("START Listening")
 	//log.Fatal(http.ListenAndServe(":8080", router))
 	// Create a listener on TCP port
-	lis, err := net.Listen("tcp", ":8080")
+	lis, err := net.Listen("tcp", ":8003")
 	if err != nil {
 		log.Fatalln("Failed to listen:", err)
 	}
@@ -92,7 +92,7 @@ func main() {
 		return
 	}
 	usersServicePb.RegisterProfileServiceServer(s, service)
-	log.Println("Serving gRPC on 0.0.0.0:8080")
+	log.Println("Serving gRPC on 0.0.0.0:8003")
 	go func() {
 		log.Fatalln(s.Serve(lis))
 	}()
@@ -100,7 +100,7 @@ func main() {
 	// This is where the gRPC-Gateway proxies the requests
 	conn, err := grpc.DialContext(
 		context.Background(),
-		"0.0.0.0:8080",
+		"0.0.0.0:8003",
 		grpc.WithBlock(),
 		grpc.WithInsecure(),
 	)
@@ -116,11 +116,11 @@ func main() {
 	}
 
 	gwServer := &http.Server{
-		Addr:    ":8090",
+		Addr:    ":8093",
 		Handler: tracingWrapper(gwmux),
 	}
 
-	log.Println("Serving gRPC-Gateway on http://0.0.0.0:8090")
+	log.Println("Serving gRPC-Gateway on http://0.0.0.0:8093")
 	log.Fatalln(gwServer.ListenAndServe())
 }
 func NewServer() (*Server, error) {

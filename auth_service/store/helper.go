@@ -8,8 +8,16 @@ import (
 	"log"
 )
 
-func CreateMongoDBConnection(uri string) *mongo.Client {
-	mongoUri := "localhost:27017" //os.Getenv("MONGODB_URI")
+type RequestError struct {
+	StatusCode int
+	Err        error
+}
+
+func (r *RequestError) Error() string {
+	return fmt.Sprintf("status %d: err %v", r.StatusCode, r.Err)
+}
+
+func CreateMongoDBConnection(mongoUri string) *mongo.Client {
 	clientOptions := options.Client().ApplyURI("mongodb://" + mongoUri + "/?connect=direct")
 	client, err := mongo.Connect(context.TODO(), clientOptions)
 

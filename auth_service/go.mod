@@ -1,11 +1,10 @@
-module auth_service
+module github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/auth_service
 
 go 1.18
 
 require (
-	github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022 v0.0.0-20220519141220-e7629ce84c4a
+	github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022 v0.0.0-20220520144311-eac78979020e
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
-	github.com/gorilla/mux v1.8.0
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/opentracing/opentracing-go v1.2.0
 	go.mongodb.org/mongo-driver v1.9.0
