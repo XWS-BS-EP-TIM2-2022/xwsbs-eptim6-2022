@@ -78,7 +78,7 @@ func NewConfig() *Config {
 		AuthPort:            "8051",      //os.Getenv("AUTH_SERVICE_PORT"),
 		PostsHost:           os.Getenv("ORDERING_SERVICE_HOST"),
 		PostsPort:           os.Getenv("ORDERING_SERVICE_PORT"),
-		ProfileHost:         os.Getenv("SHIPPING_SERVICE_HOST"),
-		ProfilePort:         os.Getenv("SHIPPING_SERVICE_PORT"),
+		ProfileHost:         "localhost", //os.Getenv("SHIPPING_SERVICE_HOST"),
+		ProfilePort:         "8007",      //os.Getenv("SHIPPING_SERVICE_PORT"),
 	}
 }

@@ -42,7 +42,7 @@ func (server *Server) initHandlers() {
 	if err != nil {
 		panic(err)
 	}
-	profileEndpoint := fmt.Sprintf("%s:%s", server.config.ProfileHost, server.config.ProfileHost)
+	profileEndpoint := fmt.Sprintf("%s:%s", server.config.ProfileHost, server.config.ProfilePort)
 	err = profileGw.RegisterProfileServiceHandlerFromEndpoint(context.TODO(), server.mux, profileEndpoint, opts)
 	if err != nil {
 		panic(err)
