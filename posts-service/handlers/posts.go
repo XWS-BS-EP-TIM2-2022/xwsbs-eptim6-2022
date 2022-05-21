@@ -3,14 +3,13 @@ package handlers
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
+	postsServicePb "github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common/proto/posts_service"
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"image"
-	"image/jpeg"
 	"log"
 	"net/http"
-	"time"
 	"xwsbs-eptim6-2022/posts-service/store"
 )
 
@@ -59,41 +58,13 @@ func (p *PostsHandler) GetByUser(rw http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (p *PostsHandler) CreatePost(rw http.ResponseWriter, r *http.Request) {
-	username, err := validateLoggedinUser(r)
+func (p *PostsHandler) CreatePost(in *postsServicePb.Post) (store.Post, error) {
+	post := store.Post{Username: in.Username, ImageUrl: in.ImageUrl, Text: in.Text, Liked: []string{}, Disliked: []string{}, Comments: []store.Comment{}, CreatedOn: in.CreatedOn}
+	err := p.postsStore.CreatePost(post)
 	if err != nil {
-		http.Error(rw, "Login error", http.StatusBadRequest)
-		return
+		return store.Post{}, errors.New("Could not create in")
 	}
-	err = r.ParseMultipartForm(32 << 20)
-	if err != nil {
-		http.Error(rw, "Form parsing error", http.StatusBadRequest)
-		return
-	}
-	postText := r.Form.Get("text")
-	fmt.Println(postText)
-	var url = ""
-	f, _, err := r.FormFile("file")
-	if err == nil {
-		defer f.Close()
-		imageData, _, err := image.Decode(f)
-		buf := new(bytes.Buffer)
-		err = jpeg.Encode(buf, imageData, nil)
-		if err != nil {
-			http.Error(rw, "ENCOIDNG IMAGE ERROR", http.StatusBadRequest)
-			return
-		}
-		url, err = p.imageHandler.SaveImage(buf.Bytes())
-	}
-	currentTime := time.Now().Format("02.01.2006 15:04")
-	post := store.Post{Username: username, ImageUrl: url, Text: postText, Liked: []string{}, Disliked: []string{}, Comments: []store.Comment{}, CreatedOn: currentTime}
-	err = p.postsStore.CreatePost(post)
-	if err != nil {
-		http.Error(rw, "Could not create post", http.StatusBadRequest)
-		return
-	}
-	rw.WriteHeader(http.StatusOK)
-	rw.Write([]byte("Your post has been published."))
+	return post, nil
 }
 
 func (p *PostsHandler) GetOne(rw http.ResponseWriter, r *http.Request) {

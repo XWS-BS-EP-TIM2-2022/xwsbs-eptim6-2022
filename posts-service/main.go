@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	postsServicePb "github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common/proto/posts_service"
-	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	otgo "github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/ext"
 	"google.golang.org/grpc"
@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"os"
 	"xwsbs-eptim6-2022/posts-service/handlers"
+	"xwsbs-eptim6-2022/posts-service/mappers"
 )
 
 type Server struct {
@@ -35,7 +36,11 @@ func (s *Server) DislikePost(ctx context.Context, in *postsServicePb.GetByIdRequ
 	return nil, nil
 }
 func (s *Server) AddNewPost(ctx context.Context, in *postsServicePb.PostRequest) (*postsServicePb.PostResponse, error) {
-	return nil, nil
+	post, err := s.postsHandler.CreatePost(in.Post)
+	if err != nil {
+		return &postsServicePb.PostResponse{}, err
+	}
+	return mappers.MapToPostResponse(post), nil
 }
 func (s *Server) AddNewComment(ctx context.Context, in *postsServicePb.CommentRequest) (*postsServicePb.PostResponse, error) {
 	return nil, nil
