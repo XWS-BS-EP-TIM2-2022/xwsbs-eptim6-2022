@@ -23,6 +23,9 @@ func (s *Server) AddNewUser(ctx context.Context, in *authServicePb.CreateNewUser
 	user := mappers.MapPbToUser(in.User)
 	user.Role = "USER"
 	err := s.AuthHandler.AddNewUser(user)
+	if err != nil {
+		return &authServicePb.CreateNewUser{}, err
+	}
 	err = s.AuthHandler.NotifyProfileServiceAboutRegistration(in.User)
 	if err != nil {
 		return nil, err

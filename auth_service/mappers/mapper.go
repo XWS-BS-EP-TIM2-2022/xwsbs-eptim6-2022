@@ -37,6 +37,7 @@ func MapPbToUser(user *authServicePb.User) store.User {
 		Name:     user.Name,
 		Surname:  user.Surname,
 		Password: user.Password,
+		Email:    user.Email,
 	}
 	return userPb
 }

@@ -105,7 +105,10 @@ func (ag *AuthHandler) AddNewUser(user store.User) error {
 	if _, err := ag.UserStore.FindByUsername(user.Username); err == nil {
 		return &store.RequestError{Err: errors.New("Username already in use"), StatusCode: 400}
 	}
-	ag.UserStore.AddNew(user)
+	err := ag.UserStore.AddNew(user)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 

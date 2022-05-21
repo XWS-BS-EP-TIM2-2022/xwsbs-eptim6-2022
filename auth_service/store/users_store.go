@@ -3,30 +3,66 @@ package store
 import (
 	"context"
 	"fmt"
+	"github.com/go-playground/validator/v10"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"html"
 	"log"
+	"reflect"
 )
 
 type User struct {
-	Username string `json:"username"`
-	Name     string `json:"name"`
-	Surname  string `json:"surname"`
-	Password string `json:"password"`
-	Role     string `json:"role"`
+	Username string `json:"username" validate:"required,lt=50"`
+	Name     string `json:"name" validate:"required"`
+	Surname  string `json:"surname" validate:"required"`
+	Password string `json:"password" validate:"required"`
+	Email    string `json:"email" validate:"required,email"`
+	Role     string `json:"role" validate:"required"`
 }
 
 type UsersStore struct {
 	UsersCollection *mongo.Collection
 }
 
-func (us *UsersStore) AddNew(u User) {
-	insertResult, err := us.UsersCollection.InsertOne(context.TODO(), u)
+var validate *validator.Validate
+
+func validateUserData(user User) (*User, error) {
+
+	err := validate.Struct(user)
+	if err != nil {
+		return nil, err
+	}
+	value := reflect.ValueOf(&user).Elem()
+
+	// loop over the struct
+	for i := 0; i < value.NumField(); i++ {
+		field := value.Field(i)
+
+		// check if the field is a string
+		if field.Type() != reflect.TypeOf("") {
+			continue
+		}
+
+		str := field.Interface().(string)
+		// set field to escaped version of the string
+		field.SetString(html.EscapeString(str))
+	}
+	return &user, nil
+}
+
+func (us *UsersStore) AddNew(u User) error {
+	user, err := validateUserData(u)
+	if err != nil {
+		return err
+	}
+	insertResult, err := us.UsersCollection.InsertOne(context.TODO(), user)
 	if err != nil {
 		log.Fatal(err)
+		return err
 	}
 	fmt.Println("Inserted a single document: ", insertResult.InsertedID)
+	return nil
 }
 
 func (us *UsersStore) FindByUsername(username string) (User, error) {
@@ -55,7 +91,7 @@ func (us *UsersStore) FindAll() []User {
 }
 
 func InitUsersStore(mongoUri string) *UsersStore {
-	//mongoUri := "localhost:27017" //os.Getenv("MONGODB_URI")
+	validate = validator.New()
 	client := CreateMongoDBConnection(mongoUri)
 	collection := client.Database("users_database").Collection("users")
 	fmt.Println(collection.Name())
