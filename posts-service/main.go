@@ -3,45 +3,20 @@ package main
 import (
 	"context"
 	postsServicePb "github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common/proto/posts_service"
-	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	otgo "github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/ext"
 	"google.golang.org/grpc"
 	"log"
 	"net"
 	"net/http"
-	"os"
-	"xwsbs-eptim6-2022/posts-service/handlers"
+	"xwsbs-eptim6-2022/posts-service/startup"
+	"xwsbs-eptim6-2022/posts-service/startup/config"
 )
 
-type Server struct {
-	postsServicePb.UnimplementedPostsServiceServer
-	postsHandler *handlers.PostsHandler
-}
-
-func (s *Server) GetAllPosts(ctx context.Context, in *postsServicePb.EmptyRequest) (*postsServicePb.PostsResponse, error) {
-	return nil, nil
-}
-func (s *Server) GetAllPostsByUser(ctx context.Context, in *postsServicePb.GetByUsernameRequest) (*postsServicePb.PostsResponse, error) {
-	return nil, nil
-}
-func (s *Server) GetPostById(ctx context.Context, in *postsServicePb.GetByIdRequest) (*postsServicePb.PostResponse, error) {
-	return nil, nil
-}
-func (s *Server) LikePost(ctx context.Context, in *postsServicePb.GetByIdRequest) (*postsServicePb.PostResponse, error) {
-	return nil, nil
-}
-func (s *Server) DislikePost(ctx context.Context, in *postsServicePb.GetByIdRequest) (*postsServicePb.PostResponse, error) {
-	return nil, nil
-}
-func (s *Server) AddNewPost(ctx context.Context, in *postsServicePb.PostRequest) (*postsServicePb.PostResponse, error) {
-	return nil, nil
-}
-func (s *Server) AddNewComment(ctx context.Context, in *postsServicePb.CommentRequest) (*postsServicePb.PostResponse, error) {
-	return nil, nil
-}
 func main() {
-	lis, err := net.Listen("tcp", ":8080")
+	serverConfig := config.NewConfig()
+	lis, err := net.Listen("tcp", ":"+serverConfig.GrpcPort)
 	if err != nil {
 		log.Fatalln("Failed to listen:", err)
 	}
@@ -49,13 +24,13 @@ func main() {
 	// Create a gRPC server object
 	s := grpc.NewServer()
 
-	service, err := NewServer()
+	service, err := startup.NewServer(serverConfig)
 	if err != nil {
 		log.Fatal(err.Error())
 		return
 	}
 	postsServicePb.RegisterPostsServiceServer(s, service)
-	log.Println("Serving gRPC on 0.0.0.0:8080")
+	log.Println("Serving gRPC on 0.0.0.0:" + serverConfig.GrpcPort)
 	go func() {
 		log.Fatalln(s.Serve(lis))
 	}()
@@ -85,10 +60,6 @@ func main() {
 
 	log.Println("Serving gRPC-Gateway on http://0.0.0.0:8090")
 	log.Fatalln(gwServer.ListenAndServe())
-}
-func NewServer() (*Server, error) {
-	l := log.New(os.Stdout, "posts-service ", log.LstdFlags)
-	return &Server{postsHandler: handlers.NewPostsHandler(l)}, nil
 }
 
 var grpcGatewayTag = otgo.Tag{Key: string(ext.Component), Value: "grpc-gateway"}

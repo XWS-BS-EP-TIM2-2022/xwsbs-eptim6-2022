@@ -5,10 +5,11 @@ import (
 	"github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/auth_service/startup"
 	"github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/auth_service/startup/config"
 	authServicePb "github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common/proto/auth_service"
-	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	otgo "github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/ext"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 	"log"
 	"net"
 	"net/http"
@@ -28,8 +29,7 @@ func creategRPCGateway(serverConfig *config.Config) {
 	conn, err := grpc.DialContext(
 		context.Background(),
 		serverConfig.Host+":"+serverConfig.GrpcPort,
-		grpc.WithBlock(),
-		grpc.WithInsecure(),
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {
 		log.Fatalln("Failed to dial server:", err)
@@ -43,7 +43,7 @@ func creategRPCGateway(serverConfig *config.Config) {
 	}
 
 	gwServer := &http.Server{
-		Addr:    serverConfig.GatewayPort,
+		Addr:    ":" + serverConfig.GatewayPort,
 		Handler: tracingWrapper(gwmux),
 	}
 

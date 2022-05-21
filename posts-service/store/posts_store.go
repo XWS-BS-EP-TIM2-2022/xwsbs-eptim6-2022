@@ -233,8 +233,8 @@ func (ps *PostsStore) Drop() {
 	ps.Drop()
 }
 
-func InitPostsStore() *PostsStore {
-	mongoUri := "localhost:27017" //os.Getenv("MONGODB_URI")
+func InitPostsStore(mongoUri string) *PostsStore {
+	//os.Getenv("MONGODB_URI")
 	clientOptions := options.Client().ApplyURI("mongodb://" + mongoUri + "/?connect=direct")
 	client, err := mongo.Connect(context.TODO(), clientOptions)
 

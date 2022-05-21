@@ -6,8 +6,9 @@ import (
 	"github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/api_gateway/infrastructure/service"
 	cfg "github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/api_gateway/startup/config"
 	authGw "github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common/proto/auth_service"
+	postsGw "github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common/proto/posts_service"
 	profileGw "github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common/proto/profile_service"
-	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"log"
@@ -47,12 +48,12 @@ func (server *Server) initHandlers() {
 	if err != nil {
 		panic(err)
 	}
-	/*shippingEmdpoint := fmt.Sprintf("%s:%s", server.config.ShippingHost, server.config.ShippingPort)
-	err = shippingGw.RegisterShippingServiceHandlerFromEndpoint(context.TODO(), server.mux, shippingEmdpoint, opts)
+	postsEndpoint := fmt.Sprintf("%s:%s", server.config.PostsHost, server.config.PostsPort)
+	err = postsGw.RegisterPostsServiceHandlerFromEndpoint(context.TODO(), server.mux, postsEndpoint, opts)
 	if err != nil {
 		panic(err)
 	}
-	inventoryEmdpoint := fmt.Sprintf("%s:%s", server.config.InventoryHost, server.config.InventoryPort)
+	/*inventoryEmdpoint := fmt.Sprintf("%s:%s", server.config.InventoryHost, server.config.InventoryPort)
 	err = inventoryGw.RegisterInventoryServiceHandlerFromEndpoint(context.TODO(), server.mux, inventoryEmdpoint, opts)
 	if err != nil {
 		panic(err)
@@ -60,6 +61,9 @@ func (server *Server) initHandlers() {
 }
 
 func (server *Server) initCustomHandlers() {
+	postsEndpoint := fmt.Sprintf("%s:%s", server.config.PostsHost, server.config.PostsPort)
+	postsHandler := service.NewPostsHandler(postsEndpoint, server.authService)
+	postsHandler.Init(server.mux)
 	/*authEndpoint := fmt.Sprintf("%s:%s", server.config.AuthHost, server.config.AuthPort)
 	orderingEmdpoint := fmt.Sprintf("%s:%s", server.config.OrderingHost, server.config.OrderingPort)
 	shippingEmdpoint := fmt.Sprintf("%s:%s", server.config.ShippingHost, server.config.ShippingPort)
