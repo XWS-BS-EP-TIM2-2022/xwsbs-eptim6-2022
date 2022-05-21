@@ -63,14 +63,9 @@ service ProfileService {
     };
   }
 
-  rpc AcceptFollow (FollowUserRequest) returns (UserResponse){
+  rpc FollowResponse (FollowUserRequest) returns (UserResponse){
     option (google.api.http) = {
-      put: "/users/unfollow/{id}"
-    };
-  }
-  rpc RejectFollow (FollowUserRequest) returns (UserResponse){
-    option (google.api.http) = {
-      put: "/users/unfollow/{id}"
+      put: "/users/follow-requests/{id}"
     };
   }
 }

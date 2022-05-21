@@ -30,8 +30,7 @@ type ProfileServiceClient interface {
 	AddEducation(ctx context.Context, in *EducationRequest, opts ...grpc.CallOption) (*UserResponse, error)
 	FollowUser(ctx context.Context, in *FollowUserRequest, opts ...grpc.CallOption) (*UserResponse, error)
 	UnFollowUser(ctx context.Context, in *FollowUserRequest, opts ...grpc.CallOption) (*UserResponse, error)
-	AcceptFollow(ctx context.Context, in *FollowUserRequest, opts ...grpc.CallOption) (*UserResponse, error)
-	RejectFollow(ctx context.Context, in *FollowUserRequest, opts ...grpc.CallOption) (*UserResponse, error)
+	FollowResponse(ctx context.Context, in *FollowUserRequest, opts ...grpc.CallOption) (*UserResponse, error)
 }
 
 type profileServiceClient struct {
@@ -114,18 +113,9 @@ func (c *profileServiceClient) UnFollowUser(ctx context.Context, in *FollowUserR
 	return out, nil
 }
 
-func (c *profileServiceClient) AcceptFollow(ctx context.Context, in *FollowUserRequest, opts ...grpc.CallOption) (*UserResponse, error) {
+func (c *profileServiceClient) FollowResponse(ctx context.Context, in *FollowUserRequest, opts ...grpc.CallOption) (*UserResponse, error) {
 	out := new(UserResponse)
-	err := c.cc.Invoke(ctx, "/profile_service.ProfileService/AcceptFollow", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *profileServiceClient) RejectFollow(ctx context.Context, in *FollowUserRequest, opts ...grpc.CallOption) (*UserResponse, error) {
-	out := new(UserResponse)
-	err := c.cc.Invoke(ctx, "/profile_service.ProfileService/RejectFollow", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/profile_service.ProfileService/FollowResponse", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -144,8 +134,7 @@ type ProfileServiceServer interface {
 	AddEducation(context.Context, *EducationRequest) (*UserResponse, error)
 	FollowUser(context.Context, *FollowUserRequest) (*UserResponse, error)
 	UnFollowUser(context.Context, *FollowUserRequest) (*UserResponse, error)
-	AcceptFollow(context.Context, *FollowUserRequest) (*UserResponse, error)
-	RejectFollow(context.Context, *FollowUserRequest) (*UserResponse, error)
+	FollowResponse(context.Context, *FollowUserRequest) (*UserResponse, error)
 	mustEmbedUnimplementedProfileServiceServer()
 }
 
@@ -177,11 +166,8 @@ func (UnimplementedProfileServiceServer) FollowUser(context.Context, *FollowUser
 func (UnimplementedProfileServiceServer) UnFollowUser(context.Context, *FollowUserRequest) (*UserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UnFollowUser not implemented")
 }
-func (UnimplementedProfileServiceServer) AcceptFollow(context.Context, *FollowUserRequest) (*UserResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method AcceptFollow not implemented")
-}
-func (UnimplementedProfileServiceServer) RejectFollow(context.Context, *FollowUserRequest) (*UserResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RejectFollow not implemented")
+func (UnimplementedProfileServiceServer) FollowResponse(context.Context, *FollowUserRequest) (*UserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FollowResponse not implemented")
 }
 func (UnimplementedProfileServiceServer) mustEmbedUnimplementedProfileServiceServer() {}
 
@@ -340,38 +326,20 @@ func _ProfileService_UnFollowUser_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ProfileService_AcceptFollow_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _ProfileService_FollowResponse_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(FollowUserRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ProfileServiceServer).AcceptFollow(ctx, in)
+		return srv.(ProfileServiceServer).FollowResponse(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/profile_service.ProfileService/AcceptFollow",
+		FullMethod: "/profile_service.ProfileService/FollowResponse",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ProfileServiceServer).AcceptFollow(ctx, req.(*FollowUserRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ProfileService_RejectFollow_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(FollowUserRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ProfileServiceServer).RejectFollow(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/profile_service.ProfileService/RejectFollow",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ProfileServiceServer).RejectFollow(ctx, req.(*FollowUserRequest))
+		return srv.(ProfileServiceServer).FollowResponse(ctx, req.(*FollowUserRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -416,12 +384,8 @@ var ProfileService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ProfileService_UnFollowUser_Handler,
 		},
 		{
-			MethodName: "AcceptFollow",
-			Handler:    _ProfileService_AcceptFollow_Handler,
-		},
-		{
-			MethodName: "RejectFollow",
-			Handler:    _ProfileService_RejectFollow_Handler,
+			MethodName: "FollowResponse",
+			Handler:    _ProfileService_FollowResponse_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
