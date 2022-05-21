@@ -1,61 +1,34 @@
 package handlers
 
 import (
-	"bytes"
-	"encoding/json"
 	"errors"
-	"fmt"
 	postsServicePb "github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common/proto/posts_service"
-	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"log"
-	"net/http"
+	"xwsbs-eptim6-2022/posts-service/startup/config"
 	"xwsbs-eptim6-2022/posts-service/store"
 )
 
 type PostsHandler struct {
-	l            *log.Logger
 	postsStore   *store.PostsStore
 	imageHandler *ImagesHandler
 }
 
-func NewPostsHandler(l *log.Logger) *PostsHandler {
-	postsStore := store.InitPostsStore()
+func NewPostsHandler(l *log.Logger, config *config.Config) *PostsHandler {
+	postsStore := store.InitPostsStore(config.MongoDbUri)
 	imagesHandler, err := InitImageHandler()
 	if err != nil {
 		l.Fatalln("Firebase storage error")
 	}
-	return &PostsHandler{l, postsStore, imagesHandler}
+	return &PostsHandler{postsStore, imagesHandler}
 }
 
-func (p *PostsHandler) GetAll(rw http.ResponseWriter, r *http.Request) {
-
-	lp, err := p.postsStore.GetAll()
-	if err != nil {
-		http.Error(rw, "Error while fetching posts", http.StatusBadRequest)
-	}
-
-	// serialize the list to JSON
-	err = lp.ToJSON(rw)
-	if err != nil {
-		http.Error(rw, "Unable to marshal json", http.StatusInternalServerError)
-	}
+func (p *PostsHandler) GetAll() (store.Posts, error) {
+	return p.postsStore.GetAll()
 }
 
-func (p *PostsHandler) GetByUser(rw http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	user := vars["username"]
-
-	lp, err := p.postsStore.GetByUser(user)
-	if err != nil {
-		http.Error(rw, "Error while fetching posts", http.StatusBadRequest)
-	}
-
-	// serialize the list to JSON
-	err = lp.ToJSON(rw)
-	if err != nil {
-		http.Error(rw, "Unable to marshal json", http.StatusInternalServerError)
-	}
+func (p *PostsHandler) GetByUser(username string) (store.Posts, error) {
+	return p.postsStore.GetByUser(username)
 }
 
 func (p *PostsHandler) CreatePost(in *postsServicePb.Post) (store.Post, error) {
@@ -67,120 +40,42 @@ func (p *PostsHandler) CreatePost(in *postsServicePb.Post) (store.Post, error) {
 	return post, nil
 }
 
-func (p *PostsHandler) GetOne(rw http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	id := vars["id"]
-
-	post, err := p.postsStore.GetById(getObjectId(id))
-	if err != nil {
-		http.Error(rw, "Could not get post", http.StatusBadRequest)
-		return
-	}
-
-	err = post.ToJSON(rw)
-	if err != nil {
-		http.Error(rw, "Unable to marshal json", http.StatusInternalServerError)
-	}
+func (p *PostsHandler) GetOne(id string) (store.Post, error) {
+	return p.postsStore.GetById(getObjectId(id))
 }
 
-func (p *PostsHandler) LikePost(rw http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	id := vars["id"]
-
-	curUser, err := validateLoggedinUser(r)
-	if err != nil {
-		http.Error(rw, "Login error", http.StatusBadRequest)
-		return
-	}
-
-	liked := p.postsStore.IsAlreadyLiked(getObjectId(id), curUser)
+func (p *PostsHandler) LikePost(id string, username string) (store.Post, error) {
+	liked := p.postsStore.IsAlreadyLiked(getObjectId(id), username)
+	var post store.Post
+	var err error
 	if liked == false {
-		post, err := p.postsStore.LikePost(getObjectId(id), curUser)
-		if err != nil {
-			http.Error(rw, "Could not like post", http.StatusBadRequest)
-			return
-		}
-
-		err = post.ToJSON(rw)
-		if err != nil {
-			http.Error(rw, "Unable to marshal json", http.StatusInternalServerError)
-		}
+		post, err = p.postsStore.LikePost(getObjectId(id), username)
+	} else {
+		post, err = p.postsStore.UnlikePost(getObjectId(id), username)
 	}
-	if liked == true {
-		post, err := p.postsStore.UnlikePost(getObjectId(id), curUser)
-		if err != nil {
-			http.Error(rw, "Could not unlike post", http.StatusBadRequest)
-			return
-		}
-
-		err = post.ToJSON(rw)
-		if err != nil {
-			http.Error(rw, "Unable to marshal json", http.StatusInternalServerError)
-		}
+	if err != nil {
+		return store.Post{}, err
 	}
+	return post, nil
 }
 
-func (p *PostsHandler) DislikePost(rw http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	id := vars["id"]
-
-	curUser, err := validateLoggedinUser(r)
-	if err != nil {
-		http.Error(rw, "Login error", http.StatusBadRequest)
-		return
-	}
-
+func (p *PostsHandler) DislikePost(id string, curUser string) (store.Post, error) {
 	disliked := p.postsStore.IsAlreadyDisliked(getObjectId(id), curUser)
-
+	var post store.Post
+	var err error
 	if disliked == false {
-		post, err := p.postsStore.DislikePost(getObjectId(id), curUser)
-		if err != nil {
-			http.Error(rw, "Could not dislike post", http.StatusBadRequest)
-			return
-		}
-
-		err = post.ToJSON(rw)
-		if err != nil {
-			http.Error(rw, "Unable to marshal json", http.StatusInternalServerError)
-		}
+		post, err = p.postsStore.DislikePost(getObjectId(id), curUser)
+	} else {
+		post, err = p.postsStore.UndislikePost(getObjectId(id), curUser)
 	}
-	if disliked == true {
-		post, err := p.postsStore.UndislikePost(getObjectId(id), curUser)
-		if err != nil {
-			http.Error(rw, "Could not undislike post", http.StatusBadRequest)
-			return
-		}
-
-		err = post.ToJSON(rw)
-		if err != nil {
-			http.Error(rw, "Unable to marshal json", http.StatusInternalServerError)
-		}
+	if err != nil {
+		return store.Post{}, err
 	}
+	return post, nil
 }
 
-func (p *PostsHandler) CommentOnPost(rw http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	id := vars["id"]
-
-	curUser, err := validateLoggedinUser(r)
-	if err != nil {
-		http.Error(rw, "Login error", http.StatusBadRequest)
-		return
-	}
-
-	comment := store.Comment{}
-	err = json.NewDecoder(r.Body).Decode(&comment)
-	if err != nil {
-		http.Error(rw, "Error while commenting post", http.StatusBadRequest)
-	}
-	comment.Username = curUser
-	err = p.postsStore.InsertComment(getObjectId(id), comment)
-	if err != nil {
-		http.Error(rw, "Error commenting post", http.StatusBadRequest)
-		return
-	}
-	rw.WriteHeader(http.StatusOK)
-	rw.Write([]byte("Your comment has been submitted."))
+func (p *PostsHandler) CommentOnPost(id string, comment store.Comment) error {
+	return p.postsStore.InsertComment(getObjectId(id), comment)
 }
 
 func getObjectId(id string) primitive.ObjectID {
@@ -188,25 +83,4 @@ func getObjectId(id string) primitive.ObjectID {
 		return objectId
 	}
 	return primitive.NewObjectID()
-}
-
-func validateLoggedinUser(r *http.Request) (string, error) {
-	client := &http.Client{}
-	var authServiceHost = "http://localhost:8080/api/auth/session/validations"
-	jsonBody, err := json.Marshal(map[string]string{
-		"token": r.Header["Authorization"][0],
-	})
-	if err != nil {
-		return "", err
-	}
-	req, err := http.NewRequest(http.MethodPut, authServiceHost, bytes.NewBuffer(jsonBody))
-	req.Header.Set("Authorization", r.Header["Authorization"][0])
-	resp, err := client.Do(req)
-	var user store.User
-	json.NewDecoder(resp.Body).Decode(&user)
-	fmt.Println(user)
-	if err != nil {
-		return "", err
-	}
-	return user.Username, nil
 }
