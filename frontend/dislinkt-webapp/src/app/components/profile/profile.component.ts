@@ -10,6 +10,9 @@ import { ProfileService } from 'src/app/services/profile.service';
 export class ProfileComponent implements OnInit {
 
   user: any;
+  followBtn: any;
+  followersNum: number = 0;
+  followingNum: number = 0;
   public readonly myFormGroup: FormGroup;
 
   constructor(public readonly profileService: ProfileService,
@@ -31,6 +34,22 @@ export class ProfileComponent implements OnInit {
 
   update() {
 
+  }
+
+  addNewExperience() {
+
+  }
+
+  addNewEducation() {
+    
+  }
+
+  addNewSkill() {
+    
+  }
+
+  addNewInterest() {
+    
   }
 
 }
