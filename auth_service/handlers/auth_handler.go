@@ -10,6 +10,7 @@ import (
 	authServicePb "github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common/proto/auth_service"
 	profileGw "github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common/proto/profile_service"
 	"github.com/dgrijalva/jwt-go"
+	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"net/http"
@@ -59,7 +60,7 @@ func (ah *AuthHandler) LoginUser(user store.User) (JWT, error) {
 		fmt.Println("User not found")
 		return JWT{Token: ""}, err
 	}
-	if dbUser.Password != user.Password {
+	if !CheckPasswordHash(user.Password, dbUser.Password) {
 		fmt.Println("User not found")
 		return JWT{Token: ""}, err
 	}
@@ -105,6 +106,7 @@ func (ag *AuthHandler) AddNewUser(user store.User) error {
 	if _, err := ag.UserStore.FindByUsername(user.Username); err == nil {
 		return &store.RequestError{Err: errors.New("Username already in use"), StatusCode: 400}
 	}
+	user.Password, _ = HashPassword(user.Password)
 	err := ag.UserStore.AddNew(user)
 	if err != nil {
 		return err
@@ -152,4 +154,14 @@ func GenerateJWT(dbUser store.User, secretString []byte) (string, error) {
 		return "", err
 	}
 	return tokenStr, nil
+}
+
+func HashPassword(password string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+	return string(bytes), err
+}
+
+func CheckPasswordHash(password, hash string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	return err == nil
 }
