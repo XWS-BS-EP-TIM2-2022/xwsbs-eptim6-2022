@@ -1,0 +1,83 @@
+syntax = "proto3";
+
+option go_package = "github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common/proto/auth_service";
+
+package auth_service;
+import "google/api/annotations.proto";
+
+service AuthService {
+  rpc AddNewUser (CreateNewUser) returns (CreateNewUser){
+    option (google.api.http) = {
+      post: "/api/auth/users"
+      body: "user"
+    };
+  }
+  rpc GetAll (GetAllRequest) returns (GetAllResponse){
+    option (google.api.http) = {
+      get: "/api/auth/users"
+    };
+  }
+  rpc LoginUser (CreateNewUser) returns (Token){
+    option (google.api.http) = {
+      put: "/api/auth/session"
+      body: "user"
+    };
+  }
+  rpc AuthorizeJWT (ValidateToken) returns (CreateNewUser){
+    option (google.api.http) = {
+      put: "/api/auth/session/validations"
+      body: "token"
+    };
+  }
+  rpc GetUserPermissions(ValidateToken) returns (UserPermissions){
+    option (google.api.http) = {
+      put: "/api/auth/session/permissions"
+      body: "token"
+    };
+  }
+}
+
+message Token {
+  string token = 1;
+}
+message Permission{
+  string value=1;
+}
+message UserPermissions{
+  repeated Permission permissions=1;
+}
+message ValidateToken{
+  Token token=1;
+}
+
+message GetAllRequest {
+}
+
+message GetAllResponse {
+  repeated User users = 1;
+}
+
+message User {
+  string username = 1;
+  string name = 2;
+  string surname = 3;
+  string password = 4;
+  string email = 5;
+  string telephone = 6;
+  string gender = 7;
+  string birthDate = 8;
+  string biography = 9;
+  bool isPublic = 17;
+}
+
+message CreateNewUser {
+  User user = 1;
+}
+
+message PutNewUser {
+  User user = 1;
+}
+
+message CreateNewUserResponse {
+  User user = 1;
+}

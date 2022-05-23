@@ -120,7 +120,7 @@ func (us *UsersStore) FindAll() []User {
 	return users
 }
 
-func (us *UsersStore) AddUser(u User) *mongo.InsertOneResult {
+func (us *UsersStore) AddUser(u *User) *mongo.InsertOneResult {
 	insertResult, err := us.UsersCollection.InsertOne(context.TODO(), u)
 	if err != nil {
 		log.Fatal(err)

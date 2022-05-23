@@ -2,16 +2,88 @@ package main
 
 import (
 	"context"
-	"github.com/gorilla/mux"
+	postsServicePb "github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common/proto/posts_service"
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	otgo "github.com/opentracing/opentracing-go"
+	"github.com/opentracing/opentracing-go/ext"
+	"google.golang.org/grpc"
 	"log"
+	"net"
 	"net/http"
-	"os"
-	"os/signal"
-	"time"
-	"xwsbs-eptim6-2022/posts-service/handlers"
+	"xwsbs-eptim6-2022/posts-service/startup"
+	"xwsbs-eptim6-2022/posts-service/startup/config"
 )
 
 func main() {
+	serverConfig := config.NewConfig()
+	lis, err := net.Listen("tcp", ":"+serverConfig.GrpcPort)
+	if err != nil {
+		log.Fatalln("Failed to listen:", err)
+	}
+
+	// Create a gRPC server object
+	s := grpc.NewServer()
+
+	service, err := startup.NewServer(serverConfig)
+	if err != nil {
+		log.Fatal(err.Error())
+		return
+	}
+	postsServicePb.RegisterPostsServiceServer(s, service)
+	log.Println("Serving gRPC on 0.0.0.0:" + serverConfig.GrpcPort)
+	go func() {
+		log.Fatalln(s.Serve(lis))
+	}()
+	// Create a client connection to the gRPC server we just started
+	// This is where the gRPC-Gateway proxies the requests
+	conn, err := grpc.DialContext(
+		context.Background(),
+		"0.0.0.0:8080",
+		grpc.WithBlock(),
+		grpc.WithInsecure(),
+	)
+	if err != nil {
+		log.Fatalln("Failed to dial server:", err)
+	}
+
+	gwmux := runtime.NewServeMux()
+	// Register Greeter
+	err = postsServicePb.RegisterPostsServiceHandler(context.Background(), gwmux, conn)
+	if err != nil {
+		log.Fatalln("Failed to register gateway:", err)
+	}
+
+	gwServer := &http.Server{
+		Addr:    ":8090",
+		Handler: tracingWrapper(gwmux),
+	}
+
+	log.Println("Serving gRPC-Gateway on http://0.0.0.0:8090")
+	log.Fatalln(gwServer.ListenAndServe())
+}
+
+var grpcGatewayTag = otgo.Tag{Key: string(ext.Component), Value: "grpc-gateway"}
+
+func tracingWrapper(h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		parentSpanContext, err := otgo.GlobalTracer().Extract(
+			otgo.HTTPHeaders,
+			otgo.HTTPHeadersCarrier(r.Header))
+		if err == nil || err == otgo.ErrSpanContextNotFound {
+			serverSpan := otgo.GlobalTracer().StartSpan(
+				"ServeHTTP",
+				// this is magical, it attaches the new span to the parent parentSpanContext, and creates an unparented one if empty.
+				ext.RPCServerOption(parentSpanContext),
+				grpcGatewayTag,
+			)
+			r = r.WithContext(otgo.ContextWithSpan(r.Context(), serverSpan))
+			defer serverSpan.Finish()
+		}
+		h.ServeHTTP(w, r)
+	})
+}
+
+/*func main() {
 	l := log.New(os.Stdout, "posts-service ", log.LstdFlags)
 	ph := handlers.NewPostsHandler(l)
 	sm := mux.NewRouter()
@@ -21,7 +93,7 @@ func main() {
 	getRouter.HandleFunc("/posts/user/{username:[a-zA-Z0-9]+}", ph.GetByUser)
 	getRouter.HandleFunc("/posts/{id:[a-zA-Z0-9]+}", ph.GetOne)
 
-	getRouter.HandleFunc("/posts/like/{id:[a-zA-Z0-9]+}", ph.LikePost)
+	getRouter.HandleFunc("/posts/like/{id:[a-zA-Z0-9]+", ph.LikePost)
 	getRouter.HandleFunc("/posts/dislike/{id:[a-zA-Z0-9]+}", ph.DislikePost)
 
 	postRouter := sm.Methods(http.MethodPost).Subrouter()
@@ -61,7 +133,7 @@ func main() {
 	ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)
 	s.Shutdown(ctx)
 }
-
+*/
 //**
 //
 //	f, err := os.Open("./test.jpg")

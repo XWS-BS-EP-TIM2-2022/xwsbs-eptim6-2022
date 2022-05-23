@@ -1,13 +1,10 @@
 package handlers
 
 import (
-	"bytes"
-	"encoding/json"
-	"fmt"
+	"errors"
 	"net/http"
 	"profile-service/store"
 
-	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -20,26 +17,19 @@ func InitUserHandler() *UserHandler {
 	return &UserHandler{UserStore: userStore}
 }
 
-func (uh *UserHandler) GetUser(w http.ResponseWriter, r *http.Request) {
-	username, err2 := validateLoggedinUser(r)
-	if err2 != nil {
-		http.Error(w, "Error while validating user", http.StatusBadRequest)
+func (uh *UserHandler) GetUser(username string) (store.User, error) {
+	user, err := uh.UserStore.FindOneByUsername(username)
+	if err != nil {
+		return store.User{}, errors.New("Error while finding user with specified username")
 	}
-	user, err3 := uh.UserStore.FindOneByUsername(username)
-	if err3 != nil {
-		http.Error(w, "Error while finding one user", http.StatusBadRequest)
-	}
-	json.NewEncoder(w).Encode(user)
+	return user, nil
 }
 
-func (uh *UserHandler) GetAll(w http.ResponseWriter, r *http.Request) {
-	users := uh.UserStore.FindAll()
-	json.NewEncoder(w).Encode(users)
+func (uh *UserHandler) GetAll() []store.User {
+	return uh.UserStore.FindAll()
 }
 
-func (uh *UserHandler) AddNewUser(w http.ResponseWriter, r *http.Request) {
-	var user store.User
-	json.NewDecoder(r.Body).Decode(&user)
+func (uh *UserHandler) AddNewUser(user *store.User) *store.User {
 	user.Experiences = []store.Experience{}
 	user.Educations = []store.Education{}
 	user.Skills = []store.Skill{}
@@ -47,137 +37,52 @@ func (uh *UserHandler) AddNewUser(w http.ResponseWriter, r *http.Request) {
 	user.Followers = []store.Follower{}
 	user.Followings = []store.Following{}
 	user.FollowRequests = []string{}
-	user1 := uh.UserStore.AddUser(user)
-	json.NewEncoder(w).Encode(user1)
+	uh.UserStore.AddUser(user)
+	return user
 }
 
-func (uh *UserHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
-	username, err2 := validateLoggedinUser(r)
-	if err2 != nil {
-		http.Error(w, "Error while validating user", http.StatusBadRequest)
-	}
-	user1, err3 := uh.UserStore.FindOneByUsername(username)
-	if err3 != nil {
-		http.Error(w, "Error while finding one user", http.StatusBadRequest)
-	}
-	id := user1.ID
-
-	var user store.User
-	json.NewDecoder(r.Body).Decode(&user)
-
-	err := uh.UserStore.UpdateUser(id, user)
-	json.NewEncoder(w).Encode(err)
-}
-
-func (uh *UserHandler) AddExperience(w http.ResponseWriter, r *http.Request) {
-	username, err2 := validateLoggedinUser(r)
-	if err2 != nil {
-		http.Error(w, "Error while validating user", http.StatusBadRequest)
-	}
-	user, err3 := uh.UserStore.FindOneByUsername(username)
-	if err3 != nil {
-		http.Error(w, "Error while finding one user", http.StatusBadRequest)
-	}
+func (uh *UserHandler) UpdateUser(username string, newUserInfo store.User) (store.User, error) {
+	user, err := uh.GetUser(username)
 	id := user.ID
-
-	var experience store.Experience
-	err := json.NewDecoder(r.Body).Decode(&experience)
+	err = uh.UserStore.UpdateUser(id, newUserInfo)
 	if err != nil {
-		http.Error(w, "Error while adding new experience", http.StatusBadRequest)
+		return store.User{}, err
 	}
-
-	err1 := uh.UserStore.InsertExperience(id, experience)
-	if err1 != nil {
-		http.Error(w, "Error adding experience", http.StatusBadRequest)
-		return
-	}
+	return newUserInfo, nil
 }
 
-func (uh *UserHandler) AddEducation(w http.ResponseWriter, r *http.Request) {
-	username, err2 := validateLoggedinUser(r)
-	if err2 != nil {
-		http.Error(w, "Error while validating user", http.StatusBadRequest)
-	}
-	user, err3 := uh.UserStore.FindOneByUsername(username)
-	if err3 != nil {
-		http.Error(w, "Error while finding one user", http.StatusBadRequest)
-	}
+func (uh *UserHandler) AddExperience(username string, experience store.Experience) (store.User, error) {
+	user, _ := uh.GetUser(username)
 	id := user.ID
-
-	var education store.Education
-	err := json.NewDecoder(r.Body).Decode(&education)
-	if err != nil {
-		http.Error(w, "Error while adding new education", http.StatusBadRequest)
-	}
-
-	err1 := uh.UserStore.InsertEducation(id, education)
-	if err1 != nil {
-		http.Error(w, "Error adding eduction", http.StatusBadRequest)
-		return
-	}
+	err := uh.UserStore.InsertExperience(id, experience)
+	return user, err
 }
 
-func (uh *UserHandler) AddSkill(w http.ResponseWriter, r *http.Request) {
-	username, err2 := validateLoggedinUser(r)
-	if err2 != nil {
-		http.Error(w, "Error while validating user", http.StatusBadRequest)
-	}
-	user, err3 := uh.UserStore.FindOneByUsername(username)
-	if err3 != nil {
-		http.Error(w, "Error while finding one user", http.StatusBadRequest)
-	}
+func (uh *UserHandler) AddEducation(username string, text string) (store.User, error) {
+	user, _ := uh.GetUser(username)
 	id := user.ID
-
-	var skill store.Skill
-	err := json.NewDecoder(r.Body).Decode(&skill)
-	if err != nil {
-		http.Error(w, "Error while adding new skill", http.StatusBadRequest)
-	}
-
-	err1 := uh.UserStore.InsertSkill(id, skill)
-	if err1 != nil {
-		http.Error(w, "Error adding skill", http.StatusBadRequest)
-		return
-	}
+	err1 := uh.UserStore.InsertEducation(id, store.Education{Text: text})
+	return user, err1
 }
 
-func (uh *UserHandler) AddInterest(w http.ResponseWriter, r *http.Request) {
-	username, err2 := validateLoggedinUser(r)
-	if err2 != nil {
-		http.Error(w, "Error while validating user", http.StatusBadRequest)
-	}
-	user, err3 := uh.UserStore.FindOneByUsername(username)
-	if err3 != nil {
-		http.Error(w, "Error while finding one user", http.StatusBadRequest)
-	}
+func (uh *UserHandler) AddSkill(username string, text string) (store.User, error) {
+	user, _ := uh.GetUser(username)
 	id := user.ID
-
-	var interest store.Interest
-	err := json.NewDecoder(r.Body).Decode(&interest)
-	if err != nil {
-		http.Error(w, "Error while adding new interest", http.StatusBadRequest)
-	}
-
-	err1 := uh.UserStore.InsertInterest(id, interest)
-	if err1 != nil {
-		http.Error(w, "Error adding interest", http.StatusBadRequest)
-		return
-	}
+	err1 := uh.UserStore.InsertSkill(id, store.Skill{Text: text})
+	return user, err1
 }
 
-func (uh *UserHandler) FollowUser(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
-	userToFollowID, _ := primitive.ObjectIDFromHex(params["id"])
-	username, err2 := validateLoggedinUser(r)
-	if err2 != nil {
-		http.Error(w, "Error while validating user", http.StatusBadRequest)
-	}
-	user, err3 := uh.UserStore.FindOneByUsername(username)
-	if err3 != nil {
-		http.Error(w, "Error while finding one user", http.StatusBadRequest)
-	}
+func (uh *UserHandler) AddInterest(username string, text string) (store.User, error) {
+	user, _ := uh.GetUser(username)
+	id := user.ID
+	err1 := uh.UserStore.InsertInterest(id, store.Interest{Text: text})
+	return user, err1
+}
+
+//TODO: TESTIRATI
+func (uh *UserHandler) FollowUser(username string, userToFollowID string) error {
+	user, _ := uh.GetUser(username)
 	userID := user.ID
-
 	var follower store.Follower
 	var following store.Following
 
@@ -186,49 +91,36 @@ func (uh *UserHandler) FollowUser(w http.ResponseWriter, r *http.Request) {
 
 	userFollower, err1 := uh.UserStore.FindOne(userID)
 	if err1 != nil {
-		http.Error(w, "Error getting user with {id}", http.StatusBadRequest)
-		return
+		return err1
 	}
-	json.NewEncoder(w).Encode(userFollower)
-
-	userFollowing, err2 = uh.UserStore.FindOne(userToFollowID)
-	if err2 != nil {
-		http.Error(w, "Error getting user with {idToFollow}", http.StatusBadRequest)
-		return
+	hex, err := primitive.ObjectIDFromHex(userToFollowID)
+	if err != nil {
+		return err
 	}
-	json.NewEncoder(w).Encode(userFollowing)
-
+	userFollowing, err = uh.UserStore.FindOne(hex)
+	if err != nil {
+		return errors.New("Error getting user with {idToFollow}")
+	}
 	follower.Username = userFollowing.Username
 	following.Username = userFollower.Username
 
 	if userFollowing.IsPublic {
-		err := uh.UserStore.FollowUser(userToFollowID, userID, follower, following)
+		err := uh.UserStore.FollowUser(hex, userID, follower, following)
 		if err != nil {
-			http.Error(w, "Error following user", http.StatusBadRequest)
-			return
+			return errors.New("Error following user")
 		}
-		json.NewEncoder(w).Encode(err)
 	} else {
-		err := uh.UserStore.AddFollowRequest(userToFollowID, userFollower.Username)
+		err := uh.UserStore.AddFollowRequest(hex, userFollower.Username)
 		if err != nil {
-			http.Error(w, "Error adding your follow request to the user you want to follow", http.StatusBadRequest)
-			return
+			return errors.New("Error adding your follow request to the user you want to follow")
 		}
-		json.NewEncoder(w).Encode(err)
 	}
+	return nil
 }
 
-func (uh *UserHandler) UnfollowUser(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
-	userToUnfollowID, _ := primitive.ObjectIDFromHex(params["id"])
-	username, err2 := validateLoggedinUser(r)
-	if err2 != nil {
-		http.Error(w, "Error while validating user", http.StatusBadRequest)
-	}
-	user, err3 := uh.UserStore.FindOneByUsername(username)
-	if err3 != nil {
-		http.Error(w, "Error while finding one user", http.StatusBadRequest)
-	}
+func (uh *UserHandler) UnfollowUser(username string, userToFollowID string) error {
+	userToUnfollowID, _ := primitive.ObjectIDFromHex(userToFollowID)
+	user, err := uh.GetUser(username)
 	userID := user.ID
 
 	var follower store.Follower
@@ -237,81 +129,57 @@ func (uh *UserHandler) UnfollowUser(w http.ResponseWriter, r *http.Request) {
 	var userFollower store.User
 	var userFollowing store.User
 
-	userFollower, err1 := uh.UserStore.FindOne(userID)
-	if err1 != nil {
-		http.Error(w, "Error getting user with {id}", http.StatusBadRequest)
-		return
+	userFollower, err = uh.UserStore.FindOne(userID)
+	if err != nil {
+		return errors.New("Error getting user with {id}")
 	}
-	json.NewEncoder(w).Encode(userFollower)
 
-	userFollowing, err2 = uh.UserStore.FindOne(userToUnfollowID)
-	if err2 != nil {
-		http.Error(w, "Error getting user with {idToFollow}", http.StatusBadRequest)
-		return
+	userFollowing, err = uh.UserStore.FindOne(userToUnfollowID)
+	if err != nil {
+		return errors.New("Error following user")
 	}
-	json.NewEncoder(w).Encode(userFollowing)
-
 	follower.Username = userFollowing.Username
 	following.Username = userFollower.Username
 
-	err := uh.UserStore.UnfollowUser(userToUnfollowID, userID, follower, following)
+	err = uh.UserStore.UnfollowUser(userToUnfollowID, userID, follower, following)
 	if err != nil {
-		http.Error(w, "Error following user", http.StatusBadRequest)
-		return
+		return errors.New("Error following user")
 	}
-	json.NewEncoder(w).Encode(err)
+	return nil
 }
 
-func (uh *UserHandler) AcceptFollow(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
-	userToAcceptID, _ := primitive.ObjectIDFromHex(params["id"])
-	username, err2 := validateLoggedinUser(r)
-	if err2 != nil {
-		http.Error(w, "Error while validating user", http.StatusBadRequest)
-	}
-	user, err3 := uh.UserStore.FindOneByUsername(username)
-	if err3 != nil {
-		http.Error(w, "Error while finding one user", http.StatusBadRequest)
-	}
+func (uh *UserHandler) AcceptFollow(username string, id string) error {
+	userToAcceptID, _ := primitive.ObjectIDFromHex(id)
+	user, err := uh.GetUser(username)
 	userID := user.ID
-
 	userFromFollowRequest, err2 := uh.UserStore.FindOne(userToAcceptID) //ovaj user zeli da zaprati
 	if err2 != nil {
-		http.Error(w, "Error getting user with {idUserToAccept}", http.StatusBadRequest)
-		return
+		return errors.New("Error getting user with {idUserToAccept}")
 	}
-	json.NewEncoder(w).Encode(userFromFollowRequest)
-
 	user, err1 := uh.UserStore.FindOne(userID) //ovog usera
 	if err1 != nil {
-		http.Error(w, "Error getting user with {id}", http.StatusBadRequest)
-		return
+		return errors.New("Error getting user with {id}")
 	}
-	json.NewEncoder(w).Encode(user)
-
 	var follower store.Follower
 	var following store.Following
 
 	following.Username = userFromFollowRequest.Username
 	follower.Username = user.Username
 
-	err := uh.UserStore.FollowUser(userID, userFromFollowRequest.ID, follower, following)
+	err = uh.UserStore.FollowUser(userID, userFromFollowRequest.ID, follower, following)
 	if err != nil {
-		http.Error(w, "Error following user", http.StatusBadRequest)
-		return
+		return errors.New("Error following user")
 	}
-	json.NewEncoder(w).Encode(err)
-
-	err3 = uh.UserStore.AcceptRejectFollow(userID, userFromFollowRequest.Username)
-	if err3 != nil {
-		http.Error(w, "Error accepting user follow", http.StatusBadRequest)
-		return
+	err = uh.UserStore.AcceptRejectFollow(userID, userFromFollowRequest.Username)
+	if err != nil {
+		return errors.New("Error accepting user follow")
 	}
-	json.NewEncoder(w).Encode(err3)
+	return nil
 }
 
-func (uh *UserHandler) RejectFollow(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
+func (uh *UserHandler) RejectFollow(w http.ResponseWriter, r *http.Request) error {
+	return errors.New("NIJE MI SE DALO")
+	/*params := mux.Vars(r)
 	userToAcceptID, _ := primitive.ObjectIDFromHex(params["id"])
 	username, err2 := validateLoggedinUser(r)
 	if err2 != nil {
@@ -335,28 +203,7 @@ func (uh *UserHandler) RejectFollow(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error rejecting user follow", http.StatusBadRequest)
 		return
 	}
-	json.NewEncoder(w).Encode(err2)
-}
-
-func validateLoggedinUser(r *http.Request) (string, error) {
-	client := &http.Client{}
-	var authServiceHost = "http://localhost:8080/api/auth/session/validations"
-	jsonBody, err := json.Marshal(map[string]string{
-		"token": r.Header["Authorization"][0],
-	})
-	if err != nil {
-		return "", err
-	}
-	req, _ := http.NewRequest(http.MethodPut, authServiceHost, bytes.NewBuffer(jsonBody))
-	req.Header.Set("Authorization", r.Header["Authorization"][0])
-	resp, err := client.Do(req)
-	var user store.User
-	json.NewDecoder(resp.Body).Decode(&user)
-	fmt.Println(user)
-	if err != nil {
-		return "", err
-	}
-	return user.Username, nil
+	json.NewEncoder(w).Encode(err2)*/
 }
 
 //GET USER, EXPERIENCE, EDUCATION, SKILL, INTEREST

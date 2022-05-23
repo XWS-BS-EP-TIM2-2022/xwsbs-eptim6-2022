@@ -1,0 +1,82 @@
+syntax = "proto3";
+
+option go_package = "github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common/proto/posts_service";
+
+package posts_service;
+import "google/api/annotations.proto";
+
+service PostsService {
+  rpc GetAllPosts (EmptyRequest) returns (PostsResponse){
+    option (google.api.http) = {
+      get: "/api/posts"
+    };
+  }
+  rpc GetAllPostsByUser (GetByUsernameRequest) returns (PostsResponse){
+    option (google.api.http) = {
+      get: "/api/users/{username}/posts"
+    };
+  }
+  rpc GetPostById (GetByIdRequest) returns (PostResponse){
+    option (google.api.http) = {
+      get: "/api/posts/{id}"
+    };
+  }
+
+  rpc LikePost (GetByIdRequest) returns (PostResponse){
+    option (google.api.http) = {
+      put: "/api/posts/{id}/likes"
+    };
+  }
+  rpc DislikePost (GetByIdRequest) returns (PostResponse){
+    option (google.api.http) = {
+      put: "/api/posts/{id}/dislikes"
+    };
+  }
+  rpc AddNewPost (PostRequest) returns (PostResponse){
+    option (google.api.http) = {
+      post: "/api/posts"
+      body:"post"
+    };
+  }
+
+  rpc AddNewComment (CommentRequest) returns (PostResponse){
+    option (google.api.http) = {
+      post: "/api/posts/{id}/comments"
+      body: "comment"
+    };
+  }
+}
+
+message EmptyRequest{}
+message Post{
+  string username = 1;
+  string text = 2;
+  repeated string liked = 3;
+  repeated string disliked = 4;
+  string CreatedOn = 5;
+  string imageUrl = 6;
+  repeated Comment comments = 7;
+}
+message PostResponse{
+  Post post=1;
+}
+message PostRequest{
+  Post post=1;
+}
+message Comment  {
+  string username = 1;
+  string text = 2;
+}
+message CommentRequest{
+  string id=1;
+  Comment comment=2;
+}
+message PostsResponse{
+  repeated Post posts = 1;
+}
+message GetByUsernameRequest{
+  string username = 1;
+}
+message GetByIdRequest{
+  string id = 1;
+}
