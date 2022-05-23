@@ -10,11 +10,13 @@ import (
 	authServicePb "github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common/proto/auth_service"
 	profileGw "github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common/proto/profile_service"
 	"github.com/dgrijalva/jwt-go"
+	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"net/http"
 	"strings"
 	"time"
+	"unicode"
 )
 
 type ErrorMessage struct {
@@ -59,17 +61,22 @@ func (ah *AuthHandler) LoginUser(user store.User) (JWT, error) {
 		fmt.Println("User not found")
 		return JWT{Token: ""}, err
 	}
-	if dbUser.Password != user.Password {
-		fmt.Println("User not found")
-		return JWT{Token: ""}, err
+	if !CheckPasswordHash(user.Password, dbUser.Password) {
+		_ = ah.UserStore.UpdateFailedLogForUser(user.Username)
+		return JWT{Token: ""}, errors.New("Invalid credentials")
 	}
+	if dbUser.FailedLog >= 5 {
+		return JWT{Token: ""}, errors.New("Blocked account")
+	} else {
+		_ = ah.UserStore.ResetFailedLogForUser(user.Username)
+	}
+
 	tokenStr, err := GenerateJWT(dbUser, ah.secretKey)
 	if err != nil {
 		fmt.Printf("Token generation failed %s\n", err.Error())
 		return JWT{Token: ""}, err
 	}
 	return JWT{Token: tokenStr}, nil
-
 }
 
 func (ag *AuthHandler) AuthorizeJWT(w http.ResponseWriter, r *http.Request) {
@@ -105,6 +112,11 @@ func (ag *AuthHandler) AddNewUser(user store.User) error {
 	if _, err := ag.UserStore.FindByUsername(user.Username); err == nil {
 		return &store.RequestError{Err: errors.New("Username already in use"), StatusCode: 400}
 	}
+	if !isPasswordValid(user.Password) {
+		return &store.RequestError{Err: errors.New("Bad password format"), StatusCode: 400}
+	}
+	user.Password, _ = HashPassword(user.Password)
+	user.FailedLog = 0
 	err := ag.UserStore.AddNew(user)
 	if err != nil {
 		return err
@@ -152,4 +164,40 @@ func GenerateJWT(dbUser store.User, secretString []byte) (string, error) {
 		return "", err
 	}
 	return tokenStr, nil
+}
+
+func HashPassword(password string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+	return string(bytes), err
+}
+
+func CheckPasswordHash(password, hash string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	return err == nil
+}
+
+func isPasswordValid(password string) bool {
+	var (
+		hasMinLen  = false
+		hasUpper   = false
+		hasLower   = false
+		hasNumber  = false
+		hasSpecial = false
+	)
+	if len(password) >= 8 {
+		hasMinLen = true
+	}
+	for _, char := range password {
+		switch {
+		case unicode.IsUpper(char):
+			hasUpper = true
+		case unicode.IsLower(char):
+			hasLower = true
+		case unicode.IsNumber(char):
+			hasNumber = true
+		case unicode.IsPunct(char) || unicode.IsSymbol(char):
+			hasSpecial = true
+		}
+	}
+	return hasMinLen && hasUpper && hasLower && hasNumber && hasSpecial
 }

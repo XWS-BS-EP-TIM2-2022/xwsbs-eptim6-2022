@@ -13,12 +13,13 @@ import (
 )
 
 type User struct {
-	Username string `json:"username" validate:"required,lt=50"`
-	Name     string `json:"name" validate:"required"`
-	Surname  string `json:"surname" validate:"required"`
-	Password string `json:"password" validate:"required"`
-	Email    string `json:"email" validate:"required,email"`
-	Role     string `json:"role" validate:"required"`
+	Username  string `json:"username" validate:"required,lt=50"`
+	Name      string `json:"name" validate:"required"`
+	Surname   string `json:"surname" validate:"required"`
+	Password  string `json:"password" validate:"required"`
+	Email     string `json:"email" validate:"required,email"`
+	Role      string `json:"role" validate:"required"`
+	FailedLog int    `json:"failedlog"`
 }
 
 type UsersStore struct {
@@ -88,6 +89,38 @@ func (us *UsersStore) FindAll() []User {
 	cur.Close(context.TODO())
 	fmt.Println(users)
 	return users
+}
+
+func (us *UsersStore) UpdateFailedLogForUser(username string) error {
+	filter := bson.D{{"username", username}}
+
+	update := bson.D{
+		{"$inc", bson.D{
+			{"failedlog", 1},
+		}},
+	}
+
+	_, err := us.UsersCollection.UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (us *UsersStore) ResetFailedLogForUser(username string) error {
+	filter := bson.D{{"username", username}}
+
+	update := bson.D{
+		{"$set", bson.D{
+			{"failedlog", 0},
+		}},
+	}
+
+	_, err := us.UsersCollection.UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func InitUsersStore(mongoUri string) *UsersStore {
