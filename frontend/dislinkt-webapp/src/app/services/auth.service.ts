@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { map } from 'rxjs/operators';
 
 
 @Injectable({
@@ -14,7 +15,17 @@ export class AuthService {
       'username': user.username,
       'password': user.password
     };
-    return this.http.put("http://localhost:8081/api/auth/session", JSON.stringify(body));
+    return this.http.put("/api/auth/session", JSON.stringify(body)).pipe(
+      map((res: any) => {
+        console.log('Login success');
+        localStorage.setItem('jwt', res);
+        console.log(res);
+      })
+    );;
+  }
+
+  public logOut(): void {
+    localStorage.removeItem('jwt');
   }
 
   register(user : any) {
@@ -24,6 +35,6 @@ export class AuthService {
       'name' : user.name,
       'surname' : user.surname
     };
-    return this.http.post("http://localhost:8081/api/auth/users", JSON.stringify(body));
+    return this.http.post("/api/auth/users", JSON.stringify(body));
   }
 }

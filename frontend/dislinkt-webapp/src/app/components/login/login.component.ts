@@ -10,6 +10,7 @@ import { AuthService } from 'src/app/services/auth.service';
 export class LoginComponent implements OnInit {
   username : string = ""
   password : string = ""
+  errorMessage : string = ""
 
   constructor(private authService: AuthService, private router: Router) { }
 
@@ -21,10 +22,14 @@ export class LoginComponent implements OnInit {
       username : this.username,
       password : this.password
     }
-    this.authService.login(user).subscribe((token: any) => {
-      this.router.navigate(['']);
-      console.log(token.token);
-      localStorage.setItem("token", token.token);
-   })
+    this.authService.login(user).subscribe(
+      (data) => {
+        this.router.navigate(['/posts'])
+      },
+      (error) => {
+        this.errorMessage = 'Invalid credentials';
+        console.error('error caught');
+      }
+    );
   }
 }
