@@ -62,16 +62,21 @@ func (ah *AuthHandler) LoginUser(user store.User) (JWT, error) {
 		return JWT{Token: ""}, err
 	}
 	if !CheckPasswordHash(user.Password, dbUser.Password) {
-		fmt.Println("User not found")
-		return JWT{Token: ""}, err
+		_ = ah.UserStore.UpdateFailedLogForUser(user.Username)
+		return JWT{Token: ""}, errors.New("Invalid credentials")
 	}
+	if dbUser.FailedLog >= 5 {
+		return JWT{Token: ""}, errors.New("Blocked account")
+	} else {
+		_ = ah.UserStore.ResetFailedLogForUser(user.Username)
+	}
+
 	tokenStr, err := GenerateJWT(dbUser, ah.secretKey)
 	if err != nil {
 		fmt.Printf("Token generation failed %s\n", err.Error())
 		return JWT{Token: ""}, err
 	}
 	return JWT{Token: tokenStr}, nil
-
 }
 
 func (ag *AuthHandler) AuthorizeJWT(w http.ResponseWriter, r *http.Request) {
@@ -111,6 +116,7 @@ func (ag *AuthHandler) AddNewUser(user store.User) error {
 		return &store.RequestError{Err: errors.New("Bad password format"), StatusCode: 400}
 	}
 	user.Password, _ = HashPassword(user.Password)
+	user.FailedLog = 0
 	err := ag.UserStore.AddNew(user)
 	if err != nil {
 		return err
