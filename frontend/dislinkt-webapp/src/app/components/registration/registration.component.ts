@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
 
@@ -15,8 +16,7 @@ export class RegistrationComponent implements OnInit {
   repeatedPassword : string = "";
   name : string = "";
   surname : string = "";
-  differentPasswords : boolean = false;
-
+  errorMessage : string = ""
 
   constructor(private authService: AuthService, private router: Router) { }
 
@@ -24,8 +24,8 @@ export class RegistrationComponent implements OnInit {
   }
 
   submitForm() {
-    if (this.password === this.repeatedPassword){
-      this.differentPasswords = false;
+    if (this.isFormDataValid()){
+      this.errorMessage = ''
       var user = {
         username : this.username,
         password : this.password,
@@ -35,11 +35,37 @@ export class RegistrationComponent implements OnInit {
       }
       this.authService.register(user).subscribe((token: any) => {
         this.router.navigate(['']);
-      })
+      },
+      (error) => {
+        this.errorMessage = error.error;
+      }
+      )
     }
-    else {
-      this.differentPasswords = true;
+  }
+
+  isFormDataValid() : boolean {
+    var emailPattern = new RegExp(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/);
+    var passwordPattern = new RegExp(/(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W)/);
+
+    if (this.password !== this.repeatedPassword)
+    {
+      this.errorMessage = "Passwords do not match";
+      return false;
     }
+    if (this.password.length < 8)
+    {
+      this.errorMessage = "Password must be minimum 8 characters long";
+      return false;
+    }
+    if (!emailPattern.test(this.email)){
+      this.errorMessage = "Incorrect email format.";
+      return false;
+    }
+    if (!passwordPattern.test(this.password)){
+      this.errorMessage = "Incorrect password format.";
+      return false;
+    }
+    return true;
   }
 
 }

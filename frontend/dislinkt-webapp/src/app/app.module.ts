@@ -37,7 +37,7 @@ import { TokenInterceptor } from './interceptor/token-interceptor';
     ReactiveFormsModule,
     HttpClientModule,
     MatSnackBarModule,
-    MatCardModule
+    MatCardModule,
   ],
   providers: [ 
     {

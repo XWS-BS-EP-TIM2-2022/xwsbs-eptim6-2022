@@ -58,10 +58,22 @@
           required
         />
       </mat-form-field>
-      <mat-error *ngIf="differentPasswords">
-        Please provide a valid password
+      <mat-error class="my-2" *ngIf="errorMessage != ''">
+        {{ errorMessage }}
       </mat-error>
-      <button class="btn btn-primary" mat-raised-button color="primary">
+      <button
+        class="btn btn-primary"
+        mat-raised-button
+        color="primary"
+        [disabled]="
+          username == '' ||
+          password == '' ||
+          repeatedPassword == '' ||
+          name == '' ||
+          surname == '' ||
+          email == ''
+        "
+      >
         Sign up!
       </button>
     </form>
