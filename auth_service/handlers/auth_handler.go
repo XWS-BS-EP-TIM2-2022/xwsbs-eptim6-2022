@@ -16,6 +16,7 @@ import (
 	"net/http"
 	"strings"
 	"time"
+	"unicode"
 )
 
 type ErrorMessage struct {
@@ -106,6 +107,9 @@ func (ag *AuthHandler) AddNewUser(user store.User) error {
 	if _, err := ag.UserStore.FindByUsername(user.Username); err == nil {
 		return &store.RequestError{Err: errors.New("Username already in use"), StatusCode: 400}
 	}
+	if !isPasswordValid(user.Password) {
+		return &store.RequestError{Err: errors.New("Bad password format"), StatusCode: 400}
+	}
 	user.Password, _ = HashPassword(user.Password)
 	err := ag.UserStore.AddNew(user)
 	if err != nil {
@@ -164,4 +168,30 @@ func HashPassword(password string) (string, error) {
 func CheckPasswordHash(password, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil
+}
+
+func isPasswordValid(password string) bool {
+	var (
+		hasMinLen  = false
+		hasUpper   = false
+		hasLower   = false
+		hasNumber  = false
+		hasSpecial = false
+	)
+	if len(password) >= 8 {
+		hasMinLen = true
+	}
+	for _, char := range password {
+		switch {
+		case unicode.IsUpper(char):
+			hasUpper = true
+		case unicode.IsLower(char):
+			hasLower = true
+		case unicode.IsNumber(char):
+			hasNumber = true
+		case unicode.IsPunct(char) || unicode.IsSymbol(char):
+			hasSpecial = true
+		}
+	}
+	return hasMinLen && hasUpper && hasLower && hasNumber && hasSpecial
 }
