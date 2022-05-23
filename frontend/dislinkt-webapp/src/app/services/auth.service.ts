@@ -33,7 +33,9 @@ export class AuthService {
       'username': user.username,
       'password': user.password,
       'name' : user.name,
-      'surname' : user.surname
+      'surname' : user.surname,
+      'email' : user.email,
+      'role' : "user"
     };
     return this.http.post("/api/auth/users", JSON.stringify(body));
   }

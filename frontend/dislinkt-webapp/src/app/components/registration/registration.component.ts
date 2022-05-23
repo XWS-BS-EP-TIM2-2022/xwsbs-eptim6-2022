@@ -10,11 +10,13 @@ import { AuthService } from 'src/app/services/auth.service';
 export class RegistrationComponent implements OnInit {
 
   username : string = "";
+  email : string = "";
   password : string = "";
   repeatedPassword : string = "";
   name : string = "";
   surname : string = "";
   differentPasswords : boolean = false;
+
 
   constructor(private authService: AuthService, private router: Router) { }
 
@@ -28,7 +30,8 @@ export class RegistrationComponent implements OnInit {
         username : this.username,
         password : this.password,
         name : this.name,
-        surname : this.surname
+        surname : this.surname,
+        email : this.email
       }
       this.authService.register(user).subscribe((token: any) => {
         this.router.navigate(['']);
