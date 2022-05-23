@@ -8,9 +8,12 @@ import { NavbarComponent } from './components/navbar/navbar.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HomepageComponent } from './components/homepage/homepage.component';
 import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatCardModule} from '@angular/material/card';
 import { MatInputModule } from '@angular/material/input';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { PostsViewComponent } from './components/posts-view/posts-view.component';
+import { LoginComponent } from './components/login/login.component';
+import { RegistrationComponent } from './components/registration/registration.component';
 
 
 @NgModule({
@@ -18,7 +21,9 @@ import { PostsViewComponent } from './components/posts-view/posts-view.component
     AppComponent,
     NavbarComponent,
     HomepageComponent,
-    PostsViewComponent
+    PostsViewComponent,
+    LoginComponent,
+    RegistrationComponent
 
   ],
   imports: [
@@ -30,7 +35,8 @@ import { PostsViewComponent } from './components/posts-view/posts-view.component
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatCardModule
   ],
   providers: [ ],
   bootstrap: [AppComponent]
