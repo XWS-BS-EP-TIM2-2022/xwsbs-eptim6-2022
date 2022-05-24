@@ -37,6 +37,6 @@ export class AuthService {
       'email' : user.email,
       'role' : "user"
     };
-    return this.http.post("/api/auth/users", JSON.stringify(body));
+    return this.http.post("http://localhost:5000/api/auth/users", JSON.stringify(body));
   }
 }

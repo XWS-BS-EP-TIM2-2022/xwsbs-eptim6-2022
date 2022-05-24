@@ -20,12 +20,12 @@ type PostsHandler struct {
 }
 
 func NewPostsHandler(postsClientAddress string, authService *AuthService) Handler {
-	handler, err := NewImageHandler()
-	if err != nil {
-		return nil
-	}
+	//_, err := NewImageHandler()
+	//if err != nil {
+	//	return nil
+	//}
 	return &PostsHandler{postsClientAddress: postsClientAddress,
-		authService: authService, imageHandler: handler,
+		authService: authService,
 	}
 }
 

@@ -16,11 +16,11 @@ type PostsHandler struct {
 
 func NewPostsHandler(l *log.Logger, config *config.Config) *PostsHandler {
 	postsStore := store.InitPostsStore(config.MongoDbUri)
-	imagesHandler, err := InitImageHandler()
-	if err != nil {
-		l.Fatalln("Firebase storage error")
-	}
-	return &PostsHandler{postsStore, imagesHandler}
+	//imagesHandler, err := InitImageHandler()
+	//if err != nil {
+	//	l.Fatalln("Firebase storage error")
+	//}
+	return &PostsHandler{postsStore, nil}
 }
 
 func (p *PostsHandler) GetAll() (store.Posts, error) {
