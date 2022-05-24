@@ -12,6 +12,12 @@ service AuthService {
       body: "user"
     };
   }
+  rpc UpdateUserPassword (ChangePasswordRequest) returns (CreateNewUser){
+    option (google.api.http) = {
+      put: "/api/auth/users/password"
+      body: "changePasswordMessage"
+    };
+  }
   rpc GetAll (GetAllRequest) returns (GetAllResponse){
     option (google.api.http) = {
       get: "/api/auth/users"
@@ -36,18 +42,26 @@ service AuthService {
     };
   }
 }
+message ChangePasswordRequest{
+  ChangePasswordMessage changePasswordMessage=1;
+}
 
+message ChangePasswordMessage  {
+  string username = 1;
+  string oldPassword = 2;
+  string NewPassword = 3;
+}
 message Token {
   string token = 1;
 }
 message Permission{
-  string value=1;
+  string value = 1;
 }
 message UserPermissions{
-  repeated Permission permissions=1;
+  repeated Permission permissions = 1;
 }
 message ValidateToken{
-  Token token=1;
+  Token token = 1;
 }
 
 message GetAllRequest {

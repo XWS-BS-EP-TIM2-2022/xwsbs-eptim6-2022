@@ -15,6 +15,7 @@ import { PostsViewComponent } from './components/posts-view/posts-view.component
 import { LoginComponent } from './components/login/login.component';
 import { RegistrationComponent } from './components/registration/registration.component';
 import { TokenInterceptor } from './interceptor/token-interceptor';
+import { ProfileComponent } from './components/profile/profile.component';
 
 
 @NgModule({
@@ -24,7 +25,8 @@ import { TokenInterceptor } from './interceptor/token-interceptor';
     HomepageComponent,
     PostsViewComponent,
     LoginComponent,
-    RegistrationComponent
+    RegistrationComponent,
+    ProfileComponent
 
   ],
   imports: [
@@ -39,7 +41,7 @@ import { TokenInterceptor } from './interceptor/token-interceptor';
     MatSnackBarModule,
     MatCardModule,
   ],
-  providers: [ 
+  providers: [
     {
       provide: HTTP_INTERCEPTORS,
       useClass: TokenInterceptor,

@@ -5,5 +5,9 @@
     <content url="file://$MODULE_DIR$" />
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="posts-service" />
+    <orderEntry type="module" module-name="profile-service" />
+    <orderEntry type="module" module-name="common" />
+    <orderEntry type="module" module-name="api_gateway" />
   </component>
 </module>

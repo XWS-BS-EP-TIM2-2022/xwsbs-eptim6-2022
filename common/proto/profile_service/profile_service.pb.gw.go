@@ -31,6 +31,76 @@ var _ = runtime.String
 var _ = utilities.NewDoubleArray
 var _ = metadata.Join
 
+func request_ProfileService_GetUserById_0(ctx context.Context, marshaler runtime.Marshaler, client ProfileServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq GetByIdRequest
+	var metadata runtime.ServerMetadata
+
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
+	}
+
+	protoReq.Id, err = runtime.String(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
+	}
+
+	msg, err := client.GetUserById(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+
+}
+
+func local_request_ProfileService_GetUserById_0(ctx context.Context, marshaler runtime.Marshaler, server ProfileServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq GetByIdRequest
+	var metadata runtime.ServerMetadata
+
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
+	}
+
+	protoReq.Id, err = runtime.String(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
+	}
+
+	msg, err := server.GetUserById(ctx, &protoReq)
+	return msg, metadata, err
+
+}
+
+func request_ProfileService_GetLoggedinUser_0(ctx context.Context, marshaler runtime.Marshaler, client ProfileServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq EmptyRequest
+	var metadata runtime.ServerMetadata
+
+	msg, err := client.GetLoggedinUser(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+
+}
+
+func local_request_ProfileService_GetLoggedinUser_0(ctx context.Context, marshaler runtime.Marshaler, server ProfileServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq EmptyRequest
+	var metadata runtime.ServerMetadata
+
+	msg, err := server.GetLoggedinUser(ctx, &protoReq)
+	return msg, metadata, err
+
+}
+
 func request_ProfileService_GetAllUsers_0(ctx context.Context, marshaler runtime.Marshaler, client ProfileServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq EmptyRequest
 	var metadata runtime.ServerMetadata
@@ -220,7 +290,7 @@ func local_request_ProfileService_AddEducation_0(ctx context.Context, marshaler 
 }
 
 func request_ProfileService_FollowUser_0(ctx context.Context, marshaler runtime.Marshaler, client ProfileServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq FollowUserRequest
+	var protoReq GetByIdRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -246,7 +316,7 @@ func request_ProfileService_FollowUser_0(ctx context.Context, marshaler runtime.
 }
 
 func local_request_ProfileService_FollowUser_0(ctx context.Context, marshaler runtime.Marshaler, server ProfileServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq FollowUserRequest
+	var protoReq GetByIdRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -272,7 +342,7 @@ func local_request_ProfileService_FollowUser_0(ctx context.Context, marshaler ru
 }
 
 func request_ProfileService_UnFollowUser_0(ctx context.Context, marshaler runtime.Marshaler, client ProfileServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq FollowUserRequest
+	var protoReq GetByIdRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -298,7 +368,7 @@ func request_ProfileService_UnFollowUser_0(ctx context.Context, marshaler runtim
 }
 
 func local_request_ProfileService_UnFollowUser_0(ctx context.Context, marshaler runtime.Marshaler, server ProfileServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq FollowUserRequest
+	var protoReq GetByIdRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -324,7 +394,7 @@ func local_request_ProfileService_UnFollowUser_0(ctx context.Context, marshaler 
 }
 
 func request_ProfileService_FollowResponse_0(ctx context.Context, marshaler runtime.Marshaler, client ProfileServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq FollowUserRequest
+	var protoReq GetByIdRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -350,7 +420,7 @@ func request_ProfileService_FollowResponse_0(ctx context.Context, marshaler runt
 }
 
 func local_request_ProfileService_FollowResponse_0(ctx context.Context, marshaler runtime.Marshaler, server ProfileServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq FollowUserRequest
+	var protoReq GetByIdRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -380,6 +450,54 @@ func local_request_ProfileService_FollowResponse_0(ctx context.Context, marshale
 // StreamingRPC :currently unsupported pending https://github.com/grpc/grpc-go/issues/906.
 // Note that using this registration option will cause many gRPC library features to stop working. Consider using RegisterProfileServiceHandlerFromEndpoint instead.
 func RegisterProfileServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux, server ProfileServiceServer) error {
+
+	mux.Handle("GET", pattern_ProfileService_GetUserById_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/profile_service.ProfileService/GetUserById", runtime.WithHTTPPathPattern("/api/users/{id}"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_ProfileService_GetUserById_0(ctx, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		ctx = runtime.NewServerMetadataContext(ctx, md)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_ProfileService_GetUserById_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
+
+	mux.Handle("GET", pattern_ProfileService_GetLoggedinUser_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/profile_service.ProfileService/GetLoggedinUser", runtime.WithHTTPPathPattern("/api/whoami"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_ProfileService_GetLoggedinUser_0(ctx, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		ctx = runtime.NewServerMetadataContext(ctx, md)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_ProfileService_GetLoggedinUser_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
 
 	mux.Handle("GET", pattern_ProfileService_GetAllUsers_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
@@ -532,7 +650,7 @@ func RegisterProfileServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/profile_service.ProfileService/FollowUser", runtime.WithHTTPPathPattern("/users/follow/{id}"))
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/profile_service.ProfileService/FollowUser", runtime.WithHTTPPathPattern("/api/users/follow/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -556,7 +674,7 @@ func RegisterProfileServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/profile_service.ProfileService/UnFollowUser", runtime.WithHTTPPathPattern("/users/unfollow/{id}"))
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/profile_service.ProfileService/UnFollowUser", runtime.WithHTTPPathPattern("/api/users/unfollow/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -580,7 +698,7 @@ func RegisterProfileServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/profile_service.ProfileService/FollowResponse", runtime.WithHTTPPathPattern("/users/follow-requests/{id}"))
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/profile_service.ProfileService/FollowResponse", runtime.WithHTTPPathPattern("/api/users/follow-requests/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -637,6 +755,48 @@ func RegisterProfileServiceHandler(ctx context.Context, mux *runtime.ServeMux, c
 // doesn't go through the normal gRPC flow (creating a gRPC client etc.) then it will be up to the passed in
 // "ProfileServiceClient" to call the correct interceptors.
 func RegisterProfileServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux, client ProfileServiceClient) error {
+
+	mux.Handle("GET", pattern_ProfileService_GetUserById_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/profile_service.ProfileService/GetUserById", runtime.WithHTTPPathPattern("/api/users/{id}"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_ProfileService_GetUserById_0(ctx, inboundMarshaler, client, req, pathParams)
+		ctx = runtime.NewServerMetadataContext(ctx, md)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_ProfileService_GetUserById_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
+
+	mux.Handle("GET", pattern_ProfileService_GetLoggedinUser_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/profile_service.ProfileService/GetLoggedinUser", runtime.WithHTTPPathPattern("/api/whoami"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_ProfileService_GetLoggedinUser_0(ctx, inboundMarshaler, client, req, pathParams)
+		ctx = runtime.NewServerMetadataContext(ctx, md)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_ProfileService_GetLoggedinUser_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
 
 	mux.Handle("GET", pattern_ProfileService_GetAllUsers_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
@@ -769,7 +929,7 @@ func RegisterProfileServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/profile_service.ProfileService/FollowUser", runtime.WithHTTPPathPattern("/users/follow/{id}"))
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/profile_service.ProfileService/FollowUser", runtime.WithHTTPPathPattern("/api/users/follow/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -790,7 +950,7 @@ func RegisterProfileServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/profile_service.ProfileService/UnFollowUser", runtime.WithHTTPPathPattern("/users/unfollow/{id}"))
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/profile_service.ProfileService/UnFollowUser", runtime.WithHTTPPathPattern("/api/users/unfollow/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -811,7 +971,7 @@ func RegisterProfileServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/profile_service.ProfileService/FollowResponse", runtime.WithHTTPPathPattern("/users/follow-requests/{id}"))
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/profile_service.ProfileService/FollowResponse", runtime.WithHTTPPathPattern("/api/users/follow-requests/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -831,6 +991,10 @@ func RegisterProfileServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 }
 
 var (
+	pattern_ProfileService_GetUserById_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"api", "users", "id"}, ""))
+
+	pattern_ProfileService_GetLoggedinUser_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"api", "whoami"}, ""))
+
 	pattern_ProfileService_GetAllUsers_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"api", "users"}, ""))
 
 	pattern_ProfileService_AddNewUser_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"api", "users"}, ""))
@@ -843,14 +1007,18 @@ var (
 
 	pattern_ProfileService_AddEducation_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "users", "education"}, ""))
 
-	pattern_ProfileService_FollowUser_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"users", "follow", "id"}, ""))
+	pattern_ProfileService_FollowUser_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"api", "users", "follow", "id"}, ""))
 
-	pattern_ProfileService_UnFollowUser_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"users", "unfollow", "id"}, ""))
+	pattern_ProfileService_UnFollowUser_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"api", "users", "unfollow", "id"}, ""))
 
-	pattern_ProfileService_FollowResponse_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"users", "follow-requests", "id"}, ""))
+	pattern_ProfileService_FollowResponse_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"api", "users", "follow-requests", "id"}, ""))
 )
 
 var (
+	forward_ProfileService_GetUserById_0 = runtime.ForwardResponseMessage
+
+	forward_ProfileService_GetLoggedinUser_0 = runtime.ForwardResponseMessage
+
 	forward_ProfileService_GetAllUsers_0 = runtime.ForwardResponseMessage
 
 	forward_ProfileService_AddNewUser_0 = runtime.ForwardResponseMessage

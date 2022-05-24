@@ -88,7 +88,7 @@ func (s *Server) AddEducation(ctx context.Context, in *usersServicePb.EducationR
 	return mappers.MapToUserResponse(&user), nil
 
 }
-func (s *Server) FollowUser(ctx context.Context, in *usersServicePb.FollowUserRequest) (*usersServicePb.UserResponse, error) {
+func (s *Server) FollowUser(ctx context.Context, in *usersServicePb.GetByIdRequest) (*usersServicePb.UserResponse, error) {
 	username, err := s.validateLoggedinUser(getTokenFromContext(ctx))
 	if err != nil {
 		return nil, err
@@ -98,14 +98,24 @@ func (s *Server) FollowUser(ctx context.Context, in *usersServicePb.FollowUserRe
 		return nil, err
 	}
 	return nil, nil
+}
 
-}
-func (s *Server) UnFollowUser(ctx context.Context, in *usersServicePb.FollowUserRequest) (*usersServicePb.UserResponse, error) {
+func (s *Server) GetUserById(ctx context.Context, in *usersServicePb.GetByIdRequest) (*usersServicePb.UserResponse, error) {
 	return nil, nil
 }
-func (s *Server) AcceptFollow(ctx context.Context, in *usersServicePb.FollowUserRequest) (*usersServicePb.UserResponse, error) {
+func (s *Server) FollowResponse(context.Context, *usersServicePb.GetByIdRequest) (*usersServicePb.UserResponse, error) {
 	return nil, nil
 }
-func (s *Server) RejectFollow(ctx context.Context, in *usersServicePb.FollowUserRequest) (*usersServicePb.UserResponse, error) {
+func (s *Server) GetLoggedinUser(ctx context.Context, in *usersServicePb.EmptyRequest) (*usersServicePb.UserResponse, error) {
+	return nil, nil
+}
+
+func (s *Server) UnFollowUser(ctx context.Context, in *usersServicePb.GetByIdRequest) (*usersServicePb.UserResponse, error) {
+	return nil, nil
+}
+func (s *Server) AcceptFollow(ctx context.Context, in *usersServicePb.GetByIdRequest) (*usersServicePb.UserResponse, error) {
+	return nil, nil
+}
+func (s *Server) RejectFollow(ctx context.Context, in *usersServicePb.GetByIdRequest) (*usersServicePb.UserResponse, error) {
 	return nil, nil
 }
