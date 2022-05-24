@@ -7,8 +7,8 @@ import { AppComponent } from './app.component';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HomepageComponent } from './components/homepage/homepage.component';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatCardModule} from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatCardModule } from '@angular/material/card';
 import { MatInputModule } from '@angular/material/input';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { PostsViewComponent } from './components/posts-view/posts-view.component';
@@ -17,6 +17,9 @@ import { RegistrationComponent } from './components/registration/registration.co
 import { TokenInterceptor } from './interceptor/token-interceptor';
 import { ProfileComponent } from './components/profile/profile.component';
 import { ChangePasswordComponent } from './components/change-password/change-password.component';
+import { ForgotPasswordComponent } from './components/forgot-password/forgot-password.component';
+import { SetNewPasswordComponent } from './components/set-new-password/set-new-password.component';
+import { AccountActivationInfoComponent } from './components/account-activation-info/account-activation-info.component';
 
 
 @NgModule({
@@ -28,7 +31,10 @@ import { ChangePasswordComponent } from './components/change-password/change-pas
     LoginComponent,
     RegistrationComponent,
     ProfileComponent,
-    ChangePasswordComponent
+    ChangePasswordComponent,
+    ForgotPasswordComponent,
+    SetNewPasswordComponent,
+    AccountActivationInfoComponent
 
   ],
   imports: [
@@ -42,6 +48,7 @@ import { ChangePasswordComponent } from './components/change-password/change-pas
     HttpClientModule,
     MatSnackBarModule,
     MatCardModule,
+    MatSnackBarModule
   ],
   providers: [
     {
