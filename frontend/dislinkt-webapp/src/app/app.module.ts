@@ -7,14 +7,17 @@ import { AppComponent } from './app.component';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HomepageComponent } from './components/homepage/homepage.component';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatCardModule} from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatCardModule } from '@angular/material/card';
 import { MatInputModule } from '@angular/material/input';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { PostsViewComponent } from './components/posts-view/posts-view.component';
 import { LoginComponent } from './components/login/login.component';
 import { RegistrationComponent } from './components/registration/registration.component';
 import { TokenInterceptor } from './interceptor/token-interceptor';
+import { ForgotPasswordComponent } from './components/forgot-password/forgot-password.component';
+import { SetNewPasswordComponent } from './components/set-new-password/set-new-password.component';
+import { AccountActivationInfoComponent } from './components/account-activation-info/account-activation-info.component';
 
 
 @NgModule({
@@ -24,7 +27,10 @@ import { TokenInterceptor } from './interceptor/token-interceptor';
     HomepageComponent,
     PostsViewComponent,
     LoginComponent,
-    RegistrationComponent
+    RegistrationComponent,
+    ForgotPasswordComponent,
+    SetNewPasswordComponent,
+    AccountActivationInfoComponent
 
   ],
   imports: [
@@ -38,8 +44,9 @@ import { TokenInterceptor } from './interceptor/token-interceptor';
     HttpClientModule,
     MatSnackBarModule,
     MatCardModule,
+    MatSnackBarModule
   ],
-  providers: [ 
+  providers: [
     {
       provide: HTTP_INTERCEPTORS,
       useClass: TokenInterceptor,

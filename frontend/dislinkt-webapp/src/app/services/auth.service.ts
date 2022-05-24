@@ -10,7 +10,7 @@ export class AuthService {
 
   constructor(private http: HttpClient) { }
 
-  login(user : any) {
+  login(user: any) {
     const body = {
       'username': user.username,
       'password': user.password
@@ -28,15 +28,29 @@ export class AuthService {
     localStorage.removeItem('jwt');
   }
 
-  register(user : any) {
+  register(user: any) {
     const body = {
       'username': user.username,
       'password': user.password,
-      'name' : user.name,
-      'surname' : user.surname,
-      'email' : user.email,
-      'role' : "user"
+      'name': user.name,
+      'surname': user.surname,
+      'email': user.email,
+      'role': "user"
     };
     return this.http.post("/api/auth/users", JSON.stringify(body));
+  }
+
+  forgotPassword(email: string) {
+    const body = { 'email': email };
+    return this.http.post("/api/auth/users/forgot-password", JSON.stringify(body), { responseType: 'text' });
+  }
+
+  setPassword(password: string, token: string) {
+    const body = {
+      'password': password,
+      'verificationToken': token
+    };
+
+    return this.http.post('/api/auth/users/reset-password', JSON.stringify(body), { responseType: 'text' });
   }
 }
