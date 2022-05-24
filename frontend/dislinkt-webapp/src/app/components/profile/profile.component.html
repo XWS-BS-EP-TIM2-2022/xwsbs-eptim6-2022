@@ -39,7 +39,7 @@
             <div style="background-color: #E8E8E8; border-radius: 20px; margin-top: 10px; margin-left: 20px; margin-right: 20px; padding: 10px;">
                 <h2 style="margin-left: 40px; display: inline;">Experience</h2>
                 <img src="..//..//../assets/add.png" style="width: 20px; display: inline; float: right; margin-right: 40px; " data-bs-toggle="modal" data-bs-target="#modalDialogNewExperience"> 
-                <div class="list-group">
+                <div class="list-group" *ngIf="user.experiences.length!=0">
                     <a *ngFor = "let experience of user.experiences" class="list-group-item list-group-item-action flex-column align-items-start">
                         <div class="d-flex w-100 justify-content-between">
                             <h5 class="mb-1">{{experience.text}}</h5>

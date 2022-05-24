@@ -33,16 +33,16 @@ export class ProfileComponent implements OnInit {
                   biography: []
                 });
                 this.experienceFormGroup = this.formBuilder.group({
-                  text: Validators.required
+                  experience: Validators.required
                 });
                 this.educationFormGroup = this.formBuilder.group({
-                  text: Validators.required
+                  education: Validators.required
                 });
                 this.skillFormGroup = this.formBuilder.group({
-                  text: Validators.required
+                  skill: Validators.required
                 });
                 this.interestFormGroup = this.formBuilder.group({
-                  text: Validators.required
+                  interest: Validators.required
                 });
               }
 
@@ -52,7 +52,9 @@ export class ProfileComponent implements OnInit {
 
   getUser() {
     this.profileService.getUser().subscribe((res: any) => {
-      this.user = res
+      
+      this.user = res.user
+      console.log(this.user)
     });
   }
 

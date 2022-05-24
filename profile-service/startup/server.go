@@ -107,7 +107,12 @@ func (s *Server) FollowResponse(context.Context, *usersServicePb.GetByIdRequest)
 	return nil, nil
 }
 func (s *Server) GetLoggedinUser(ctx context.Context, in *usersServicePb.EmptyRequest) (*usersServicePb.UserResponse, error) {
-	return nil, nil
+	username, _ := s.validateLoggedinUser(getTokenFromContext(ctx))
+	user, err := s.userHandler.GetUser(username)
+	if err != nil {
+		return &usersServicePb.UserResponse{}, err
+	}
+	return mappers.MapToUserResponse(&user), nil
 }
 
 func (s *Server) UnFollowUser(ctx context.Context, in *usersServicePb.GetByIdRequest) (*usersServicePb.UserResponse, error) {

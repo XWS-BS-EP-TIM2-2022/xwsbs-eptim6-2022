@@ -11,7 +11,7 @@ export class ProfileService {
   constructor(public _http: HttpClient) { }
 
   getUser(): Observable<any> {
-    return this._http.get<Observable<any>>('http://localhost:5000/user/' + localStorage.getItem('userId'));
+    return this._http.get<Observable<any>>('/api/whoami');
   }
 
   updateUser(user: any): Observable<any> {

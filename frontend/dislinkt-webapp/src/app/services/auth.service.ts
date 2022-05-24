@@ -18,7 +18,7 @@ export class AuthService {
     return this.http.put("/api/auth/session", JSON.stringify(body)).pipe(
       map((res: any) => {
         console.log('Login success');
-        localStorage.setItem('jwt', res);
+        localStorage.setItem('jwt', res.token);
         console.log(res);
       })
     );;

@@ -17,7 +17,7 @@ func NewConfig() *Config {
 		MongoDbUri:             "localhost:27017", //os.Getenv("MONGODB_URI"),
 		Host:                   "localhost",
 		ProfileServiceGrpcHost: "localhost",
-		ProfileServiceGrpcPort: "8003",
+		ProfileServiceGrpcPort: "8007",
 		SecretKey:              "secret-key",
 	}
 }
