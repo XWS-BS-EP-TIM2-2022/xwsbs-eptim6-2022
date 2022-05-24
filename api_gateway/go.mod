@@ -15,7 +15,7 @@ require (
 	cloud.google.com/go/compute v1.6.1 // indirect
 	cloud.google.com/go/firestore v1.6.1 // indirect
 	cloud.google.com/go/iam v0.3.0 // indirect
-	github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common v0.0.0-20220521112645-6b0350ab885e // indirect
+	github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common v0.0.0-20220524111127-86c3141e850a // indirect
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/go-cmp v0.5.8 // indirect

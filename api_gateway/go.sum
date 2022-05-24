@@ -66,6 +66,8 @@ github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022 v0.0.0-20220520144311-eac789790
 github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022 v0.0.0-20220520144311-eac78979020e/go.mod h1:gaZrlZQlqagPtPFuayBSkohrRYvluFGiNU1Cem9iuCE=
 github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common v0.0.0-20220521112645-6b0350ab885e h1:uh5webh53xKG5O/cFYS6v2NC3nPO6J5HrT+eSQd8DCU=
 github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common v0.0.0-20220521112645-6b0350ab885e/go.mod h1:0gTrrHyvXVax2deUEdjITFSQR/vlj336j7RoORehMl8=
+github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common v0.0.0-20220524111127-86c3141e850a h1:9ugH+/NxSC17KvxBmTiNUWm6+LXdzQ/vmHPQ9xXMwQI=
+github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common v0.0.0-20220524111127-86c3141e850a/go.mod h1:0gTrrHyvXVax2deUEdjITFSQR/vlj336j7RoORehMl8=
 github.com/antihax/optional v1.0.0/go.mod h1:uupD/76wgC+ih3iEmQUL+0Ugr19nfwCT1kdvxnR2qWY=
 github.com/census-instrumentation/opencensus-proto v0.2.1/go.mod h1:f6KPmirojxKA12rnyqOA5BBL4O983OfeGPqjHWSTneU=
 github.com/cespare/xxhash v1.1.0/go.mod h1:XrSqR1VqqWfGrhpAt58auRo0WTKS1nRRg3ghfAqPWnc=
