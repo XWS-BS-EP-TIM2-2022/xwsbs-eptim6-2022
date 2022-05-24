@@ -7,6 +7,7 @@ import { RegistrationComponent } from './components/registration/registration.co
 import { ProfileComponent } from './components/profile/profile.component';
 import { AccountActivationInfoComponent } from './components/account-activation-info/account-activation-info.component';
 import { ForgotPasswordComponent } from './components/forgot-password/forgot-password.component';
+
 import { SetNewPasswordComponent } from './components/set-new-password/set-new-password.component';
 
 const routes: Routes = [

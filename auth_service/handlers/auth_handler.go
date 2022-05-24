@@ -240,6 +240,14 @@ func (ah *AuthHandler) HandleFailedLogin(user store.User) error {
 	return errors.New("Invalid credentials")
 }
 
+func (ah *AuthHandler) GenerateVerificationToken() (string, error) {
+	randomBytes := make([]byte, 16)
+	rand.Read(randomBytes)
+	encoded := base64.StdEncoding.EncodeToString(randomBytes)
+
+	token, err := bcrypt.GenerateFromPassword([]byte(encoded), 14)
+	return string(token), err
+}
 func (ah *AuthHandler) ChangePassword(request store.ChangePasswordRequest) (*store.User, error) {
 	user, err := ah.UserStore.FindByUsername(request.Username)
 
@@ -260,14 +268,6 @@ func (ah *AuthHandler) ChangePassword(request store.ChangePasswordRequest) (*sto
 		}
 	}
 	return &user, nil
-}
-func (ah *AuthHandler) GenerateVerificationToken() (string, error) {
-	randomBytes := make([]byte, 16)
-	rand.Read(randomBytes)
-	encoded := base64.StdEncoding.EncodeToString(randomBytes)
-
-	token, err := bcrypt.GenerateFromPassword([]byte(encoded), 14)
-	return string(token), err
 }
 
 func (ah *AuthHandler) SendEmail(emailTo string, mailMessage []byte) {

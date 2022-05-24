@@ -40,7 +40,6 @@ export class AuthService {
     return this.http.post("/api/auth/users", JSON.stringify(body));
   }
 
-  
   changePassword(req : any) {
     const body = {
       'username': 'petra',
@@ -49,6 +48,7 @@ export class AuthService {
     };
     return this.http.put("/api/auth/users/password", JSON.stringify(body));
   }
+
   forgotPassword(email: string) {
     const body = { 'email': email };
     return this.http.post("/api/auth/users/forgot-password", JSON.stringify(body), { responseType: 'text' });
