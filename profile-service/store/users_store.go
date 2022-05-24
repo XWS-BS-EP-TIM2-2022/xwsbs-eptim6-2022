@@ -30,6 +30,7 @@ type User struct {
 	Followings     []Following        `json:"followings" bson:"followings"`
 	IsPublic       bool               `json:"public" bson:"public"`
 	FollowRequests []string           `json:"requests" bson:"requests"`
+	Role           string             `json:"role" bson:"role"`
 }
 
 type Experience struct {

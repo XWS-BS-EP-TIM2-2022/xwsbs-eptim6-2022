@@ -140,6 +140,7 @@ func (ag *AuthHandler) NotifyProfileServiceAboutRegistration(in *authServicePb.U
 		Name:      in.Name,
 		Telephone: in.Telephone,
 		Surname:   in.Surname,
+		Role:      in.Role,
 	}})
 	return err
 }
