@@ -143,6 +143,21 @@ func (us *UsersStore) BlockUser(username string) error {
 	return nil
 }
 
+func (us *UsersStore) UpdatePassword(username string, password string) error {
+	filter := bson.D{{"username", username}}
+
+	update := bson.D{
+		{"$set", bson.D{
+			{"password", password},
+		}},
+	}
+	_, err := us.UsersCollection.UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func InitUsersStore(mongoUri string) *UsersStore {
 	validate = validator.New()
 	client := CreateMongoDBConnection(mongoUri)

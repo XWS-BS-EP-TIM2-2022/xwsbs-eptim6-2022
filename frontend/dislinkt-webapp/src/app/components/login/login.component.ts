@@ -24,7 +24,7 @@ export class LoginComponent implements OnInit {
     }
     this.authService.login(user).subscribe(
       (data) => {
-        this.router.navigate(['/posts'])
+        this.router.navigate(['/change-password'])
       },
       (error) => {
         this.errorMessage = 'Invalid credentials';

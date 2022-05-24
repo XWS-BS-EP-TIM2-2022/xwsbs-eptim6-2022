@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { ChangePasswordComponent } from './components/change-password/change-password.component';
 import { LoginComponent } from './components/login/login.component';
 import { PostsViewComponent } from './components/posts-view/posts-view.component';
 import { RegistrationComponent } from './components/registration/registration.component';
@@ -20,7 +21,10 @@ const routes: Routes = [
   },
   {
     path: 'profile',
-    component: ProfileComponent,
+    component: ProfileComponent}
+  ,{
+    path : 'change-password',
+    component : ChangePasswordComponent,
   },
 ];
 

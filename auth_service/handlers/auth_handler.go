@@ -31,6 +31,12 @@ type AuthHandler struct {
 	profileServiceGrpcClient profileGw.ProfileServiceClient
 }
 
+type ChangePasswordRequest struct {
+	Username    string `json:"username"`
+	OldPassword string `json:"old-password"`
+	NewPassword string `json:"new-password"`
+}
+
 func getConnection(address string) (*grpc.ClientConn, error) {
 	return grpc.Dial(address, grpc.WithTransportCredentials(insecure.NewCredentials()))
 }
@@ -213,11 +219,30 @@ func (ah *AuthHandler) HandleFailedLogin(user store.User) error {
 			return errors.New("Blocked account")
 		}
 	} else {
-		if user.FailedLogins == 2 {
+		if user.FailedLogins == 5 {
 			ah.UserStore.BlockUser(user.Username)
 			return errors.New("Blocked account")
 		}
 	}
 	_ = ah.UserStore.UpdateFailedLogForUser(user.Username)
 	return errors.New("Invalid credentials")
+}
+
+func (ah *AuthHandler) ChangePassword(request ChangePasswordRequest) error {
+	user, err := ah.UserStore.FindByUsername(request.Username)
+
+	if err != nil {
+		return err
+	}
+	oldPassword, _ := HashPassword(request.OldPassword)
+	if user.Password != oldPassword {
+		return errors.New("Incorrect password")
+	} else {
+		newPassword, _ := HashPassword(request.NewPassword)
+		err := ah.UserStore.UpdatePassword(request.Username, newPassword)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }

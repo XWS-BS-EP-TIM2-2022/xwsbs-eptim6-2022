@@ -16,6 +16,7 @@ import { LoginComponent } from './components/login/login.component';
 import { RegistrationComponent } from './components/registration/registration.component';
 import { TokenInterceptor } from './interceptor/token-interceptor';
 import { ProfileComponent } from './components/profile/profile.component';
+import { ChangePasswordComponent } from './components/change-password/change-password.component';
 
 
 @NgModule({
@@ -26,7 +27,8 @@ import { ProfileComponent } from './components/profile/profile.component';
     PostsViewComponent,
     LoginComponent,
     RegistrationComponent,
-    ProfileComponent
+    ProfileComponent,
+    ChangePasswordComponent
 
   ],
   imports: [
