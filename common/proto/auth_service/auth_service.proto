@@ -82,6 +82,7 @@ message User {
   string birthDate = 8;
   string biography = 9;
   bool isPublic = 17;
+  string role=18;
 }
 
 message CreateNewUser {
