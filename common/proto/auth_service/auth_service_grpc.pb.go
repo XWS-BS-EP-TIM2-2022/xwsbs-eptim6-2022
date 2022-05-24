@@ -28,6 +28,11 @@ type AuthServiceClient interface {
 	LoginUser(ctx context.Context, in *CreateNewUser, opts ...grpc.CallOption) (*Token, error)
 	AuthorizeJWT(ctx context.Context, in *ValidateToken, opts ...grpc.CallOption) (*CreateNewUser, error)
 	GetUserPermissions(ctx context.Context, in *ValidateToken, opts ...grpc.CallOption) (*UserPermissions, error)
+	ActivateUserAccount(ctx context.Context, in *ActivationToken, opts ...grpc.CallOption) (*ActivationResponse, error)
+	ForgottenPassword(ctx context.Context, in *UserEmailMessage, opts ...grpc.CallOption) (*ActivationResponse, error)
+	ResetPassword(ctx context.Context, in *ActivationToken, opts ...grpc.CallOption) (*ActivationResponse, error)
+	GeneratePasswordlessLoginToken(ctx context.Context, in *UserEmailMessage, opts ...grpc.CallOption) (*ActivationResponse, error)
+	PasswordlessLogin(ctx context.Context, in *ActivationTokenMessage, opts ...grpc.CallOption) (*ActivationResponse, error)
 }
 
 type authServiceClient struct {
@@ -92,6 +97,51 @@ func (c *authServiceClient) GetUserPermissions(ctx context.Context, in *Validate
 	return out, nil
 }
 
+func (c *authServiceClient) ActivateUserAccount(ctx context.Context, in *ActivationToken, opts ...grpc.CallOption) (*ActivationResponse, error) {
+	out := new(ActivationResponse)
+	err := c.cc.Invoke(ctx, "/auth_service.AuthService/ActivateUserAccount", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) ForgottenPassword(ctx context.Context, in *UserEmailMessage, opts ...grpc.CallOption) (*ActivationResponse, error) {
+	out := new(ActivationResponse)
+	err := c.cc.Invoke(ctx, "/auth_service.AuthService/ForgottenPassword", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) ResetPassword(ctx context.Context, in *ActivationToken, opts ...grpc.CallOption) (*ActivationResponse, error) {
+	out := new(ActivationResponse)
+	err := c.cc.Invoke(ctx, "/auth_service.AuthService/ResetPassword", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) GeneratePasswordlessLoginToken(ctx context.Context, in *UserEmailMessage, opts ...grpc.CallOption) (*ActivationResponse, error) {
+	out := new(ActivationResponse)
+	err := c.cc.Invoke(ctx, "/auth_service.AuthService/GeneratePasswordlessLoginToken", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) PasswordlessLogin(ctx context.Context, in *ActivationTokenMessage, opts ...grpc.CallOption) (*ActivationResponse, error) {
+	out := new(ActivationResponse)
+	err := c.cc.Invoke(ctx, "/auth_service.AuthService/PasswordlessLogin", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AuthServiceServer is the server API for AuthService service.
 // All implementations must embed UnimplementedAuthServiceServer
 // for forward compatibility
@@ -102,6 +152,11 @@ type AuthServiceServer interface {
 	LoginUser(context.Context, *CreateNewUser) (*Token, error)
 	AuthorizeJWT(context.Context, *ValidateToken) (*CreateNewUser, error)
 	GetUserPermissions(context.Context, *ValidateToken) (*UserPermissions, error)
+	ActivateUserAccount(context.Context, *ActivationToken) (*ActivationResponse, error)
+	ForgottenPassword(context.Context, *UserEmailMessage) (*ActivationResponse, error)
+	ResetPassword(context.Context, *ActivationToken) (*ActivationResponse, error)
+	GeneratePasswordlessLoginToken(context.Context, *UserEmailMessage) (*ActivationResponse, error)
+	PasswordlessLogin(context.Context, *ActivationTokenMessage) (*ActivationResponse, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
 
@@ -126,6 +181,21 @@ func (UnimplementedAuthServiceServer) AuthorizeJWT(context.Context, *ValidateTok
 }
 func (UnimplementedAuthServiceServer) GetUserPermissions(context.Context, *ValidateToken) (*UserPermissions, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUserPermissions not implemented")
+}
+func (UnimplementedAuthServiceServer) ActivateUserAccount(context.Context, *ActivationToken) (*ActivationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ActivateUserAccount not implemented")
+}
+func (UnimplementedAuthServiceServer) ForgottenPassword(context.Context, *UserEmailMessage) (*ActivationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ForgottenPassword not implemented")
+}
+func (UnimplementedAuthServiceServer) ResetPassword(context.Context, *ActivationToken) (*ActivationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ResetPassword not implemented")
+}
+func (UnimplementedAuthServiceServer) GeneratePasswordlessLoginToken(context.Context, *UserEmailMessage) (*ActivationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GeneratePasswordlessLoginToken not implemented")
+}
+func (UnimplementedAuthServiceServer) PasswordlessLogin(context.Context, *ActivationTokenMessage) (*ActivationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PasswordlessLogin not implemented")
 }
 func (UnimplementedAuthServiceServer) mustEmbedUnimplementedAuthServiceServer() {}
 
@@ -248,6 +318,96 @@ func _AuthService_GetUserPermissions_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_ActivateUserAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ActivationToken)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).ActivateUserAccount(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/auth_service.AuthService/ActivateUserAccount",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).ActivateUserAccount(ctx, req.(*ActivationToken))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_ForgottenPassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserEmailMessage)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).ForgottenPassword(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/auth_service.AuthService/ForgottenPassword",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).ForgottenPassword(ctx, req.(*UserEmailMessage))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_ResetPassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ActivationToken)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).ResetPassword(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/auth_service.AuthService/ResetPassword",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).ResetPassword(ctx, req.(*ActivationToken))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_GeneratePasswordlessLoginToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserEmailMessage)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).GeneratePasswordlessLoginToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/auth_service.AuthService/GeneratePasswordlessLoginToken",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).GeneratePasswordlessLoginToken(ctx, req.(*UserEmailMessage))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_PasswordlessLogin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ActivationTokenMessage)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).PasswordlessLogin(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/auth_service.AuthService/PasswordlessLogin",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).PasswordlessLogin(ctx, req.(*ActivationTokenMessage))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AuthService_ServiceDesc is the grpc.ServiceDesc for AuthService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -278,6 +438,26 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetUserPermissions",
 			Handler:    _AuthService_GetUserPermissions_Handler,
+		},
+		{
+			MethodName: "ActivateUserAccount",
+			Handler:    _AuthService_ActivateUserAccount_Handler,
+		},
+		{
+			MethodName: "ForgottenPassword",
+			Handler:    _AuthService_ForgottenPassword_Handler,
+		},
+		{
+			MethodName: "ResetPassword",
+			Handler:    _AuthService_ResetPassword_Handler,
+		},
+		{
+			MethodName: "GeneratePasswordlessLoginToken",
+			Handler:    _AuthService_GeneratePasswordlessLoginToken_Handler,
+		},
+		{
+			MethodName: "PasswordlessLogin",
+			Handler:    _AuthService_PasswordlessLogin_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
