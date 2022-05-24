@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 
 
 @Injectable({
@@ -48,5 +49,9 @@ export class AuthService {
       'NewPassword' : req.NewPassword,
     };
     return this.http.put("/api/auth/users/password", JSON.stringify(body));
+  }
+
+  getUser(): Observable<any> {
+    return this.http.get<Observable<any>>('/api/whoami');
   }
 }

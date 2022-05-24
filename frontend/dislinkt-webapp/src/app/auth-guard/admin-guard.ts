@@ -1,6 +1,8 @@
 import { Injectable } from "@angular/core";
-import { ActivatedRouteSnapshot, CanActivate, RouterStateSnapshot, UrlTree } from "@angular/router";
+import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot, UrlTree } from "@angular/router";
 import { Observable } from "rxjs";
+import { User } from "../model/user";
+import { AuthService } from "../services/auth.service";
 
 @Injectable({
     providedIn: 'root'
@@ -8,11 +10,10 @@ import { Observable } from "rxjs";
 export class AdminGuard implements CanActivate{
 
     currentUser!: User
-  loggedIn!: User
 
   constructor(
     private router: Router,
-    private authenticationService: SignupOwnersService
+    private authenticationService: AuthService
 ) {
 }
   canActivate(
@@ -23,7 +24,7 @@ export class AdminGuard implements CanActivate{
             this.authenticationService.getUser().toPromise().then((response) => {
                 this.currentUser = response
 
-                if (this.currentUser.role.name === 'ROLE_ADMIN') {
+                if (this.currentUser.role === 'ADMIN') {
                     resolve(true);
                     return true;
                 }

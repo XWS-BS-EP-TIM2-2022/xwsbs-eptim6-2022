@@ -5,6 +5,7 @@ import { LoginComponent } from './components/login/login.component';
 import { PostsViewComponent } from './components/posts-view/posts-view.component';
 import { RegistrationComponent } from './components/registration/registration.component';
 import { ProfileComponent } from './components/profile/profile.component';
+import { AdminGuard } from './auth-guard/admin-guard';
 
 const routes: Routes = [
   {
@@ -25,6 +26,7 @@ const routes: Routes = [
   ,{
     path : 'change-password',
     component : ChangePasswordComponent,
+    canActivate: [AdminGuard]
   },
 ];
 
