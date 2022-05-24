@@ -31,12 +31,6 @@ type AuthHandler struct {
 	profileServiceGrpcClient profileGw.ProfileServiceClient
 }
 
-type ChangePasswordRequest struct {
-	Username    string `json:"username"`
-	OldPassword string `json:"old-password"`
-	NewPassword string `json:"new-password"`
-}
-
 func getConnection(address string) (*grpc.ClientConn, error) {
 	return grpc.Dial(address, grpc.WithTransportCredentials(insecure.NewCredentials()))
 }
@@ -228,21 +222,24 @@ func (ah *AuthHandler) HandleFailedLogin(user store.User) error {
 	return errors.New("Invalid credentials")
 }
 
-func (ah *AuthHandler) ChangePassword(request ChangePasswordRequest) error {
+func (ah *AuthHandler) ChangePassword(request store.ChangePasswordRequest) (*store.User, error) {
 	user, err := ah.UserStore.FindByUsername(request.Username)
 
 	if err != nil {
-		return err
+		return &user, err
 	}
-	oldPassword, _ := HashPassword(request.OldPassword)
-	if user.Password != oldPassword {
-		return errors.New("Incorrect password")
+	er := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(request.OldPassword))
+	if er != nil {
+		return &user, errors.New("Wrong old password")
 	} else {
+		if !isPasswordValid(request.NewPassword) {
+			return &user, errors.New("Incorrect password format")
+		}
 		newPassword, _ := HashPassword(request.NewPassword)
 		err := ah.UserStore.UpdatePassword(request.Username, newPassword)
 		if err != nil {
-			return err
+			return &user, err
 		}
 	}
-	return nil
+	return &user, nil
 }

@@ -41,3 +41,12 @@ func MapPbToUser(user *authServicePb.User) store.User {
 	}
 	return userPb
 }
+
+func MapMessToRequest(mess *authServicePb.ChangePasswordRequest) store.ChangePasswordRequest {
+	req := store.ChangePasswordRequest{
+		Username:    mess.ChangePasswordMessage.Username,
+		OldPassword: mess.ChangePasswordMessage.OldPassword,
+		NewPassword: mess.ChangePasswordMessage.NewPassword,
+	}
+	return req
+}

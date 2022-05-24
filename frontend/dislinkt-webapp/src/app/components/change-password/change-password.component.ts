@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-change-password',
@@ -11,17 +12,30 @@ export class ChangePasswordComponent implements OnInit {
   repeatedPassword : string = ''
   errorMessage : string = ''
 
-  constructor() { }
+  constructor(public service : AuthService) { }
 
   ngOnInit(): void {
   }
 
   submitForm(){
     if (this.isFormDataValid()){
-      this.errorMessage = ""
-      this.oldPassword = ""
-      this.newPassword = ""
-      this.repeatedPassword = ""
+      var req = {
+        username : '',
+        oldPassword : this.oldPassword,
+        NewPassword : this.newPassword
+      }
+      this.service.changePassword(req).subscribe(
+        (data) => {
+          this.errorMessage = ""
+          this.oldPassword = ""
+          this.newPassword = ""
+          this.repeatedPassword = ""
+        },
+        (error) => {
+          this.errorMessage = 'Wrong old password';
+        }
+      );
+    
     }
      
   }

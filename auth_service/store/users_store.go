@@ -24,7 +24,11 @@ type User struct {
 	Blocked      bool      `json:"blocked"`
 	BlockedUntil time.Time `json:"blocked-until" bson:"blocked-until"`
 }
-
+type ChangePasswordRequest struct {
+	Username    string `json:"username"`
+	OldPassword string `json:"old-password"`
+	NewPassword string `json:"new-password"`
+}
 type UsersStore struct {
 	UsersCollection *mongo.Collection
 }

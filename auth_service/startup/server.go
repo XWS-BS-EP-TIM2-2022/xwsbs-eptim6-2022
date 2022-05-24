@@ -64,5 +64,6 @@ func (s *Server) GetUserPermissions(ctx context.Context, in *authServicePb.Valid
 }
 
 func (s *Server) UpdateUserPassword(ctx context.Context, in *authServicePb.ChangePasswordRequest) (*authServicePb.CreateNewUser, error) {
-	return nil, nil
+	user, err := s.AuthHandler.ChangePassword(mappers.MapMessToRequest(in))
+	return &authServicePb.CreateNewUser{User: mappers.MapUserToPb(user)}, err
 }
