@@ -40,11 +40,11 @@ export class AuthService {
     return this.http.post("/api/auth/users", JSON.stringify(body));
   }
 
-  changePassword(req : any) {
+  changePassword(req: any) {
     const body = {
       'username': 'petra',
       'oldPassword': req.oldPassword,
-      'NewPassword' : req.NewPassword,
+      'NewPassword': req.NewPassword,
     };
     return this.http.put("/api/auth/users/password", JSON.stringify(body));
   }
@@ -61,5 +61,9 @@ export class AuthService {
     };
 
     return this.http.post('/api/auth/users/reset-password', JSON.stringify(body), { responseType: 'text' });
+  }
+
+  activateAccount(token: string | null) {
+    return this.http.get('/api/auth/activation/' + token);
   }
 }

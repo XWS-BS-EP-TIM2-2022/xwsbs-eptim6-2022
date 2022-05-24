@@ -74,7 +74,8 @@ func (s *Server) UpdateUserPassword(ctx context.Context, in *authServicePb.Chang
 	return &authServicePb.CreateNewUser{User: mappers.MapUserToPb(user)}, err
 }
 func (s *Server) ActivateUserAccount(ctx context.Context, in *authServicePb.ActivationToken) (*authServicePb.ActivationResponse, error) {
-	return nil, nil
+	err := s.AuthHandler.ActivateAccount(in.Token)
+	return &authServicePb.ActivationResponse{ResponseStatus: "message"}, err
 }
 func (s *Server) ForgottenPassword(ctx context.Context, in *authServicePb.UserEmailMessage) (*authServicePb.ActivationResponse, error) {
 	return nil, nil

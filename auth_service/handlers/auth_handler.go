@@ -69,8 +69,8 @@ func (ah *AuthHandler) LoginUser(user store.User) (JWT, error) {
 		fmt.Println("User not found")
 		return JWT{Token: ""}, err
 	}
-	if !user.IsActivated {
-		err := &store.RequestError{Err: errors.New("Account not activated!"), StatusCode: 400}
+	if dbUser.IsActivated == false {
+		err := errors.New("Account not activated!")
 		return JWT{Token: ""}, err
 	}
 	if !CheckPasswordHash(user.Password, dbUser.Password) {
@@ -134,9 +134,10 @@ func (ag *AuthHandler) AddNewUser(user store.User) error {
 	user.FailedLogins = 0
 
 	user.IsActivated = false
-	user.VerificationToken, _ = ag.GenerateVerificationToken()
+	verificationHash, urlToken := ag.GenerateVerificationToken()
+	user.VerificationToken = verificationHash
 	user.TokenExpiration = time.Now().AddDate(0, 0, 1)
-	ag.SendEmail("andjela.ra28@gmail.com", ag.MailActivationMessage(user.VerificationToken))
+	ag.SendEmail("andjela.ra28@gmail.com", ag.MailActivationMessage(urlToken))
 
 	err := ag.UserStore.AddNew(user)
 	if err != nil {
@@ -240,14 +241,17 @@ func (ah *AuthHandler) HandleFailedLogin(user store.User) error {
 	return errors.New("Invalid credentials")
 }
 
-func (ah *AuthHandler) GenerateVerificationToken() (string, error) {
-	randomBytes := make([]byte, 16)
+func (ah *AuthHandler) GenerateVerificationToken() (string, string) {
+	randomBytes := make([]byte, 10)
+	rand.Seed(time.Now().UnixNano())
 	rand.Read(randomBytes)
-	encoded := base64.StdEncoding.EncodeToString(randomBytes)
+	fmt.Println(randomBytes)
+	encoded := base64.RawURLEncoding.EncodeToString(randomBytes)
 
-	token, err := bcrypt.GenerateFromPassword([]byte(encoded), 14)
-	return string(token), err
+	token, _ := bcrypt.GenerateFromPassword([]byte(encoded), 14)
+	return string(token), encoded
 }
+
 func (ah *AuthHandler) ChangePassword(request store.ChangePasswordRequest) (*store.User, error) {
 	user, err := ah.UserStore.FindByUsername(request.Username)
 
@@ -295,23 +299,23 @@ func (ah *AuthHandler) MailActivationMessage(token string) []byte {
 	return message
 }
 
-func (ah *AuthHandler) ActivateAccount(request ActivationRequest) error {
-	user, err := ah.UserStore.FindByToken(request.token)
-	if err != nil {
-		return &store.RequestError{Err: errors.New("Cannot find user for account verification!"), StatusCode: 400}
+func (ah *AuthHandler) ActivateAccount(token string) error {
+	user := ah.UserStore.FindByToken(token)
+	if user == (store.User{}) {
+		return errors.New("Activation failed, invalid token!")
 	}
 
-	if time.Now().Before(user.TokenExpiration) {
-		return &store.RequestError{Err: errors.New("Activation token expired!"), StatusCode: 400}
+	if user.TokenExpiration.Before(time.Now()) {
+		return errors.New("Activation token expired!")
 	}
 
-	validateToken := bcrypt.CompareHashAndPassword([]byte(user.VerificationToken), []byte(request.token))
+	validateToken := bcrypt.CompareHashAndPassword([]byte(user.VerificationToken), []byte(token))
 	if validateToken != nil {
-		return &store.RequestError{Err: errors.New("Invalid token!"), StatusCode: 400}
+		return errors.New("Activation failed, invalid token!")
 	}
 
-	user.IsActivated = true
-	return &store.RequestError{Err: errors.New("Account successfully activated!"), StatusCode: 200}
+	err := ah.UserStore.ActivateAccount(user.Username)
+	return err
 }
 
 func (ah *AuthHandler) ForgotPasswordMessage(token string) []byte {

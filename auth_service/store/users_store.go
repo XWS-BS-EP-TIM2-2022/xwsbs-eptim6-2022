@@ -3,6 +3,7 @@ package store
 import (
 	"context"
 	"fmt"
+	"golang.org/x/crypto/bcrypt"
 	"html"
 	"log"
 	"reflect"
@@ -174,9 +175,25 @@ func InitUsersStore(mongoUri string) *UsersStore {
 	return &UsersStore{UsersCollection: collection}
 }
 
-func (us *UsersStore) FindByToken(token string) (User, error) {
-	var user User
-	filter := bson.D{{"verification-token", token}}
-	err := us.UsersCollection.FindOne(context.TODO(), filter).Decode(&user)
-	return user, err
+func (us *UsersStore) FindByToken(token string) User {
+	for _, element := range us.FindAll() {
+		err := bcrypt.CompareHashAndPassword([]byte(element.VerificationToken), []byte(token))
+		if err == nil {
+			return element
+		}
+	}
+
+	return User{}
+}
+
+func (us *UsersStore) ActivateAccount(username string) error {
+	filter := bson.D{{"username", username}}
+
+	update := bson.D{
+		{"$set", bson.D{
+			{"is-activated", true},
+		}},
+	}
+	_, err := us.UsersCollection.UpdateOne(context.TODO(), filter, update)
+	return err
 }

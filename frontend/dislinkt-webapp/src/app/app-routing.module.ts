@@ -32,16 +32,18 @@ const routes: Routes = [
     component: SetNewPasswordComponent
   },
   {
-    path: 'account-activation',
+    path: 'account-activation/:token',
     component: AccountActivationInfoComponent
   },
   {
     path: 'profile',
-    component: ProfileComponent}
-  ,{
-    path : 'change-password',
-    component : ChangePasswordComponent,
+    component: ProfileComponent
+  }
+  , {
+    path: 'change-password',
+    component: ChangePasswordComponent,
   },
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
 ];
 
 @NgModule({
