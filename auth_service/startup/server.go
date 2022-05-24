@@ -73,6 +73,22 @@ func (s *Server) UpdateUserPassword(ctx context.Context, in *authServicePb.Chang
 	user, err = s.AuthHandler.ChangePassword(changePasswordData)
 	return &authServicePb.CreateNewUser{User: mappers.MapUserToPb(user)}, err
 }
+func (s *Server) ActivateUserAccount(ctx context.Context, in *authServicePb.ActivationToken) (*authServicePb.ActivationResponse, error) {
+	return nil, nil
+}
+func (s *Server) ForgottenPassword(ctx context.Context, in *authServicePb.UserEmailMessage) (*authServicePb.ActivationResponse, error) {
+	return nil, nil
+}
+func (s *Server) ResetPassword(ctx context.Context, in *authServicePb.ActivationToken) (*authServicePb.ActivationResponse, error) {
+	return nil, nil
+}
+func (s *Server) GeneratePasswordlessLoginToken(ctx context.Context, in *authServicePb.UserEmailMessage) (*authServicePb.ActivationResponse, error) {
+	return nil, nil
+}
+func (s *Server) PasswordlessLogin(ctx context.Context, in *authServicePb.ActivationTokenMessage) (*authServicePb.ActivationResponse, error) {
+	return nil, nil
+}
+
 func getTokenFromContext(ctx context.Context) string {
 	md, _ := metadata.FromIncomingContext(ctx)
 	fmt.Println(md.Get("authorization")[0])
