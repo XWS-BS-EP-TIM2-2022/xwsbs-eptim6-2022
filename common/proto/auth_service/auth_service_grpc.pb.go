@@ -23,6 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AuthServiceClient interface {
 	AddNewUser(ctx context.Context, in *CreateNewUser, opts ...grpc.CallOption) (*CreateNewUser, error)
+	UpdateUserPassword(ctx context.Context, in *ChangePasswordRequest, opts ...grpc.CallOption) (*CreateNewUser, error)
 	GetAll(ctx context.Context, in *GetAllRequest, opts ...grpc.CallOption) (*GetAllResponse, error)
 	LoginUser(ctx context.Context, in *CreateNewUser, opts ...grpc.CallOption) (*Token, error)
 	AuthorizeJWT(ctx context.Context, in *ValidateToken, opts ...grpc.CallOption) (*CreateNewUser, error)
@@ -40,6 +41,15 @@ func NewAuthServiceClient(cc grpc.ClientConnInterface) AuthServiceClient {
 func (c *authServiceClient) AddNewUser(ctx context.Context, in *CreateNewUser, opts ...grpc.CallOption) (*CreateNewUser, error) {
 	out := new(CreateNewUser)
 	err := c.cc.Invoke(ctx, "/auth_service.AuthService/AddNewUser", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) UpdateUserPassword(ctx context.Context, in *ChangePasswordRequest, opts ...grpc.CallOption) (*CreateNewUser, error) {
+	out := new(CreateNewUser)
+	err := c.cc.Invoke(ctx, "/auth_service.AuthService/UpdateUserPassword", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -87,6 +97,7 @@ func (c *authServiceClient) GetUserPermissions(ctx context.Context, in *Validate
 // for forward compatibility
 type AuthServiceServer interface {
 	AddNewUser(context.Context, *CreateNewUser) (*CreateNewUser, error)
+	UpdateUserPassword(context.Context, *ChangePasswordRequest) (*CreateNewUser, error)
 	GetAll(context.Context, *GetAllRequest) (*GetAllResponse, error)
 	LoginUser(context.Context, *CreateNewUser) (*Token, error)
 	AuthorizeJWT(context.Context, *ValidateToken) (*CreateNewUser, error)
@@ -100,6 +111,9 @@ type UnimplementedAuthServiceServer struct {
 
 func (UnimplementedAuthServiceServer) AddNewUser(context.Context, *CreateNewUser) (*CreateNewUser, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddNewUser not implemented")
+}
+func (UnimplementedAuthServiceServer) UpdateUserPassword(context.Context, *ChangePasswordRequest) (*CreateNewUser, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateUserPassword not implemented")
 }
 func (UnimplementedAuthServiceServer) GetAll(context.Context, *GetAllRequest) (*GetAllResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAll not implemented")
@@ -140,6 +154,24 @@ func _AuthService_AddNewUser_Handler(srv interface{}, ctx context.Context, dec f
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AuthServiceServer).AddNewUser(ctx, req.(*CreateNewUser))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_UpdateUserPassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ChangePasswordRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).UpdateUserPassword(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/auth_service.AuthService/UpdateUserPassword",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).UpdateUserPassword(ctx, req.(*ChangePasswordRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -226,6 +258,10 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AddNewUser",
 			Handler:    _AuthService_AddNewUser_Handler,
+		},
+		{
+			MethodName: "UpdateUserPassword",
+			Handler:    _AuthService_UpdateUserPassword_Handler,
 		},
 		{
 			MethodName: "GetAll",

@@ -22,15 +22,17 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ProfileServiceClient interface {
+	GetUserById(ctx context.Context, in *GetByIdRequest, opts ...grpc.CallOption) (*UserResponse, error)
+	GetLoggedinUser(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*UserResponse, error)
 	GetAllUsers(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*UsersResponse, error)
 	AddNewUser(ctx context.Context, in *UserRequest, opts ...grpc.CallOption) (*UserResponse, error)
 	AddSkill(ctx context.Context, in *SkillRequest, opts ...grpc.CallOption) (*UserResponse, error)
 	AddInterest(ctx context.Context, in *InterestRequest, opts ...grpc.CallOption) (*UserResponse, error)
 	AddExperience(ctx context.Context, in *ExperienceRequest, opts ...grpc.CallOption) (*UserResponse, error)
 	AddEducation(ctx context.Context, in *EducationRequest, opts ...grpc.CallOption) (*UserResponse, error)
-	FollowUser(ctx context.Context, in *FollowUserRequest, opts ...grpc.CallOption) (*UserResponse, error)
-	UnFollowUser(ctx context.Context, in *FollowUserRequest, opts ...grpc.CallOption) (*UserResponse, error)
-	FollowResponse(ctx context.Context, in *FollowUserRequest, opts ...grpc.CallOption) (*UserResponse, error)
+	FollowUser(ctx context.Context, in *GetByIdRequest, opts ...grpc.CallOption) (*UserResponse, error)
+	UnFollowUser(ctx context.Context, in *GetByIdRequest, opts ...grpc.CallOption) (*UserResponse, error)
+	FollowResponse(ctx context.Context, in *GetByIdRequest, opts ...grpc.CallOption) (*UserResponse, error)
 }
 
 type profileServiceClient struct {
@@ -39,6 +41,24 @@ type profileServiceClient struct {
 
 func NewProfileServiceClient(cc grpc.ClientConnInterface) ProfileServiceClient {
 	return &profileServiceClient{cc}
+}
+
+func (c *profileServiceClient) GetUserById(ctx context.Context, in *GetByIdRequest, opts ...grpc.CallOption) (*UserResponse, error) {
+	out := new(UserResponse)
+	err := c.cc.Invoke(ctx, "/profile_service.ProfileService/GetUserById", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *profileServiceClient) GetLoggedinUser(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*UserResponse, error) {
+	out := new(UserResponse)
+	err := c.cc.Invoke(ctx, "/profile_service.ProfileService/GetLoggedinUser", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *profileServiceClient) GetAllUsers(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*UsersResponse, error) {
@@ -95,7 +115,7 @@ func (c *profileServiceClient) AddEducation(ctx context.Context, in *EducationRe
 	return out, nil
 }
 
-func (c *profileServiceClient) FollowUser(ctx context.Context, in *FollowUserRequest, opts ...grpc.CallOption) (*UserResponse, error) {
+func (c *profileServiceClient) FollowUser(ctx context.Context, in *GetByIdRequest, opts ...grpc.CallOption) (*UserResponse, error) {
 	out := new(UserResponse)
 	err := c.cc.Invoke(ctx, "/profile_service.ProfileService/FollowUser", in, out, opts...)
 	if err != nil {
@@ -104,7 +124,7 @@ func (c *profileServiceClient) FollowUser(ctx context.Context, in *FollowUserReq
 	return out, nil
 }
 
-func (c *profileServiceClient) UnFollowUser(ctx context.Context, in *FollowUserRequest, opts ...grpc.CallOption) (*UserResponse, error) {
+func (c *profileServiceClient) UnFollowUser(ctx context.Context, in *GetByIdRequest, opts ...grpc.CallOption) (*UserResponse, error) {
 	out := new(UserResponse)
 	err := c.cc.Invoke(ctx, "/profile_service.ProfileService/UnFollowUser", in, out, opts...)
 	if err != nil {
@@ -113,7 +133,7 @@ func (c *profileServiceClient) UnFollowUser(ctx context.Context, in *FollowUserR
 	return out, nil
 }
 
-func (c *profileServiceClient) FollowResponse(ctx context.Context, in *FollowUserRequest, opts ...grpc.CallOption) (*UserResponse, error) {
+func (c *profileServiceClient) FollowResponse(ctx context.Context, in *GetByIdRequest, opts ...grpc.CallOption) (*UserResponse, error) {
 	out := new(UserResponse)
 	err := c.cc.Invoke(ctx, "/profile_service.ProfileService/FollowResponse", in, out, opts...)
 	if err != nil {
@@ -126,15 +146,17 @@ func (c *profileServiceClient) FollowResponse(ctx context.Context, in *FollowUse
 // All implementations must embed UnimplementedProfileServiceServer
 // for forward compatibility
 type ProfileServiceServer interface {
+	GetUserById(context.Context, *GetByIdRequest) (*UserResponse, error)
+	GetLoggedinUser(context.Context, *EmptyRequest) (*UserResponse, error)
 	GetAllUsers(context.Context, *EmptyRequest) (*UsersResponse, error)
 	AddNewUser(context.Context, *UserRequest) (*UserResponse, error)
 	AddSkill(context.Context, *SkillRequest) (*UserResponse, error)
 	AddInterest(context.Context, *InterestRequest) (*UserResponse, error)
 	AddExperience(context.Context, *ExperienceRequest) (*UserResponse, error)
 	AddEducation(context.Context, *EducationRequest) (*UserResponse, error)
-	FollowUser(context.Context, *FollowUserRequest) (*UserResponse, error)
-	UnFollowUser(context.Context, *FollowUserRequest) (*UserResponse, error)
-	FollowResponse(context.Context, *FollowUserRequest) (*UserResponse, error)
+	FollowUser(context.Context, *GetByIdRequest) (*UserResponse, error)
+	UnFollowUser(context.Context, *GetByIdRequest) (*UserResponse, error)
+	FollowResponse(context.Context, *GetByIdRequest) (*UserResponse, error)
 	mustEmbedUnimplementedProfileServiceServer()
 }
 
@@ -142,6 +164,12 @@ type ProfileServiceServer interface {
 type UnimplementedProfileServiceServer struct {
 }
 
+func (UnimplementedProfileServiceServer) GetUserById(context.Context, *GetByIdRequest) (*UserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserById not implemented")
+}
+func (UnimplementedProfileServiceServer) GetLoggedinUser(context.Context, *EmptyRequest) (*UserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetLoggedinUser not implemented")
+}
 func (UnimplementedProfileServiceServer) GetAllUsers(context.Context, *EmptyRequest) (*UsersResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllUsers not implemented")
 }
@@ -160,13 +188,13 @@ func (UnimplementedProfileServiceServer) AddExperience(context.Context, *Experie
 func (UnimplementedProfileServiceServer) AddEducation(context.Context, *EducationRequest) (*UserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddEducation not implemented")
 }
-func (UnimplementedProfileServiceServer) FollowUser(context.Context, *FollowUserRequest) (*UserResponse, error) {
+func (UnimplementedProfileServiceServer) FollowUser(context.Context, *GetByIdRequest) (*UserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FollowUser not implemented")
 }
-func (UnimplementedProfileServiceServer) UnFollowUser(context.Context, *FollowUserRequest) (*UserResponse, error) {
+func (UnimplementedProfileServiceServer) UnFollowUser(context.Context, *GetByIdRequest) (*UserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UnFollowUser not implemented")
 }
-func (UnimplementedProfileServiceServer) FollowResponse(context.Context, *FollowUserRequest) (*UserResponse, error) {
+func (UnimplementedProfileServiceServer) FollowResponse(context.Context, *GetByIdRequest) (*UserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FollowResponse not implemented")
 }
 func (UnimplementedProfileServiceServer) mustEmbedUnimplementedProfileServiceServer() {}
@@ -180,6 +208,42 @@ type UnsafeProfileServiceServer interface {
 
 func RegisterProfileServiceServer(s grpc.ServiceRegistrar, srv ProfileServiceServer) {
 	s.RegisterService(&ProfileService_ServiceDesc, srv)
+}
+
+func _ProfileService_GetUserById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetByIdRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProfileServiceServer).GetUserById(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/profile_service.ProfileService/GetUserById",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProfileServiceServer).GetUserById(ctx, req.(*GetByIdRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProfileService_GetLoggedinUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(EmptyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProfileServiceServer).GetLoggedinUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/profile_service.ProfileService/GetLoggedinUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProfileServiceServer).GetLoggedinUser(ctx, req.(*EmptyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _ProfileService_GetAllUsers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -291,7 +355,7 @@ func _ProfileService_AddEducation_Handler(srv interface{}, ctx context.Context, 
 }
 
 func _ProfileService_FollowUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(FollowUserRequest)
+	in := new(GetByIdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -303,13 +367,13 @@ func _ProfileService_FollowUser_Handler(srv interface{}, ctx context.Context, de
 		FullMethod: "/profile_service.ProfileService/FollowUser",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ProfileServiceServer).FollowUser(ctx, req.(*FollowUserRequest))
+		return srv.(ProfileServiceServer).FollowUser(ctx, req.(*GetByIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _ProfileService_UnFollowUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(FollowUserRequest)
+	in := new(GetByIdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -321,13 +385,13 @@ func _ProfileService_UnFollowUser_Handler(srv interface{}, ctx context.Context, 
 		FullMethod: "/profile_service.ProfileService/UnFollowUser",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ProfileServiceServer).UnFollowUser(ctx, req.(*FollowUserRequest))
+		return srv.(ProfileServiceServer).UnFollowUser(ctx, req.(*GetByIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _ProfileService_FollowResponse_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(FollowUserRequest)
+	in := new(GetByIdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -339,7 +403,7 @@ func _ProfileService_FollowResponse_Handler(srv interface{}, ctx context.Context
 		FullMethod: "/profile_service.ProfileService/FollowResponse",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ProfileServiceServer).FollowResponse(ctx, req.(*FollowUserRequest))
+		return srv.(ProfileServiceServer).FollowResponse(ctx, req.(*GetByIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -351,6 +415,14 @@ var ProfileService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "profile_service.ProfileService",
 	HandlerType: (*ProfileServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "GetUserById",
+			Handler:    _ProfileService_GetUserById_Handler,
+		},
+		{
+			MethodName: "GetLoggedinUser",
+			Handler:    _ProfileService_GetLoggedinUser_Handler,
+		},
 		{
 			MethodName: "GetAllUsers",
 			Handler:    _ProfileService_GetAllUsers_Handler,

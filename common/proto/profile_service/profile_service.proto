@@ -15,6 +15,16 @@ import "google/api/annotations.proto";
 //
 // *//
 service ProfileService {
+  rpc GetUserById (GetByIdRequest) returns (UserResponse){
+    option (google.api.http) = {
+      get: "/api/users/{id}"
+    };
+  }
+  rpc GetLoggedinUser (EmptyRequest) returns (UserResponse){
+    option (google.api.http) = {
+      get: "/api/whoami"
+    };
+  }
   rpc GetAllUsers (EmptyRequest) returns (UsersResponse){
     option (google.api.http) = {
       get: "/api/users"
@@ -52,27 +62,27 @@ service ProfileService {
     };
   }
 
-  rpc FollowUser (FollowUserRequest) returns (UserResponse){
+  rpc FollowUser (GetByIdRequest) returns (UserResponse){
     option (google.api.http) = {
-      put: "/users/follow/{id}"
+      put: "/api/users/follow/{id}"
     };
   }
-  rpc UnFollowUser (FollowUserRequest) returns (UserResponse){
+  rpc UnFollowUser (GetByIdRequest) returns (UserResponse){
     option (google.api.http) = {
-      put: "/users/unfollow/{id}"
+      put: "/api/users/unfollow/{id}"
     };
   }
 
-  rpc FollowResponse (FollowUserRequest) returns (UserResponse){
+  rpc FollowResponse (GetByIdRequest) returns (UserResponse){
     option (google.api.http) = {
-      put: "/users/follow-requests/{id}"
+      put: "/api/users/follow-requests/{id}"
     };
   }
 }
 
 
 message EmptyRequest{}
-message FollowUserRequest{
+message GetByIdRequest{
   string id=1;
 }
 
