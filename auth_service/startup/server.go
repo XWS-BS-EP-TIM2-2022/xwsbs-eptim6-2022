@@ -62,3 +62,7 @@ func (s *Server) GetUserPermissions(ctx context.Context, in *authServicePb.Valid
 	}
 	return mappers.MapPermissions(permission), nil
 }
+
+func (s *Server) UpdateUserPassword(ctx context.Context, in *authServicePb.ChangePasswordRequest) (*authServicePb.CreateNewUser, error) {
+	return nil, nil
+}
