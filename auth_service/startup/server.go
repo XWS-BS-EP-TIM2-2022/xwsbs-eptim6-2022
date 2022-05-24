@@ -2,11 +2,14 @@ package startup
 
 import (
 	"context"
+	"fmt"
 	"github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/auth_service/handlers"
 	"github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/auth_service/mappers"
 	"github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/auth_service/startup/config"
 	"github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/auth_service/store"
 	authServicePb "github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common/proto/auth_service"
+	"google.golang.org/grpc/metadata"
+	"strings"
 )
 
 type Server struct {
@@ -64,6 +67,14 @@ func (s *Server) GetUserPermissions(ctx context.Context, in *authServicePb.Valid
 }
 
 func (s *Server) UpdateUserPassword(ctx context.Context, in *authServicePb.ChangePasswordRequest) (*authServicePb.CreateNewUser, error) {
-	user, err := s.AuthHandler.ChangePassword(mappers.MapMessToRequest(in))
+	user, err := s.AuthHandler.ValidateToken(getTokenFromContext(ctx))
+	changePasswordData := mappers.MapMessToRequest(in)
+	changePasswordData.Username = user.Username
+	user, err = s.AuthHandler.ChangePassword(changePasswordData)
 	return &authServicePb.CreateNewUser{User: mappers.MapUserToPb(user)}, err
+}
+func getTokenFromContext(ctx context.Context) string {
+	md, _ := metadata.FromIncomingContext(ctx)
+	fmt.Println(md.Get("authorization")[0])
+	return strings.Split(md.Get("authorization")[0], " ")[1]
 }
