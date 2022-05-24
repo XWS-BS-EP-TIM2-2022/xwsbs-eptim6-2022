@@ -41,6 +41,38 @@ service AuthService {
       body: "token"
     };
   }
+
+
+
+  rpc ActivateUserAccount(ActivationToken) returns (ActivationResponse){
+    option (google.api.http) = {
+      get: "/api/auth/activation/{token}"
+    };
+  }
+  rpc ForgottenPassword(UserEmailMessage) returns (ActivationResponse){
+    option (google.api.http) = {
+      put: "/api/auth/users/forgotten-password"
+      body: "email"
+    };
+  }
+  rpc ResetPassword(ActivationToken) returns (ActivationResponse){
+    option (google.api.http) = {
+      get: "/api/auth/users/forgotten-password/{token}"
+    };
+  }
+
+  rpc GeneratePasswordlessLoginToken(UserEmailMessage) returns (ActivationResponse){
+    option (google.api.http) = {
+      put: "/api/auth/users/passwordless"
+      body: "email"
+    };
+  }
+  rpc PasswordlessLogin(ActivationTokenMessage) returns (ActivationResponse){
+    option (google.api.http) = {
+      put: "/api/auth/session/passwordless"
+      body: "token"
+    };
+  }
 }
 message ChangePasswordRequest{
   ChangePasswordMessage changePasswordMessage=1;
@@ -50,6 +82,22 @@ message ChangePasswordMessage  {
   string username = 1;
   string oldPassword = 2;
   string NewPassword = 3;
+}
+message UserEmail{
+  string email=1;
+}
+message UserEmailMessage{
+  UserEmail email=1;
+}
+message ActivationTokenMessage{
+  ActivationToken token=1;
+}
+message ActivationToken{
+  string token=1;
+}
+
+message ActivationResponse{
+  string responseStatus=1;
 }
 message Token {
   string token = 1;
