@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"profile-service/startup/config"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -65,8 +66,10 @@ type UsersStore struct {
 	UsersCollection *mongo.Collection
 }
 
-func InitUsersStore() *UsersStore {
-	mongoUri := "localhost:27017" //os.Getenv("MONGODB_URI")
+func InitUsersStore(config config.Config) *UsersStore {
+	mongoUri := config.MongoDbUri //os.Getenv("MONGODB_URI")
+	mongoDb := config.MongoDbName
+	mongoCollection := config.MongoDbCollection
 	clientOptions := options.Client().ApplyURI("mongodb://" + mongoUri + "/?connect=direct")
 	client, _ := mongo.Connect(context.TODO(), clientOptions)
 
@@ -77,7 +80,7 @@ func InitUsersStore() *UsersStore {
 		log.Fatal(err)
 	}
 	fmt.Println("Connected to MongoDB!")
-	collection := client.Database("users_database").Collection("users")
+	collection := client.Database(mongoDb).Collection(mongoCollection)
 	fmt.Println(collection.Name())
 	return &UsersStore{UsersCollection: collection}
 }
