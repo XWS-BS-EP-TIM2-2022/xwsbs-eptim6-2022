@@ -65,11 +65,14 @@ func (ah *AuthHandler) LoginUser(user store.User) (JWT, error) {
 		err := ah.HandleFailedLogin(dbUser)
 		return JWT{Token: ""}, err
 	}
-	if time.Now().After(user.BlockedUntil) {
-		ah.UserStore.ResetFailedLogForUser(user.Username)
-	} else {
-		return JWT{Token: ""}, errors.New("Blocked account")
+	if dbUser.Blocked {
+		if time.Now().After(user.BlockedUntil) {
+			ah.UserStore.ResetFailedLogForUser(user.Username)
+		} else {
+			return JWT{Token: ""}, errors.New("Blocked account")
+		}
 	}
+	ah.UserStore.ResetFailedLogForUser(user.Username)
 
 	tokenStr, err := GenerateJWT(dbUser, ah.secretKey)
 	if err != nil {
