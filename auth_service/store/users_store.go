@@ -14,15 +14,18 @@ import (
 )
 
 type User struct {
-	Username     string    `json:"username" validate:"required,lt=50"`
-	Name         string    `json:"name" validate:"required"`
-	Surname      string    `json:"surname" validate:"required"`
-	Password     string    `json:"password" validate:"required"`
-	Email        string    `json:"email" validate:"required,email"`
-	Role         string    `json:"role" validate:"required"`
-	FailedLogins int       `json:"failed-logins" bson:"failed-logins"`
-	Blocked      bool      `json:"blocked"`
-	BlockedUntil time.Time `json:"blocked-until" bson:"blocked-until"`
+	Username          string    `json:"username" validate:"required,lt=50"`
+	Name              string    `json:"name" validate:"required"`
+	Surname           string    `json:"surname" validate:"required"`
+	Password          string    `json:"password" validate:"required"`
+	Email             string    `json:"email" validate:"required,email"`
+	Role              string    `json:"role" validate:"required"`
+	FailedLogins      int       `json:"failed-logins" bson:"failed-logins"`
+	Blocked           bool      `json:"blocked"`
+	BlockedUntil      time.Time `json:"blocked-until" bson:"blocked-until"`
+	IsActivated       bool      `json:"isActivated" bson:"is-activated"`
+	VerificationToken string    `json:"verificationToken" bson:"verification-token"`
+	TokenExpiration   time.Time `json:"tokenExpiration" bson:"token-expiration"`
 }
 type ChangePasswordRequest struct {
 	Username    string `json:"username"`
@@ -168,4 +171,11 @@ func InitUsersStore(mongoUri string) *UsersStore {
 	collection := client.Database("users_database").Collection("users")
 	fmt.Println(collection.Name())
 	return &UsersStore{UsersCollection: collection}
+}
+
+func (us *UsersStore) FindByToken(token string) (User, error) {
+	var user User
+	filter := bson.D{{"verification-token", token}}
+	err := us.UsersCollection.FindOne(context.TODO(), filter).Decode(&user)
+	return user, err
 }

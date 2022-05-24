@@ -8,6 +8,10 @@ type Config struct {
 	ProfileServiceGrpcHost string
 	ProfileServiceGrpcPort string
 	SecretKey              string
+	EmailPort              string
+	EmailHost              string
+	EmailFrom              string
+	EmailPassword          string
 }
 
 func NewConfig() *Config {
@@ -19,5 +23,9 @@ func NewConfig() *Config {
 		ProfileServiceGrpcHost: "localhost",
 		ProfileServiceGrpcPort: "8007",
 		SecretKey:              "secret-key",
+		EmailPort:              "587",
+		EmailHost:              "smtp.gmail.com",
+		EmailFrom:              "andjela.ra28@gmail.com",
+		EmailPassword:          "fakultet28",
 	}
 }
