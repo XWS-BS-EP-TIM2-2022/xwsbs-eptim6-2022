@@ -62,13 +62,13 @@ func (ah *AuthHandler) LoginUser(user store.User) (JWT, error) {
 		return JWT{Token: ""}, err
 	}
 	if !CheckPasswordHash(user.Password, dbUser.Password) {
-		_ = ah.UserStore.UpdateFailedLogForUser(user.Username)
-		return JWT{Token: ""}, errors.New("Invalid credentials")
+		err := ah.HandleFailedLogin(dbUser)
+		return JWT{Token: ""}, err
 	}
-	if dbUser.FailedLog >= 5 {
-		return JWT{Token: ""}, errors.New("Blocked account")
+	if time.Now().After(user.BlockedUntil) {
+		ah.UserStore.ResetFailedLogForUser(user.Username)
 	} else {
-		_ = ah.UserStore.ResetFailedLogForUser(user.Username)
+		return JWT{Token: ""}, errors.New("Blocked account")
 	}
 
 	tokenStr, err := GenerateJWT(dbUser, ah.secretKey)
@@ -116,7 +116,7 @@ func (ag *AuthHandler) AddNewUser(user store.User) error {
 		return &store.RequestError{Err: errors.New("Bad password format"), StatusCode: 400}
 	}
 	user.Password, _ = HashPassword(user.Password)
-	user.FailedLog = 0
+	user.FailedLogins = 0
 	err := ag.UserStore.AddNew(user)
 	if err != nil {
 		return err
@@ -200,4 +200,21 @@ func isPasswordValid(password string) bool {
 		}
 	}
 	return hasMinLen && hasUpper && hasLower && hasNumber && hasSpecial
+}
+
+func (ah *AuthHandler) HandleFailedLogin(user store.User) error {
+	if user.Blocked {
+		if time.Now().After(user.BlockedUntil) {
+			ah.UserStore.ResetFailedLogForUser(user.Username)
+		} else {
+			return errors.New("Blocked account")
+		}
+	} else {
+		if user.FailedLogins == 2 {
+			ah.UserStore.BlockUser(user.Username)
+			return errors.New("Blocked account")
+		}
+	}
+	_ = ah.UserStore.UpdateFailedLogForUser(user.Username)
+	return errors.New("Invalid credentials")
 }

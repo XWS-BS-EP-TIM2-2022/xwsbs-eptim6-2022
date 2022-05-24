@@ -10,16 +10,19 @@ import (
 	"html"
 	"log"
 	"reflect"
+	"time"
 )
 
 type User struct {
-	Username  string `json:"username" validate:"required,lt=50"`
-	Name      string `json:"name" validate:"required"`
-	Surname   string `json:"surname" validate:"required"`
-	Password  string `json:"password" validate:"required"`
-	Email     string `json:"email" validate:"required,email"`
-	Role      string `json:"role" validate:"required"`
-	FailedLog int    `json:"failedlog"`
+	Username     string    `json:"username" validate:"required,lt=50"`
+	Name         string    `json:"name" validate:"required"`
+	Surname      string    `json:"surname" validate:"required"`
+	Password     string    `json:"password" validate:"required"`
+	Email        string    `json:"email" validate:"required,email"`
+	Role         string    `json:"role" validate:"required"`
+	FailedLogins int       `json:"failed-logins" bson:"failed-logins"`
+	Blocked      bool      `json:"blocked"`
+	BlockedUntil time.Time `json:"blocked-until" bson:"blocked-until"`
 }
 
 type UsersStore struct {
@@ -96,7 +99,7 @@ func (us *UsersStore) UpdateFailedLogForUser(username string) error {
 
 	update := bson.D{
 		{"$inc", bson.D{
-			{"failedlog", 1},
+			{"failed-logins", 1},
 		}},
 	}
 
@@ -112,10 +115,27 @@ func (us *UsersStore) ResetFailedLogForUser(username string) error {
 
 	update := bson.D{
 		{"$set", bson.D{
-			{"failedlog", 0},
+			{"failed-logins", 0},
+			{"blocked", false},
 		}},
 	}
 
+	_, err := us.UsersCollection.UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (us *UsersStore) BlockUser(username string) error {
+	filter := bson.D{{"username", username}}
+
+	update := bson.D{
+		{"$set", bson.D{
+			{"blocked", true},
+			{"blocked-until", time.Now().AddDate(0, 0, 1)},
+		}},
+	}
 	_, err := us.UsersCollection.UpdateOne(context.TODO(), filter, update)
 	if err != nil {
 		return err
