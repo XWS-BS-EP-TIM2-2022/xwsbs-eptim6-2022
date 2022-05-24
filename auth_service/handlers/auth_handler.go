@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -13,7 +14,9 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"math/rand"
 	"net/http"
+	"net/smtp"
 	"strings"
 	"time"
 	"unicode"
@@ -29,6 +32,10 @@ type AuthHandler struct {
 	UserStore                *store.UsersStore
 	secretKey                []byte
 	profileServiceGrpcClient profileGw.ProfileServiceClient
+}
+
+type ActivationRequest struct {
+	token string `json:"token"`
 }
 
 func getConnection(address string) (*grpc.ClientConn, error) {
@@ -59,6 +66,10 @@ func (ah *AuthHandler) LoginUser(user store.User) (JWT, error) {
 	dbUser, err := ah.UserStore.FindByUsername(user.Username)
 	if err != nil {
 		fmt.Println("User not found")
+		return JWT{Token: ""}, err
+	}
+	if !user.IsActivated {
+		err := &store.RequestError{Err: errors.New("Account not activated!"), StatusCode: 400}
 		return JWT{Token: ""}, err
 	}
 	if !CheckPasswordHash(user.Password, dbUser.Password) {
@@ -120,6 +131,12 @@ func (ag *AuthHandler) AddNewUser(user store.User) error {
 	}
 	user.Password, _ = HashPassword(user.Password)
 	user.FailedLogins = 0
+
+	user.IsActivated = false
+	user.VerificationToken, _ = ag.GenerateVerificationToken()
+	user.TokenExpiration = time.Now().AddDate(0, 0, 1)
+	ag.SendEmail("andjela.ra28@gmail.com", ag.MailActivationMessage(user.VerificationToken))
+
 	err := ag.UserStore.AddNew(user)
 	if err != nil {
 		return err
@@ -220,4 +237,66 @@ func (ah *AuthHandler) HandleFailedLogin(user store.User) error {
 	}
 	_ = ah.UserStore.UpdateFailedLogForUser(user.Username)
 	return errors.New("Invalid credentials")
+}
+
+func (ah *AuthHandler) GenerateVerificationToken() (string, error) {
+	randomBytes := make([]byte, 16)
+	rand.Read(randomBytes)
+	encoded := base64.StdEncoding.EncodeToString(randomBytes)
+
+	token, err := bcrypt.GenerateFromPassword([]byte(encoded), 14)
+	return string(token), err
+}
+
+func (ah *AuthHandler) SendEmail(emailTo string, mailMessage []byte) {
+	from := config.NewConfig().EmailFrom
+	password := config.NewConfig().EmailPassword
+	to := []string{emailTo}
+	host := config.NewConfig().EmailHost
+	port := config.NewConfig().EmailPort
+	address := host + ":" + port
+
+	auth := smtp.PlainAuth("", from, password, host)
+
+	err := smtp.SendMail(address, auth, from, to, mailMessage)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func (ah *AuthHandler) MailActivationMessage(token string) []byte {
+	confirmationLink := "http://localhost:4200/account-activation/" + token
+
+	subject := "Account activation\n"
+	body := "Please click on following link to confirm your email <a href='" + confirmationLink + "'>link</a>"
+	message := []byte(subject + body)
+	return message
+}
+
+func (ah *AuthHandler) ActivateAccount(request ActivationRequest) error {
+	user, err := ah.UserStore.FindByToken(request.token)
+	if err != nil {
+		return &store.RequestError{Err: errors.New("Cannot find user for account verification!"), StatusCode: 400}
+	}
+
+	if time.Now().Before(user.TokenExpiration) {
+		return &store.RequestError{Err: errors.New("Activation token expired!"), StatusCode: 400}
+	}
+
+	validateToken := bcrypt.CompareHashAndPassword([]byte(user.VerificationToken), []byte(request.token))
+	if validateToken != nil {
+		return &store.RequestError{Err: errors.New("Invalid token!"), StatusCode: 400}
+	}
+
+	user.IsActivated = true
+	return &store.RequestError{Err: errors.New("Account successfully activated!"), StatusCode: 200}
+}
+
+func (ah *AuthHandler) ForgotPasswordMessage(token string) []byte {
+	resetLink := "http://localhost:4200/set-password/" + token
+
+	subject := "Dislinkt password reset\n"
+	body := "Please click on following link to set your new account password <a href='" + resetLink + "'>link</a>"
+	message := []byte(subject + body)
+	return message
 }
