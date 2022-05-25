@@ -3,6 +3,7 @@ package handlers
 import (
 	"errors"
 	"net/http"
+	"profile-service/startup/config"
 	"profile-service/store"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -12,8 +13,8 @@ type UserHandler struct {
 	UserStore *store.UsersStore
 }
 
-func InitUserHandler() *UserHandler {
-	userStore := store.InitUsersStore()
+func InitUserHandler(config config.Config) *UserHandler {
+	userStore := store.InitUsersStore(config)
 	return &UserHandler{UserStore: userStore}
 }
 

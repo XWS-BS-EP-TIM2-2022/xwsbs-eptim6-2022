@@ -17,6 +17,7 @@ func MapToUser(in *usersServicePb.User) *store.User {
 		Name:      in.Name,
 		Telephone: in.Telephone,
 		Surname:   in.Surname,
+		Role:      in.Role,
 	}
 }
 func MapToUsersResponse(users []store.User) *usersServicePb.UsersResponse {
@@ -38,6 +39,7 @@ func mapToUserPb(usr *store.User) *usersServicePb.User {
 		Name:           usr.Name,
 		Telephone:      usr.Telephone,
 		Surname:        usr.Surname,
+		Role:           usr.Role,
 		Educations:     mapEducations(usr.Educations),
 		Experiences:    mapExperiences(usr.Experiences),
 		Skills:         mapSkills(usr.Skills),

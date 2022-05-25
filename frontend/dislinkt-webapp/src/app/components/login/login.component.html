@@ -1,4 +1,8 @@
-<mat-card>
+<app-navbar></app-navbar>
+<mat-card *ngIf="logged">
+  <h3>You are already logged in.</h3>
+</mat-card>
+<mat-card *ngIf="!logged">
   <mat-card-content *ngIf="!passwordless">
     <form #loginForm="ngForm" (ngSubmit)="submitForm()">
       <h2>Log In</h2>

@@ -8,7 +8,7 @@ import (
 	"log"
 	"reflect"
 	"time"
-
+	"github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/auth_service/startup/config"
 	"github.com/go-playground/validator/v10"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -64,8 +64,8 @@ func validateUserData(user User) (*User, error) {
 	return &user, nil
 }
 
-func (us *UsersStore) AddNew(u User) error {
-	user, err := validateUserData(u)
+func (us *UsersStore) AddNew(u *User) error {
+	user, err := validateUserData(*u)
 	if err != nil {
 		return err
 	}
@@ -167,10 +167,10 @@ func (us *UsersStore) UpdatePassword(username string, password string) error {
 	return nil
 }
 
-func InitUsersStore(mongoUri string) *UsersStore {
+func InitUsersStore(config config.Config) *UsersStore {
 	validate = validator.New()
-	client := CreateMongoDBConnection(mongoUri)
-	collection := client.Database("users_database").Collection("users")
+	client := CreateMongoDBConnection(config.MongoDbUri)
+	collection := client.Database(config.MongoDbName).Collection(config.MongoDbCollection)
 	fmt.Println(collection.Name())
 	return &UsersStore{UsersCollection: collection}
 }

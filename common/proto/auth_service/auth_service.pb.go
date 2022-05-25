@@ -756,6 +756,7 @@ type User struct {
 	BirthDate string `protobuf:"bytes,8,opt,name=birthDate,proto3" json:"birthDate,omitempty"`
 	Biography string `protobuf:"bytes,9,opt,name=biography,proto3" json:"biography,omitempty"`
 	IsPublic  bool   `protobuf:"varint,17,opt,name=isPublic,proto3" json:"isPublic,omitempty"`
+	Role      string `protobuf:"bytes,18,opt,name=role,proto3" json:"role,omitempty"`
 }
 
 func (x *User) Reset() {
@@ -858,6 +859,13 @@ func (x *User) GetIsPublic() bool {
 		return x.IsPublic
 	}
 	return false
+}
+
+func (x *User) GetRole() string {
+	if x != nil {
+		return x.Role
+	}
+	return ""
 }
 
 type CreateNewUser struct {

@@ -21,7 +21,7 @@ type Server struct {
 }
 
 func NewServer(config *config.Config) (*Server, error) {
-	return &Server{userHandler: handlers.InitUserHandler(), authServiceClient: infrastructure.InitAuthServiceClient(config)}, nil
+	return &Server{userHandler: handlers.InitUserHandler(*config), authServiceClient: infrastructure.InitAuthServiceClient(config)}, nil
 }
 
 func getTokenFromContext(ctx context.Context) string {
@@ -112,7 +112,8 @@ func (s *Server) GetLoggedinUser(ctx context.Context, in *usersServicePb.EmptyRe
 	if err != nil {
 		return &usersServicePb.UserResponse{}, err
 	}
-	return mappers.MapToUserResponse(&user), nil
+	out := mappers.MapToUserResponse(&user)
+	return out, nil
 }
 
 func (s *Server) UnFollowUser(ctx context.Context, in *usersServicePb.GetByIdRequest) (*usersServicePb.UserResponse, error) {

@@ -43,7 +43,7 @@ func getConnection(address string) (*grpc.ClientConn, error) {
 	return grpc.Dial(address, grpc.WithTransportCredentials(insecure.NewCredentials()))
 }
 func InitAuthHandler(serverConfig *config.Config) *AuthHandler {
-	userStore := store.InitUsersStore(serverConfig.MongoDbUri)
+	userStore := store.InitUsersStore(*serverConfig)
 	endpoint := fmt.Sprintf("%s:%s", serverConfig.ProfileServiceGrpcHost, serverConfig.ProfileServiceGrpcPort)
 	conn, err := getConnection(endpoint)
 	if err != nil {
@@ -123,7 +123,7 @@ func (ag *AuthHandler) ValidateToken(tokenStr string) (*store.User, error) {
 	return &store.User{Username: str}, nil
 
 }
-func (ag *AuthHandler) AddNewUser(user store.User) error {
+func (ag *AuthHandler) AddNewUser(user *store.User) error {
 	if _, err := ag.UserStore.FindByUsername(user.Username); err == nil {
 		return &store.RequestError{Err: errors.New("Username already in use"), StatusCode: 400}
 	}
@@ -146,11 +146,11 @@ func (ag *AuthHandler) AddNewUser(user store.User) error {
 	return nil
 }
 
-func (ag *AuthHandler) NotifyProfileServiceAboutRegistration(in *authServicePb.User) error {
+func (ag *AuthHandler) NotifyProfileServiceAboutRegistration(in *authServicePb.User, dbUser *store.User) error {
 	fmt.Println("Post request")
 	_, err := ag.profileServiceGrpcClient.AddNewUser(context.TODO(), &profileGw.UserRequest{User: &profileGw.User{
 		Username:  in.Username,
-		Password:  in.Password,
+		Password:  dbUser.Password,
 		Biography: in.Biography,
 		BirthDate: in.BirthDate,
 		Email:     in.Email,
@@ -159,6 +159,7 @@ func (ag *AuthHandler) NotifyProfileServiceAboutRegistration(in *authServicePb.U
 		Name:      in.Name,
 		Telephone: in.Telephone,
 		Surname:   in.Surname,
+		Role:      dbUser.Role,
 	}})
 	return err
 }

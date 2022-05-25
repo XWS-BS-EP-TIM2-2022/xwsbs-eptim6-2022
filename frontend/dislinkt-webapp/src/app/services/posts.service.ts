@@ -13,27 +13,27 @@ export class PostsService {
   public createNewPost(post : FormData){
     return this.http
       .post(
-        '/posts/new-post',
+        '/api/posts/new-post',
         post, { observe: 'response', responseType: 'text' });
   }
 
   public commentPost(comment : Comment, id : string){
     return this.http
       .post(
-        '/posts/new-comment/'+ encodeURIComponent(id),
+        '/api/posts/new-comment/'+ encodeURIComponent(id),
         comment, { observe: 'response', responseType: 'text' });
   }
 
   public getAllPosts() : Observable<Post[]> {
-   return this.http.get<Post[]>('/posts');
+   return this.http.get<Post[]>('/api/posts');
   }
 
   public likePost(id : string) : Observable<Post> {
-    return this.http.get<Post>('/posts/like/' + encodeURIComponent(id));
+    return this.http.get<Post>('/api/posts/like/' + encodeURIComponent(id));
   }
 
   public dislikePost(id : string) : Observable<Post> {
-    return this.http.get<Post>('/posts/dislike/' + encodeURIComponent(id));
+    return this.http.get<Post>('/api/posts/dislike/' + encodeURIComponent(id));
   }
 
 }

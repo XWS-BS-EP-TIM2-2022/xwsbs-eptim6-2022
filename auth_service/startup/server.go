@@ -25,15 +25,15 @@ func NewServer(serverConfig *config.Config) (*Server, error) {
 func (s *Server) AddNewUser(ctx context.Context, in *authServicePb.CreateNewUser) (*authServicePb.CreateNewUser, error) {
 	user := mappers.MapPbToUser(in.User)
 	user.Role = "USER"
-	err := s.AuthHandler.AddNewUser(user)
+	err := s.AuthHandler.AddNewUser(&user)
 	if err != nil {
 		return &authServicePb.CreateNewUser{}, err
 	}
-	err = s.AuthHandler.NotifyProfileServiceAboutRegistration(in.User)
+	err = s.AuthHandler.NotifyProfileServiceAboutRegistration(in.User, &user)
 	if err != nil {
 		return nil, err
 	}
-	return in, nil
+	return &authServicePb.CreateNewUser{User: mappers.MapUserToPb(&user)}, nil
 }
 func (s *Server) GetAll(ctx context.Context, in *authServicePb.GetAllRequest) (*authServicePb.GetAllResponse, error) {
 	return mappers.MapUsersToPb(s.AuthHandler.GetAllUsers())

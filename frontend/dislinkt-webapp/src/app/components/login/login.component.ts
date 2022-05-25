@@ -16,11 +16,16 @@ export class LoginComponent implements OnInit {
   passwordless!: boolean
   email!: string
   checkMail = new FormControl('', [Validators.email]);
+  logged: boolean = false
 
   constructor(private authService: AuthService, private router: Router, public matSnackBar: MatSnackBar) { }
 
   ngOnInit(): void {
     this.passwordless = false;
+    if (localStorage.getItem('jwt') != null)
+      this.logged = true
+    else
+      this.logged = false
   }
 
   submitForm() {
@@ -30,7 +35,7 @@ export class LoginComponent implements OnInit {
     }
     this.authService.login(user).subscribe(
       (data) => {
-        this.router.navigate(['/posts'])
+        this.router.navigate(['/homepage'])
       },
       (error) => {
         this.errorMessage = error.error.message;
