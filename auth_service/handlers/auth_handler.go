@@ -136,8 +136,8 @@ func (ag *AuthHandler) AddNewUser(user store.User) error {
 	user.IsActivated = false
 	verificationHash, urlToken := ag.GenerateVerificationToken()
 	user.VerificationToken = verificationHash
-	user.TokenExpiration = time.Now().AddDate(0, 0, 1)
-	ag.SendEmail("andjela.ra28@gmail.com", ag.MailActivationMessage(urlToken))
+	user.TokenExpiration = time.Now().Add(time.Hour * 2)
+	ag.SendEmail(user.Email, ag.MailActivationMessage(urlToken))
 
 	err := ag.UserStore.AddNew(user)
 	if err != nil {
@@ -291,11 +291,12 @@ func (ah *AuthHandler) SendEmail(emailTo string, mailMessage []byte) {
 }
 
 func (ah *AuthHandler) MailActivationMessage(token string) []byte {
-	confirmationLink := "http://localhost:4200/account-activation/" + token
+	confirmationLink := "http://" + config.NewConfig().FrontendUri + "/account-activation/" + token
 
-	subject := "Account activation\n"
-	body := "Please click on following link to confirm your email <a href='" + confirmationLink + "'>link</a>"
-	message := []byte(subject + body)
+	subject := "Subject: Account activation\n"
+	mime := "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
+	body := ah.GenerateMailBody(confirmationLink, "Welcome to Dislinkt!", "Press the button below to activate your account", "Activate Account")
+	message := []byte(subject + mime + body)
 	return message
 }
 
@@ -332,12 +333,28 @@ func (ah *AuthHandler) AccountRecoveryEmail(email string) error {
 		return errors.New("Error occured while updating token!")
 	}
 
-	resetLink := "http://localhost:4200/set-password/" + urlToken
-	subject := "Dislinkt password reset\n"
-	body := "Please click on following link to set your new account password <a href='" + resetLink + "'>link</a>"
-	message := []byte(subject + body)
+	resetLink := "http://" + config.NewConfig().FrontendUri + "/set-password/" + urlToken
+	subject := "Subject: Account recovery\n"
+	mime := "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
+	body := ah.GenerateMailBody(resetLink, "Account Recovery", "Press the button below to reset password", "Reset Password")
+	message := []byte(subject + mime + body)
 	ah.SendEmail(user.Email, message)
 	return nil
+}
+
+func (ah *AuthHandler) ResetPassword(token string, newPassword string) error {
+	user := ah.UserStore.FindByToken(token)
+	if user == (store.User{}) {
+		return errors.New("Account recovery failed, invalid token!")
+	}
+
+	if !isPasswordValid(newPassword) {
+		return errors.New("Incorrect password format")
+	}
+
+	password, _ := HashPassword(newPassword)
+	err := ah.UserStore.UpdatePassword(user.Username, password)
+	return err
 }
 
 func (ah *AuthHandler) SendPasswordlessLoginEmail(email string) error {
@@ -353,10 +370,11 @@ func (ah *AuthHandler) SendPasswordlessLoginEmail(email string) error {
 		return errors.New("Error occured while updating token!")
 	}
 
-	resetLink := "http://localhost:4200/passwordless/" + urlToken
-	subject := "Dislinkt password reset\n"
-	body := "Please click on following link to log into your account <a href='" + resetLink + "'>link</a>"
-	message := []byte(subject + body)
+	resetLink := "http://" + config.NewConfig().FrontendUri + "/passwordless/" + urlToken
+	mime := "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
+	subject := "Subject: Dislinkt passwordless login\n"
+	body := ah.GenerateMailBody(resetLink, "Dislinkt passwordless login", "Press the button below to login!", "Login")
+	message := []byte(subject + mime + body)
 	ah.SendEmail(user.Email, message)
 	return nil
 }
@@ -364,30 +382,23 @@ func (ah *AuthHandler) SendPasswordlessLoginEmail(email string) error {
 func (ah *AuthHandler) PasswordlessLogin(token string) (JWT, error) {
 	user := ah.UserStore.FindByToken(token)
 	if user == (store.User{}) {
-		return JWT{}, errors.New("Activation failed, invalid token!")
+		return JWT{}, errors.New("Passwordless login failed, invalid token!")
 	}
 
 	if user.TokenExpiration.Before(time.Now()) {
-		return JWT{}, errors.New("Activation token expired!")
+		return JWT{}, errors.New("Verification token expired!")
 	}
 
 	validateToken := bcrypt.CompareHashAndPassword([]byte(user.VerificationToken), []byte(token))
 	if validateToken != nil {
-		return JWT{}, errors.New("Activation failed, invalid token!")
+		return JWT{}, errors.New("Passwordless login failed,, invalid token!")
 	}
 
-	jwt, err2 := ah.LoginChecks(user)
-	if err2 == nil {
-		return JWT{}, err2
-	}
-	return jwt, nil
-}
-
-func (ah *AuthHandler) LoginChecks(user store.User) (JWT, error) {
 	if user.IsActivated == false {
 		err := errors.New("Account not activated!")
 		return JWT{Token: ""}, err
 	}
+
 	if user.Blocked {
 		if time.Now().After(user.BlockedUntil) {
 			ah.UserStore.ResetFailedLogForUser(user.Username)
@@ -403,4 +414,54 @@ func (ah *AuthHandler) LoginChecks(user store.User) (JWT, error) {
 		return JWT{Token: ""}, err
 	}
 	return JWT{Token: tokenStr}, nil
+}
+
+func (ah *AuthHandler) GenerateMailBody(url string, heading string, text string, buttonText string) string {
+	body := "<html>\n" +
+		"<body style=\"margin: 0 !important; padding: 0 !important;\">\n" +
+		"<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n" +
+		"<tr>\n<td bgcolor=\"#5ac5e6\" align=\"center\">\n" +
+		"<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" style=\"max-width: 600px;\">\n" +
+		"<tr>\n" +
+		"<td align=\"center\" valign=\"top\" style=\"padding: 40px 10px 40px 10px;\"></td>\n" +
+		"</tr>\n    </table>\n</td>\n" +
+		"</tr>\n" +
+		"<tr>\n<td bgcolor=\"#5ac5e6\" align=\"center\" style=\"padding: 0px 10px 0px 10px;\">\n" +
+		"<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" style=\"max-width: 600px;\">\n" +
+		"<tr>\n" +
+		"<td bgcolor=\"#ffffff\" align=\"center\" valign=\"top\"\nstyle=\"padding: 40px 20px 20px 20px; " +
+		"border-radius: 4px 4px 0px 0px; color: #111111; font-family: Helvetica, Arial, sans-serif; font-size: 48px; " +
+		"font-weight: 400; letter-spacing: 4px; line-height: 48px;\">\n<h1 style=\"font-size: 48px; font-weight: 400; " +
+		"margin: 2;\">" + heading + "</h1>\n" +
+		"</td>\n" +
+		"</tr>\n" +
+		"</table>\n</td>\n" +
+		"</tr>\n" +
+		"<tr>\n<td bgcolor=\"#5ac5e6\" align=\"center\" style=\"padding: 0px 10px 0px 10px;\">\n" +
+		"<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" style=\"max-width: 600px;\">\n" +
+		"<tr>\n" +
+		"<td bgcolor=\"#ffffff\" align=\"center\"\nstyle=\"padding: 20px 30px 40px 30px; color: #666666; " +
+		"font-family: Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;\">\n" +
+		"<p style=\"margin: 0; font-size: 20px;\">" + text + "</p>\n" +
+		"</td>\n" +
+		"</tr>\n" +
+		"<tr>\n" +
+		"<td bgcolor=\"#ffffff\" align=\"left\">\n<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\n" +
+		"<tr>\n" +
+		"<td bgcolor=\"#ffffff\" align=\"center\" style=\"padding: 20px 30px 60px 30px;\">\n" +
+		"<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\n<tr>\n" +
+		"<td align=\"center\" style=\"border-radius: 3px; border: none;\"\n" +
+		"bgcolor=\"#5ac5e6\">\n" +
+		"<a href=\"" + url + "\"\n" +
+		"style=\"font-size: 20px; font-family: Helvetica, Arial, sans-serif; color: #ffffff; text-decoration: none; " +
+		"color: #ffffff; text-decoration: none; padding: 15px 25px; border-radius: 2px; display: inline-block;\">" + buttonText +
+		"</a>\n" +
+		"</td>\n</tr>\n" +
+		"</table>\n" +
+		"</td>\n" +
+		"</tr>\n</table>\n" +
+		"</td>\n" +
+		"</tr></table><br><br></body></html>"
+
+	return body
 }

@@ -1,5 +1,7 @@
 package config
 
+import "os"
+
 type Config struct {
 	Host                   string
 	GatewayPort            string
@@ -12,6 +14,7 @@ type Config struct {
 	EmailHost              string
 	EmailFrom              string
 	EmailPassword          string
+	FrontendUri            string
 }
 
 func NewConfig() *Config {
@@ -25,7 +28,8 @@ func NewConfig() *Config {
 		SecretKey:              "secret-key",
 		EmailPort:              "587",
 		EmailHost:              "smtp.gmail.com",
-		EmailFrom:              "andjela.ra28@gmail.com",
-		EmailPassword:          "fakultet28",
+		EmailFrom:              os.Getenv("DISLINKT_MAIL"),          //bsepdislinkt@gmail.com
+		EmailPassword:          os.Getenv("DISLINKT_MAIL_PASSWORD"), //Dislinkt123
+		FrontendUri:            "localhost:4200",
 	}
 }

@@ -56,11 +56,11 @@ export class AuthService {
 
   setPassword(password: string, token: string | null) {
     const body = {
-      'password': password,
-      'verificationToken': token
+      'token': token,
+      'newPassword': password
     };
 
-    return this.http.put('/api/auth/users/forgotten-password/', JSON.stringify(body), { responseType: 'text' });
+    return this.http.put('/api/auth/users/account-recovery', JSON.stringify(body), { responseType: 'text' });
   }
 
   activateAccount(token: string | null) {

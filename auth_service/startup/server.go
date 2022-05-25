@@ -90,7 +90,12 @@ func (s *Server) ForgottenPassword(ctx context.Context, in *authServicePb.UserEm
 	return &authServicePb.ActivationResponse{ResponseStatus: "Recovery email successfully sent!"}, err
 }
 func (s *Server) ResetPassword(ctx context.Context, in *authServicePb.ResetPasswordWithTokenMessage) (*authServicePb.ActivationResponse, error) {
-	return nil, nil
+	err := s.AuthHandler.ResetPassword(in.Details.Token, in.Details.NewPassword)
+	if err != nil {
+		return &authServicePb.ActivationResponse{ResponseStatus: err.Error()}, err
+	}
+
+	return &authServicePb.ActivationResponse{ResponseStatus: "Password changed successfully!"}, err
 }
 func (s *Server) GeneratePasswordlessLoginToken(ctx context.Context, in *authServicePb.UserEmailMessage) (*authServicePb.ActivationResponse, error) {
 	err := s.AuthHandler.SendPasswordlessLoginEmail(in.Email.Email)

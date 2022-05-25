@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
 
@@ -16,7 +17,7 @@ export class LoginComponent implements OnInit {
   email!: string
   checkMail = new FormControl('', [Validators.email]);
 
-  constructor(private authService: AuthService, private router: Router) { }
+  constructor(private authService: AuthService, private router: Router, public matSnackBar: MatSnackBar) { }
 
   ngOnInit(): void {
     this.passwordless = false;
@@ -29,10 +30,10 @@ export class LoginComponent implements OnInit {
     }
     this.authService.login(user).subscribe(
       (data) => {
-        this.router.navigate(['/change-password'])
+        this.router.navigate(['/posts'])
       },
       (error) => {
-        this.errorMessage = 'Invalid credentials';
+        this.errorMessage = error.error.message;
         console.error('error caught');
       }
     );
@@ -42,7 +43,13 @@ export class LoginComponent implements OnInit {
     this.authService.passwordless(this.email).subscribe(
       (data) => {
         this.passwordless = false;
-        window.location.reload;
+        this.matSnackBar.open("Email successfully sent!", 'Dismiss', {
+          duration: 2000
+        })
+
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000)
       },
       (error) => {
         this.errorMessage = error.error;
