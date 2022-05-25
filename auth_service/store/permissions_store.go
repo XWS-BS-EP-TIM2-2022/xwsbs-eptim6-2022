@@ -42,7 +42,7 @@ func InitPermissionsStore(mongoUri string) *PermissionsStore {
 	collection := client.Database(mongoDbName).Collection(mongoCollectionName)
 	fmt.Println(collection.Name())
 	permissionStore := PermissionsStore{PermissionsCollection: collection}
-	permissionStore.InsertData()
+	//permissionStore.InsertData()
 	return &permissionStore
 }
 
