@@ -25,6 +25,11 @@ type SecurityServer struct {
 	mainServer *Server
 }
 
+const (
+	serverCertFile = "D:\\Fakultet\\cetvrta\\xml\\xwsbs-eptim6-2022\\frontend\\dislinkt-webapp\\.cert\\cert.pem"
+	serverKeyFile  = "D:\\Fakultet\\cetvrta\\xml\\xwsbs-eptim6-2022\\frontend\\dislinkt-webapp\\.cert\\key.pem"
+)
+
 func NewServer(config *cfg.Config) *Server {
 	server := &Server{
 		config:      config,
@@ -100,9 +105,27 @@ func (server *Server) Start() {
 		Addr:    ":" + server.config.Port,
 		Handler: authWrapper(server.mux, server),
 	}
-	s := fmt.Sprintf("Serving gRPC-Gateway on http://0.0.0.0:%s", server.config.Port)
-	fmt.Println(s)
-	log.Fatalln(gwServer.ListenAndServe())
+	//listener, err := net.Listen("tcp", gwServer.Addr)
+	//if err != nil {
+	//	log.Fatal("cannot start server: ", err)
+	//}
+	//log.Fatal(http.ServeTLS(listener, gwServer.Handler, serverCertFile, serverKeyFile))
+
+	err := gwServer.ListenAndServeTLS(serverCertFile, serverKeyFile)
+	if err != nil {
+		log.Fatal("ListenAndServe: ", err)
+	}
+
+	//s := fmt.Sprintf("Serving gRPC-Gateway on http://0.0.0.0:%s", server.config.Port)
+	//fmt.Println(s)
+	//log.Fatalln(gwServer.ListenAndServe())
 
 	//log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", server.config.Port), )
+
+	//address := fmt.Sprintf(":%s", server.config.Port)
+	//listener, err := net.Listen("tcp", ":443")
+	//if err != nil {
+	//	log.Fatal("cannot start server: ", err)
+	//}
+	//log.Fatal(http.ServeTLS(listener, authWrapper(server.mux, server), serverCertFile, serverKeyFile))
 }
