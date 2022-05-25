@@ -55,9 +55,10 @@ service AuthService {
       body: "email"
     };
   }
-  rpc ResetPassword(ActivationToken) returns (ActivationResponse){
+  rpc ResetPassword(ResetPasswordWithTokenMessage) returns (ActivationResponse){
     option (google.api.http) = {
-      get: "/api/auth/users/forgotten-password/{token}"
+      put: "/api/auth/users/account-recovery"
+      body:"details"
     };
   }
 
@@ -76,6 +77,15 @@ service AuthService {
 }
 message ChangePasswordRequest{
   ChangePasswordMessage changePasswordMessage=1;
+}
+
+
+message ResetPasswordWithToken{
+  string token=1;
+  string newPassword=2;
+}
+message ResetPasswordWithTokenMessage{
+  ResetPasswordWithToken details=1;
 }
 
 message ChangePasswordMessage  {

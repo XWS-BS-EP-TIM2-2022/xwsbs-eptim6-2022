@@ -30,7 +30,7 @@ type AuthServiceClient interface {
 	GetUserPermissions(ctx context.Context, in *ValidateToken, opts ...grpc.CallOption) (*UserPermissions, error)
 	ActivateUserAccount(ctx context.Context, in *ActivationToken, opts ...grpc.CallOption) (*ActivationResponse, error)
 	ForgottenPassword(ctx context.Context, in *UserEmailMessage, opts ...grpc.CallOption) (*ActivationResponse, error)
-	ResetPassword(ctx context.Context, in *ActivationToken, opts ...grpc.CallOption) (*ActivationResponse, error)
+	ResetPassword(ctx context.Context, in *ResetPasswordWithTokenMessage, opts ...grpc.CallOption) (*ActivationResponse, error)
 	GeneratePasswordlessLoginToken(ctx context.Context, in *UserEmailMessage, opts ...grpc.CallOption) (*ActivationResponse, error)
 	PasswordlessLogin(ctx context.Context, in *ActivationTokenMessage, opts ...grpc.CallOption) (*ActivationResponse, error)
 }
@@ -115,7 +115,7 @@ func (c *authServiceClient) ForgottenPassword(ctx context.Context, in *UserEmail
 	return out, nil
 }
 
-func (c *authServiceClient) ResetPassword(ctx context.Context, in *ActivationToken, opts ...grpc.CallOption) (*ActivationResponse, error) {
+func (c *authServiceClient) ResetPassword(ctx context.Context, in *ResetPasswordWithTokenMessage, opts ...grpc.CallOption) (*ActivationResponse, error) {
 	out := new(ActivationResponse)
 	err := c.cc.Invoke(ctx, "/auth_service.AuthService/ResetPassword", in, out, opts...)
 	if err != nil {
@@ -154,7 +154,7 @@ type AuthServiceServer interface {
 	GetUserPermissions(context.Context, *ValidateToken) (*UserPermissions, error)
 	ActivateUserAccount(context.Context, *ActivationToken) (*ActivationResponse, error)
 	ForgottenPassword(context.Context, *UserEmailMessage) (*ActivationResponse, error)
-	ResetPassword(context.Context, *ActivationToken) (*ActivationResponse, error)
+	ResetPassword(context.Context, *ResetPasswordWithTokenMessage) (*ActivationResponse, error)
 	GeneratePasswordlessLoginToken(context.Context, *UserEmailMessage) (*ActivationResponse, error)
 	PasswordlessLogin(context.Context, *ActivationTokenMessage) (*ActivationResponse, error)
 	mustEmbedUnimplementedAuthServiceServer()
@@ -188,7 +188,7 @@ func (UnimplementedAuthServiceServer) ActivateUserAccount(context.Context, *Acti
 func (UnimplementedAuthServiceServer) ForgottenPassword(context.Context, *UserEmailMessage) (*ActivationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ForgottenPassword not implemented")
 }
-func (UnimplementedAuthServiceServer) ResetPassword(context.Context, *ActivationToken) (*ActivationResponse, error) {
+func (UnimplementedAuthServiceServer) ResetPassword(context.Context, *ResetPasswordWithTokenMessage) (*ActivationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ResetPassword not implemented")
 }
 func (UnimplementedAuthServiceServer) GeneratePasswordlessLoginToken(context.Context, *UserEmailMessage) (*ActivationResponse, error) {
@@ -355,7 +355,7 @@ func _AuthService_ForgottenPassword_Handler(srv interface{}, ctx context.Context
 }
 
 func _AuthService_ResetPassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ActivationToken)
+	in := new(ResetPasswordWithTokenMessage)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -367,7 +367,7 @@ func _AuthService_ResetPassword_Handler(srv interface{}, ctx context.Context, de
 		FullMethod: "/auth_service.AuthService/ResetPassword",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServiceServer).ResetPassword(ctx, req.(*ActivationToken))
+		return srv.(AuthServiceServer).ResetPassword(ctx, req.(*ResetPasswordWithTokenMessage))
 	}
 	return interceptor(ctx, in, info, handler)
 }
