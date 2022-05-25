@@ -89,7 +89,7 @@ func (s *Server) ForgottenPassword(ctx context.Context, in *authServicePb.UserEm
 
 	return &authServicePb.ActivationResponse{ResponseStatus: "Recovery email successfully sent!"}, err
 }
-func (s *Server) ResetPassword(ctx context.Context, in *authServicePb.ActivationToken) (*authServicePb.ActivationResponse, error) {
+func (s *Server) ResetPassword(ctx context.Context, in *authServicePb.ResetPasswordWithTokenMessage) (*authServicePb.ActivationResponse, error) {
 	return nil, nil
 }
 func (s *Server) GeneratePasswordlessLoginToken(ctx context.Context, in *authServicePb.UserEmailMessage) (*authServicePb.ActivationResponse, error) {
