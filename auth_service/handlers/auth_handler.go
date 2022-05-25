@@ -318,11 +318,89 @@ func (ah *AuthHandler) ActivateAccount(token string) error {
 	return err
 }
 
-func (ah *AuthHandler) ForgotPasswordMessage(token string) []byte {
-	resetLink := "http://localhost:4200/set-password/" + token
+func (ah *AuthHandler) AccountRecoveryEmail(email string) error {
+	user, noUserFound := ah.UserStore.FindByEmail(email)
 
+	if noUserFound != nil {
+		return errors.New("Account with this email doesn't exist!")
+	}
+
+	verificationHash, urlToken := ah.GenerateVerificationToken()
+
+	invalidToken := ah.UserStore.RefreshToken(user.Username, verificationHash)
+	if invalidToken != nil {
+		return errors.New("Error occured while updating token!")
+	}
+
+	resetLink := "http://localhost:4200/set-password/" + urlToken
 	subject := "Dislinkt password reset\n"
 	body := "Please click on following link to set your new account password <a href='" + resetLink + "'>link</a>"
 	message := []byte(subject + body)
-	return message
+	ah.SendEmail(user.Email, message)
+	return nil
+}
+
+func (ah *AuthHandler) SendPasswordlessLoginEmail(email string) error {
+	user, noUserFound := ah.UserStore.FindByEmail(email)
+
+	if noUserFound != nil {
+		return errors.New("Account with this email doesn't exist!")
+	}
+
+	verificationHash, urlToken := ah.GenerateVerificationToken()
+	invalidToken := ah.UserStore.RefreshToken(user.Username, verificationHash)
+	if invalidToken != nil {
+		return errors.New("Error occured while updating token!")
+	}
+
+	resetLink := "http://localhost:4200/passwordless/" + urlToken
+	subject := "Dislinkt password reset\n"
+	body := "Please click on following link to log into your account <a href='" + resetLink + "'>link</a>"
+	message := []byte(subject + body)
+	ah.SendEmail(user.Email, message)
+	return nil
+}
+
+func (ah *AuthHandler) PasswordlessLogin(token string) (JWT, error) {
+	user := ah.UserStore.FindByToken(token)
+	if user == (store.User{}) {
+		return JWT{}, errors.New("Activation failed, invalid token!")
+	}
+
+	if user.TokenExpiration.Before(time.Now()) {
+		return JWT{}, errors.New("Activation token expired!")
+	}
+
+	validateToken := bcrypt.CompareHashAndPassword([]byte(user.VerificationToken), []byte(token))
+	if validateToken != nil {
+		return JWT{}, errors.New("Activation failed, invalid token!")
+	}
+
+	jwt, err2 := ah.LoginChecks(user)
+	if err2 == nil {
+		return JWT{}, err2
+	}
+	return jwt, nil
+}
+
+func (ah *AuthHandler) LoginChecks(user store.User) (JWT, error) {
+	if user.IsActivated == false {
+		err := errors.New("Account not activated!")
+		return JWT{Token: ""}, err
+	}
+	if user.Blocked {
+		if time.Now().After(user.BlockedUntil) {
+			ah.UserStore.ResetFailedLogForUser(user.Username)
+		} else {
+			return JWT{Token: ""}, errors.New("Blocked account")
+		}
+	}
+	ah.UserStore.ResetFailedLogForUser(user.Username)
+
+	tokenStr, err := GenerateJWT(user, ah.secretKey)
+	if err != nil {
+		fmt.Printf("Token generation failed %s\n", err.Error())
+		return JWT{Token: ""}, err
+	}
+	return JWT{Token: tokenStr}, nil
 }

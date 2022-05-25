@@ -197,3 +197,23 @@ func (us *UsersStore) ActivateAccount(username string) error {
 	_, err := us.UsersCollection.UpdateOne(context.TODO(), filter, update)
 	return err
 }
+
+func (us *UsersStore) FindByEmail(email string) (User, error) {
+	var user User
+	filter := bson.D{{"email", email}}
+	err := us.UsersCollection.FindOne(context.TODO(), filter).Decode(&user)
+	return user, err
+}
+
+func (us *UsersStore) RefreshToken(username string, token string) error {
+	filter := bson.D{{"username", username}}
+
+	update := bson.D{
+		{"$set", bson.D{
+			{"verification-token", token},
+			{"token-expiration", time.Now().Add(time.Hour * 2)},
+		}},
+	}
+	_, err := us.UsersCollection.UpdateOne(context.TODO(), filter, update)
+	return err
+}

@@ -51,19 +51,35 @@ export class AuthService {
 
   forgotPassword(email: string) {
     const body = { 'email': email };
-    return this.http.post("/api/auth/users/forgot-password", JSON.stringify(body), { responseType: 'text' });
+    return this.http.put("/api/auth/users/forgotten-password", JSON.stringify(body), { responseType: 'text' });
   }
 
-  setPassword(password: string, token: string) {
+  setPassword(password: string, token: string | null) {
     const body = {
       'password': password,
       'verificationToken': token
     };
 
-    return this.http.post('/api/auth/users/reset-password', JSON.stringify(body), { responseType: 'text' });
+    return this.http.put('/api/auth/users/forgotten-password/', JSON.stringify(body), { responseType: 'text' });
   }
 
   activateAccount(token: string | null) {
     return this.http.get('/api/auth/activation/' + token);
+  }
+
+  passwordless(email: string) {
+    const body = { 'email': email };
+    return this.http.put("/api/auth/users/passwordless", JSON.stringify(body), { responseType: 'text' });
+  }
+
+  passwordlessLogin(token: string | null) {
+    const body = { 'token': token };
+    return this.http.put("/api/auth/session/passwordless", JSON.stringify(body)).pipe(
+      map((res: any) => {
+        console.log('Login success');
+        localStorage.setItem('jwt', res.responseStatus);
+        console.log(res);
+      })
+    )
   }
 }

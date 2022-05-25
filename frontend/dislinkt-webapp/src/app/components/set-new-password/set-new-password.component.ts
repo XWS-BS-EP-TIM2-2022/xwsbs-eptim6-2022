@@ -17,7 +17,7 @@ export class SetNewPasswordComponent implements OnInit {
   checkConfirmPassword = new FormControl('', [Validators.required]);
   errorMessage: string = ""
   errorMessage1: string = ""
-  token!: string
+  token!: string | null
 
   constructor(public activeRoute: ActivatedRoute, public authService: AuthService, public route: Router, public matSnackBar: MatSnackBar) { }
 
@@ -40,10 +40,7 @@ export class SetNewPasswordComponent implements OnInit {
   }
 
   setPass() {
-    this.activeRoute.queryParams.subscribe(res => {
-      this.token = res.token;
-      console.log(this.token);
-    })
+    this.token = this.activeRoute.snapshot.paramMap.get('token');
 
     this.authService.setPassword(this.password, this.token).subscribe(
       (data) => {

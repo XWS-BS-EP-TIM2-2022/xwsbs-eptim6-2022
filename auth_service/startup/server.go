@@ -75,19 +75,38 @@ func (s *Server) UpdateUserPassword(ctx context.Context, in *authServicePb.Chang
 }
 func (s *Server) ActivateUserAccount(ctx context.Context, in *authServicePb.ActivationToken) (*authServicePb.ActivationResponse, error) {
 	err := s.AuthHandler.ActivateAccount(in.Token)
-	return &authServicePb.ActivationResponse{ResponseStatus: "message"}, err
+	if err != nil {
+		return &authServicePb.ActivationResponse{ResponseStatus: err.Error()}, err
+	}
+
+	return &authServicePb.ActivationResponse{ResponseStatus: "Account successfully activated!"}, err
 }
 func (s *Server) ForgottenPassword(ctx context.Context, in *authServicePb.UserEmailMessage) (*authServicePb.ActivationResponse, error) {
-	return nil, nil
+	err := s.AuthHandler.AccountRecoveryEmail(in.Email.Email)
+	if err != nil {
+		return &authServicePb.ActivationResponse{ResponseStatus: err.Error()}, err
+	}
+
+	return &authServicePb.ActivationResponse{ResponseStatus: "Recovery email successfully sent!"}, err
 }
 func (s *Server) ResetPassword(ctx context.Context, in *authServicePb.ActivationToken) (*authServicePb.ActivationResponse, error) {
 	return nil, nil
 }
 func (s *Server) GeneratePasswordlessLoginToken(ctx context.Context, in *authServicePb.UserEmailMessage) (*authServicePb.ActivationResponse, error) {
-	return nil, nil
+	err := s.AuthHandler.SendPasswordlessLoginEmail(in.Email.Email)
+	if err != nil {
+		return &authServicePb.ActivationResponse{ResponseStatus: err.Error()}, err
+	}
+
+	return &authServicePb.ActivationResponse{ResponseStatus: "Email successfully sent!"}, err
 }
 func (s *Server) PasswordlessLogin(ctx context.Context, in *authServicePb.ActivationTokenMessage) (*authServicePb.ActivationResponse, error) {
-	return nil, nil
+	jwt, err := s.AuthHandler.PasswordlessLogin(in.Token.Token)
+	if err != nil {
+		return &authServicePb.ActivationResponse{ResponseStatus: err.Error()}, err
+	}
+
+	return &authServicePb.ActivationResponse{ResponseStatus: jwt.Token}, err
 }
 
 func getTokenFromContext(ctx context.Context) string {

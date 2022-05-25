@@ -28,7 +28,7 @@ const routes: Routes = [
     component: ForgotPasswordComponent
   },
   {
-    path: 'set-password',
+    path: 'set-password/:token',
     component: SetNewPasswordComponent
   },
   {
@@ -43,7 +43,10 @@ const routes: Routes = [
     path: 'change-password',
     component: ChangePasswordComponent,
   },
-  { path: '', redirectTo: 'login', pathMatch: 'full' },
+  {
+    path: 'passwordless/:token',
+    component: PostsViewComponent,
+  },
 ];
 
 @NgModule({

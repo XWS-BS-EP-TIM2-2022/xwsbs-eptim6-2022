@@ -16,3 +16,13 @@ mat-form-field {
 a {
   text-decoration: none;
 }
+
+.link:hover {
+  cursor: pointer;
+}
+
+.link {
+  color: blue;
+  width: 80px;
+  margin-right: auto;
+}

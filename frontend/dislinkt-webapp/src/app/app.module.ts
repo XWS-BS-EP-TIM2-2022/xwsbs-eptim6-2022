@@ -20,6 +20,7 @@ import { ChangePasswordComponent } from './components/change-password/change-pas
 import { ForgotPasswordComponent } from './components/forgot-password/forgot-password.component';
 import { SetNewPasswordComponent } from './components/set-new-password/set-new-password.component';
 import { AccountActivationInfoComponent } from './components/account-activation-info/account-activation-info.component';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 
 @NgModule({
@@ -48,7 +49,8 @@ import { AccountActivationInfoComponent } from './components/account-activation-
     HttpClientModule,
     MatSnackBarModule,
     MatCardModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatProgressSpinnerModule
   ],
   providers: [
     {
