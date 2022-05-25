@@ -9,7 +9,7 @@ import { AuthService } from "../services/auth.service";
   })
 export class AdminGuard implements CanActivate{
 
-    currentUser!: User
+    currentUser!: any
 
   constructor(
     private router: Router,
@@ -24,7 +24,7 @@ export class AdminGuard implements CanActivate{
             this.authenticationService.getUser().toPromise().then((response) => {
                 this.currentUser = response
 
-                if (this.currentUser.role === 'ADMIN') {
+                if (this.currentUser.user.role === 'ADMIN') {
                     resolve(true);
                     return true;
                 }

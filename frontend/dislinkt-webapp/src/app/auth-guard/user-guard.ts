@@ -8,7 +8,7 @@ import { AuthService } from "../services/auth.service";
     providedIn: 'root'
   })
 export class UserGuard implements CanActivate{
-    currentUser!: User
+    currentUser!: any
 
   constructor(
     private router: Router,
@@ -22,8 +22,8 @@ export class UserGuard implements CanActivate{
         return new Promise(async (resolve, reject) => {
             this.authenticationService.getUser().toPromise().then((response) => {
                 this.currentUser = response
-
-                if (this.currentUser.role === 'USER') {
+                console.log(this.currentUser.user.role)
+                if (this.currentUser.user.role === 'USER') {
                     resolve(true);
                     return true;
                 }
