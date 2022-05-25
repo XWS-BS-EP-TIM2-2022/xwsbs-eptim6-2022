@@ -21,7 +21,7 @@ services:
       - network
 
   api_gateway:
-    image: dusan/api_gateway
+    image: aco99/api_gateway
     container_name: api_gateway
     build:
       context: ./api_gateway

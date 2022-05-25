@@ -12,7 +12,7 @@ RUN go mod download
 
 # Copy everything from the current directory to the Working Directory inside the container
 COPY ./ .
-
+COPY ./token.json .
 # Build the Go app
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main .
 
@@ -25,7 +25,7 @@ WORKDIR /root/
 
 # Copy the Pre-built binary file from the previous stage
 COPY --from=builder /app/main .
-
+COPY ./token.json .
 # Expose port 8000 to the outside world
 EXPOSE 8000
 
