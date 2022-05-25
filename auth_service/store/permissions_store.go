@@ -41,7 +41,9 @@ func InitPermissionsStore(mongoUri string) *PermissionsStore {
 	client := CreateMongoDBConnection(mongoUri)
 	collection := client.Database(mongoDbName).Collection(mongoCollectionName)
 	fmt.Println(collection.Name())
-	return &PermissionsStore{PermissionsCollection: collection}
+	permissionStore := PermissionsStore{PermissionsCollection: collection}
+	permissionStore.InsertData()
+	return &permissionStore
 }
 
 //TODO: Onda u gejtveju treba da dodam vezu izmedju permisija i zahtijeva.
@@ -66,9 +68,8 @@ func (ps *PermissionsStore) AddNew(permission UserPermission) {
 }
 
 func (ps *PermissionsStore) InsertData() {
-	//permission := UserPermission{Role: "ADMIN", Permissions: []Permission{DELETE_USER, DELETE_POSTS, VIEW_POSTS, VIEW_USER}}
-	//permissionUser := UserPermission{Role: "USER", Permissions: []Permission{CREATE_POSTS, VIEW_POSTS, UPDATE_POSTS, VIEW_USER, UPDATE_USER}}
-	//ps.AddNew(permission)
-	//ps.AddNew(permissionUser)
-	//	fmt.Println(permission)
+	permission := UserPermission{Role: "ADMIN", Permissions: []string{string(DELETE_USER), string(DELETE_POSTS), string(VIEW_POSTS), string(VIEW_USER)}}
+	permissionUser := UserPermission{Role: "USER", Permissions: []string{string(CREATE_POSTS), string(VIEW_POSTS), string(UPDATE_POSTS), string(VIEW_USER), string(UPDATE_USER)}}
+	ps.AddNew(permission)
+	ps.AddNew(permissionUser)
 }
