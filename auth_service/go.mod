@@ -3,7 +3,7 @@ module github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/auth_service
 go 1.18
 
 require (
-	github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common v0.0.0-20220525104406-564254bc8a2c
+	github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common v0.0.0-20220525180127-cf807331712f
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/go-playground/validator/v10 v10.11.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.10.1

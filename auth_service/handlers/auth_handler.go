@@ -292,7 +292,7 @@ func (ah *AuthHandler) SendEmail(emailTo string, mailMessage []byte) {
 }
 
 func (ah *AuthHandler) MailActivationMessage(token string) []byte {
-	confirmationLink := "http://" + config.NewConfig().FrontendUri + "/account-activation/" + token
+	confirmationLink := "https://" + config.NewConfig().FrontendUri + "/account-activation/" + token
 
 	subject := "Subject: Account activation\n"
 	mime := "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
@@ -334,7 +334,7 @@ func (ah *AuthHandler) AccountRecoveryEmail(email string) error {
 		return errors.New("Error occured while updating token!")
 	}
 
-	resetLink := "http://" + config.NewConfig().FrontendUri + "/set-password/" + urlToken
+	resetLink := "https://" + config.NewConfig().FrontendUri + "/set-password/" + urlToken
 	subject := "Subject: Account recovery\n"
 	mime := "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
 	body := ah.GenerateMailBody(resetLink, "Account Recovery", "Press the button below to reset password", "Reset Password")
@@ -371,7 +371,7 @@ func (ah *AuthHandler) SendPasswordlessLoginEmail(email string) error {
 		return errors.New("Error occured while updating token!")
 	}
 
-	resetLink := "http://" + config.NewConfig().FrontendUri + "/passwordless/" + urlToken
+	resetLink := "https://" + config.NewConfig().FrontendUri + "/passwordless/" + urlToken
 	mime := "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
 	subject := "Subject: Dislinkt passwordless login\n"
 	body := ah.GenerateMailBody(resetLink, "Dislinkt passwordless login", "Press the button below to login!", "Login")

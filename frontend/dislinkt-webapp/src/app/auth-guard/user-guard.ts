@@ -22,7 +22,7 @@ export class UserGuard implements CanActivate{
         return new Promise(async (resolve, reject) => {
             this.authenticationService.getUser().toPromise().then((response) => {
                 this.currentUser = response
-                console.log(this.currentUser.user.role)
+                console.log(response)
                 if (this.currentUser.user.role === 'USER') {
                     resolve(true);
                     return true;

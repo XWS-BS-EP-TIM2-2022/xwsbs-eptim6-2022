@@ -1,7 +1,6 @@
 package config
 
 import (
-	"os"
 	"regexp"
 )
 
@@ -70,15 +69,24 @@ func NewConfig() *Config {
 	permissions.permissions[string(VIEW_POSTS)] = []string{"GET/api/posts"}
 	permissions.permissions[string(UPDATE_USER)] = []string{"PUT/api/users/experience", "PUT/users/follow/[a-zA-Z0-9]+"}
 	permissions.permissions[string(DELETE_USER)] = []string{"DELETE/api/users/[a-zA-Z0-9]+"}
-
 	return &Config{
 		SecurityPermissions: &permissions,
-		Port:                os.Getenv("GATEWAY_PORT"),
-		AuthHost:            os.Getenv("AUTH_SERVICE_HOST"),
-		AuthPort:            os.Getenv("AUTH_SERVICE_PORT"),
-		PostsHost:           os.Getenv("POSTS_SERVICE_HOST"),
-		PostsPort:           os.Getenv("POSTS_SERVICE_PORT"),
-		ProfileHost:         os.Getenv("PROFILE_SERVICE_HOST"),
-		ProfilePort:         os.Getenv("PROFILE_SERVICE_PORT"),
+		Port:                "5000",
+		AuthHost:            "localhost",
+		AuthPort:            "5001",
+		PostsHost:           "localhost",
+		PostsPort:           "5002",
+		ProfileHost:         "localhost",
+		ProfilePort:         "5003",
 	}
+	//return &Config{
+	//	SecurityPermissions: &permissions,
+	//	Port:                os.Getenv("GATEWAY_PORT"),
+	//	AuthHost:            os.Getenv("AUTH_SERVICE_HOST"),
+	//	AuthPort:            os.Getenv("AUTH_SERVICE_PORT"),
+	//	PostsHost:           os.Getenv("POSTS_SERVICE_HOST"),
+	//	PostsPort:           os.Getenv("POSTS_SERVICE_PORT"),
+	//	ProfileHost:         os.Getenv("PROFILE_SERVICE_HOST"),
+	//	ProfilePort:         os.Getenv("PROFILE_SERVICE_PORT"),
+	//}
 }

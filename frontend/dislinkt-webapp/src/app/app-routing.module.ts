@@ -18,6 +18,10 @@ const routes: Routes = [
     component: LoginComponent,
   },
   {
+    path: 'forgot-password',
+    component: ForgotPasswordComponent,
+  },
+  {
     path: 'registration',
     component: RegistrationComponent,
   },
@@ -37,7 +41,7 @@ const routes: Routes = [
     canActivate: [UserGuard]
   },
   {
-    path: 'homepage',
+    path: 'home',
     component: HomepageComponent,
     canActivate: [UserGuard]
   },

@@ -19,7 +19,7 @@ export class ProfileService {
   }
 
   addNewExperience(experience:any): Observable<any> {
-    return this._http.get<any>('http://localhost:5000/users/experience', experience)
+    return this._http.put<any>('/api/users/experience', experience)
     .pipe(
       tap(data => console.log("data: ", data))
     )

@@ -23,7 +23,7 @@ export class AdminGuard implements CanActivate{
         return new Promise(async (resolve, reject) => {
             this.authenticationService.getUser().toPromise().then((response) => {
                 this.currentUser = response
-
+                console.log(response)
                 if (this.currentUser.user.role === 'ADMIN') {
                     resolve(true);
                     return true;
