@@ -1,7 +1,8 @@
 FROM node:16.13 as node
 WORKDIR /app
-COPY ./dislinkt-webapp ./
+COPY ./dislinkt-webapp/package.json ./dislinkt-webapp/package-lock.json ./
 RUN npm install
+COPY ./dislinkt-webapp ./
 RUN npm run build --prod
 
 FROM nginx:alpine

@@ -5,8 +5,7 @@ services:
     image: dusan/auth_service
     container_name: auth_service
     build:
-      context: .
-      dockerfile: ./auth_service/DockerFile
+      context: ./auth_service
     restart: on-failure
     environment:
       GATEWAY_AUTH_PORT: ${GATEWAY_AUTH_PORT}
@@ -44,8 +43,8 @@ services:
     image: dusan/post_service
     container_name: post_service
     build:
-      context: .
-      dockerfile: ./post-service/Dockerfile
+      context: ./posts-service
+#      dockerfile: ./posts-service/Dockerfile
     restart: on-failure
     environment:
       GATEWAY_POSTS_PORT: ${GATEWAY_POSTS_PORT}
@@ -63,8 +62,8 @@ services:
     image: dusan/profile_service
     container_name: profile_service
     build:
-      context: .
-      dockerfile: ./profile-service/Dockerfile
+      context: ./profile-service
+#      dockerfile: ./profile-service/Dockerfile
     restart: on-failure
     environment:
       GATEWAY_PROFILE_PORT: ${GATEWAY_PROFILE_PORT}
