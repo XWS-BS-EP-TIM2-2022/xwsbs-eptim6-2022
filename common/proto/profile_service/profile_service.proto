@@ -146,4 +146,5 @@ message User {
   repeated Follower followings = 16;
   bool isPublic = 17;
   repeated Follower followRequests = 18;
+  string role=19;
 }

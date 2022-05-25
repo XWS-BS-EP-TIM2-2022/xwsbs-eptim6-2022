@@ -3,7 +3,7 @@ module profile-service
 go 1.18
 
 require (
-	github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common v0.0.0-20220524114847-9c73273bc48a
+	github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common v0.0.0-20220524160057-0befafa95623
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.10.1
 	github.com/opentracing/opentracing-go v1.2.0
 	go.mongodb.org/mongo-driver v1.9.1

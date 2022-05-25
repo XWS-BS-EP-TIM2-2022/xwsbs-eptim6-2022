@@ -11,6 +11,7 @@ export class ChangePasswordComponent implements OnInit {
   newPassword : string = ''
   repeatedPassword : string = ''
   errorMessage : string = ''
+  done : boolean = false
 
   constructor(public service : AuthService) { }
 
@@ -30,6 +31,7 @@ export class ChangePasswordComponent implements OnInit {
           this.oldPassword = ""
           this.newPassword = ""
           this.repeatedPassword = ""
+          this.done = true
         },
         (error) => {
           this.errorMessage = 'Wrong old password';

@@ -5,7 +5,7 @@ go 1.18
 require (
 	cloud.google.com/go/storage v1.10.0
 	firebase.google.com/go v3.13.0+incompatible
-	github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common v0.0.0-20220524115814-4db6dba39a11
+	github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common v0.0.0-20220524160722-0f6e464aedbe
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.10.1
 	google.golang.org/api v0.80.0
 	google.golang.org/grpc v1.46.2

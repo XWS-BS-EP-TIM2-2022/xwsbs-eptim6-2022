@@ -11,10 +11,15 @@ export class LoginComponent implements OnInit {
   username : string = ""
   password : string = ""
   errorMessage : string = ""
+  logged : boolean = false
 
   constructor(private authService: AuthService, private router: Router) { }
 
   ngOnInit(): void {
+    if (localStorage.getItem('jwt') != null)
+      this.logged = true
+    else
+      this.logged = false
   }
 
   submitForm() {
@@ -24,7 +29,7 @@ export class LoginComponent implements OnInit {
     }
     this.authService.login(user).subscribe(
       (data) => {
-        this.router.navigate(['/change-password'])
+        this.router.navigate(['/homepage'])
       },
       (error) => {
         this.errorMessage = 'Invalid credentials';

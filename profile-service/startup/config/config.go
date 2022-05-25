@@ -7,6 +7,8 @@ type Config struct {
 	GatewayPort         string
 	GrpcPort            string
 	MongoDbUri          string
+	MongoDbName         string
+	MongoDbCollection   string
 	AuthServiceGrpcHost string
 	AuthServiceGrpcPort string
 }
@@ -19,5 +21,7 @@ func NewConfig() *Config {
 		Host:                os.Getenv("PROFILE_SERVICE_HOST"),
 		AuthServiceGrpcHost: os.Getenv("AUTH_SERVICE_GRPC_HOST"),
 		AuthServiceGrpcPort: os.Getenv("AUTH_SERVICE_GRPC_PORT"),
+		MongoDbName:         "users_profiles",  //os.Getenv("MONGODB_URI"),
+		MongoDbCollection:   "profiles",        //os.Getenv("MONGODB_URI"),
 	}
 }
