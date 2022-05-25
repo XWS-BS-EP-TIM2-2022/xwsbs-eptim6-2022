@@ -3,27 +3,31 @@ package store
 import (
 	"context"
 	"fmt"
+	"golang.org/x/crypto/bcrypt"
+	"html"
+	"log"
+	"reflect"
+	"time"
 	"github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/auth_service/startup/config"
 	"github.com/go-playground/validator/v10"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"html"
-	"log"
-	"reflect"
-	"time"
 )
 
 type User struct {
-	Username     string    `json:"username" validate:"required,lt=50"`
-	Name         string    `json:"name" validate:"required"`
-	Surname      string    `json:"surname" validate:"required"`
-	Password     string    `json:"password" validate:"required"`
-	Email        string    `json:"email" validate:"required,email"`
-	Role         string    `json:"role" validate:"required"`
-	FailedLogins int       `json:"failed-logins" bson:"failed-logins"`
-	Blocked      bool      `json:"blocked"`
-	BlockedUntil time.Time `json:"blocked-until" bson:"blocked-until"`
+	Username          string    `json:"username" validate:"required,lt=50"`
+	Name              string    `json:"name" validate:"required"`
+	Surname           string    `json:"surname" validate:"required"`
+	Password          string    `json:"password" validate:"required"`
+	Email             string    `json:"email" validate:"required,email"`
+	Role              string    `json:"role" validate:"required"`
+	FailedLogins      int       `json:"failed-logins" bson:"failed-logins"`
+	Blocked           bool      `json:"blocked"`
+	BlockedUntil      time.Time `json:"blocked-until" bson:"blocked-until"`
+	IsActivated       bool      `json:"isActivated" bson:"is-activated"`
+	VerificationToken string    `json:"verificationToken" bson:"verification-token"`
+	TokenExpiration   time.Time `json:"tokenExpiration" bson:"token-expiration"`
 }
 type ChangePasswordRequest struct {
 	Username    string `json:"username"`
@@ -169,4 +173,47 @@ func InitUsersStore(config config.Config) *UsersStore {
 	collection := client.Database(config.MongoDbName).Collection(config.MongoDbCollection)
 	fmt.Println(collection.Name())
 	return &UsersStore{UsersCollection: collection}
+}
+
+func (us *UsersStore) FindByToken(token string) User {
+	for _, element := range us.FindAll() {
+		err := bcrypt.CompareHashAndPassword([]byte(element.VerificationToken), []byte(token))
+		if err == nil {
+			return element
+		}
+	}
+
+	return User{}
+}
+
+func (us *UsersStore) ActivateAccount(username string) error {
+	filter := bson.D{{"username", username}}
+
+	update := bson.D{
+		{"$set", bson.D{
+			{"is-activated", true},
+		}},
+	}
+	_, err := us.UsersCollection.UpdateOne(context.TODO(), filter, update)
+	return err
+}
+
+func (us *UsersStore) FindByEmail(email string) (User, error) {
+	var user User
+	filter := bson.D{{"email", email}}
+	err := us.UsersCollection.FindOne(context.TODO(), filter).Decode(&user)
+	return user, err
+}
+
+func (us *UsersStore) RefreshToken(username string, token string) error {
+	filter := bson.D{{"username", username}}
+
+	update := bson.D{
+		{"$set", bson.D{
+			{"verification-token", token},
+			{"token-expiration", time.Now().Add(time.Hour * 2)},
+		}},
+	}
+	_, err := us.UsersCollection.UpdateOne(context.TODO(), filter, update)
+	return err
 }

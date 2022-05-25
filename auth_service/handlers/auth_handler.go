@@ -2,9 +2,17 @@ package handlers
 
 import (
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"math/rand"
+	"net/http"
+	"net/smtp"
+	"strings"
+	"time"
+	"unicode"
+
 	"github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/auth_service/startup/config"
 	"github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/auth_service/store"
 	authServicePb "github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common/proto/auth_service"
@@ -13,10 +21,6 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
-	"net/http"
-	"strings"
-	"time"
-	"unicode"
 )
 
 type ErrorMessage struct {
@@ -29,6 +33,10 @@ type AuthHandler struct {
 	UserStore                *store.UsersStore
 	secretKey                []byte
 	profileServiceGrpcClient profileGw.ProfileServiceClient
+}
+
+type ActivationRequest struct {
+	token string `json:"token"`
 }
 
 func getConnection(address string) (*grpc.ClientConn, error) {
@@ -59,6 +67,10 @@ func (ah *AuthHandler) LoginUser(user store.User) (JWT, error) {
 	dbUser, err := ah.UserStore.FindByUsername(user.Username)
 	if err != nil {
 		fmt.Println("User not found")
+		return JWT{Token: ""}, err
+	}
+	if dbUser.IsActivated == false {
+		err := errors.New("Account not activated!")
 		return JWT{Token: ""}, err
 	}
 	if !CheckPasswordHash(user.Password, dbUser.Password) {
@@ -120,6 +132,13 @@ func (ag *AuthHandler) AddNewUser(user *store.User) error {
 	}
 	user.Password, _ = HashPassword(user.Password)
 	user.FailedLogins = 0
+
+	user.IsActivated = false
+	verificationHash, urlToken := ag.GenerateVerificationToken()
+	user.VerificationToken = verificationHash
+	user.TokenExpiration = time.Now().Add(time.Hour * 2)
+	ag.SendEmail(user.Email, ag.MailActivationMessage(urlToken))
+
 	err := ag.UserStore.AddNew(user)
 	if err != nil {
 		return err
@@ -223,6 +242,17 @@ func (ah *AuthHandler) HandleFailedLogin(user store.User) error {
 	return errors.New("Invalid credentials")
 }
 
+func (ah *AuthHandler) GenerateVerificationToken() (string, string) {
+	randomBytes := make([]byte, 10)
+	rand.Seed(time.Now().UnixNano())
+	rand.Read(randomBytes)
+	fmt.Println(randomBytes)
+	encoded := base64.RawURLEncoding.EncodeToString(randomBytes)
+
+	token, _ := bcrypt.GenerateFromPassword([]byte(encoded), 14)
+	return string(token), encoded
+}
+
 func (ah *AuthHandler) ChangePassword(request store.ChangePasswordRequest) (*store.User, error) {
 	user, err := ah.UserStore.FindByUsername(request.Username)
 
@@ -243,4 +273,196 @@ func (ah *AuthHandler) ChangePassword(request store.ChangePasswordRequest) (*sto
 		}
 	}
 	return &user, nil
+}
+
+func (ah *AuthHandler) SendEmail(emailTo string, mailMessage []byte) {
+	from := config.NewConfig().EmailFrom
+	password := config.NewConfig().EmailPassword
+	to := []string{emailTo}
+	host := config.NewConfig().EmailHost
+	port := config.NewConfig().EmailPort
+	address := host + ":" + port
+
+	auth := smtp.PlainAuth("", from, password, host)
+
+	err := smtp.SendMail(address, auth, from, to, mailMessage)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func (ah *AuthHandler) MailActivationMessage(token string) []byte {
+	confirmationLink := "http://" + config.NewConfig().FrontendUri + "/account-activation/" + token
+
+	subject := "Subject: Account activation\n"
+	mime := "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
+	body := ah.GenerateMailBody(confirmationLink, "Welcome to Dislinkt!", "Press the button below to activate your account", "Activate Account")
+	message := []byte(subject + mime + body)
+	return message
+}
+
+func (ah *AuthHandler) ActivateAccount(token string) error {
+	user := ah.UserStore.FindByToken(token)
+	if user == (store.User{}) {
+		return errors.New("Activation failed, invalid token!")
+	}
+
+	if user.TokenExpiration.Before(time.Now()) {
+		return errors.New("Activation token expired!")
+	}
+
+	validateToken := bcrypt.CompareHashAndPassword([]byte(user.VerificationToken), []byte(token))
+	if validateToken != nil {
+		return errors.New("Activation failed, invalid token!")
+	}
+
+	err := ah.UserStore.ActivateAccount(user.Username)
+	return err
+}
+
+func (ah *AuthHandler) AccountRecoveryEmail(email string) error {
+	user, noUserFound := ah.UserStore.FindByEmail(email)
+
+	if noUserFound != nil {
+		return errors.New("Account with this email doesn't exist!")
+	}
+
+	verificationHash, urlToken := ah.GenerateVerificationToken()
+
+	invalidToken := ah.UserStore.RefreshToken(user.Username, verificationHash)
+	if invalidToken != nil {
+		return errors.New("Error occured while updating token!")
+	}
+
+	resetLink := "http://" + config.NewConfig().FrontendUri + "/set-password/" + urlToken
+	subject := "Subject: Account recovery\n"
+	mime := "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
+	body := ah.GenerateMailBody(resetLink, "Account Recovery", "Press the button below to reset password", "Reset Password")
+	message := []byte(subject + mime + body)
+	ah.SendEmail(user.Email, message)
+	return nil
+}
+
+func (ah *AuthHandler) ResetPassword(token string, newPassword string) error {
+	user := ah.UserStore.FindByToken(token)
+	if user == (store.User{}) {
+		return errors.New("Account recovery failed, invalid token!")
+	}
+
+	if !isPasswordValid(newPassword) {
+		return errors.New("Incorrect password format")
+	}
+
+	password, _ := HashPassword(newPassword)
+	err := ah.UserStore.UpdatePassword(user.Username, password)
+	return err
+}
+
+func (ah *AuthHandler) SendPasswordlessLoginEmail(email string) error {
+	user, noUserFound := ah.UserStore.FindByEmail(email)
+
+	if noUserFound != nil {
+		return errors.New("Account with this email doesn't exist!")
+	}
+
+	verificationHash, urlToken := ah.GenerateVerificationToken()
+	invalidToken := ah.UserStore.RefreshToken(user.Username, verificationHash)
+	if invalidToken != nil {
+		return errors.New("Error occured while updating token!")
+	}
+
+	resetLink := "http://" + config.NewConfig().FrontendUri + "/passwordless/" + urlToken
+	mime := "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
+	subject := "Subject: Dislinkt passwordless login\n"
+	body := ah.GenerateMailBody(resetLink, "Dislinkt passwordless login", "Press the button below to login!", "Login")
+	message := []byte(subject + mime + body)
+	ah.SendEmail(user.Email, message)
+	return nil
+}
+
+func (ah *AuthHandler) PasswordlessLogin(token string) (JWT, error) {
+	user := ah.UserStore.FindByToken(token)
+	if user == (store.User{}) {
+		return JWT{}, errors.New("Passwordless login failed, invalid token!")
+	}
+
+	if user.TokenExpiration.Before(time.Now()) {
+		return JWT{}, errors.New("Verification token expired!")
+	}
+
+	validateToken := bcrypt.CompareHashAndPassword([]byte(user.VerificationToken), []byte(token))
+	if validateToken != nil {
+		return JWT{}, errors.New("Passwordless login failed,, invalid token!")
+	}
+
+	if user.IsActivated == false {
+		err := errors.New("Account not activated!")
+		return JWT{Token: ""}, err
+	}
+
+	if user.Blocked {
+		if time.Now().After(user.BlockedUntil) {
+			ah.UserStore.ResetFailedLogForUser(user.Username)
+		} else {
+			return JWT{Token: ""}, errors.New("Blocked account")
+		}
+	}
+	ah.UserStore.ResetFailedLogForUser(user.Username)
+
+	tokenStr, err := GenerateJWT(user, ah.secretKey)
+	if err != nil {
+		fmt.Printf("Token generation failed %s\n", err.Error())
+		return JWT{Token: ""}, err
+	}
+	return JWT{Token: tokenStr}, nil
+}
+
+func (ah *AuthHandler) GenerateMailBody(url string, heading string, text string, buttonText string) string {
+	body := "<html>\n" +
+		"<body style=\"margin: 0 !important; padding: 0 !important;\">\n" +
+		"<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n" +
+		"<tr>\n<td bgcolor=\"#5ac5e6\" align=\"center\">\n" +
+		"<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" style=\"max-width: 600px;\">\n" +
+		"<tr>\n" +
+		"<td align=\"center\" valign=\"top\" style=\"padding: 40px 10px 40px 10px;\"></td>\n" +
+		"</tr>\n    </table>\n</td>\n" +
+		"</tr>\n" +
+		"<tr>\n<td bgcolor=\"#5ac5e6\" align=\"center\" style=\"padding: 0px 10px 0px 10px;\">\n" +
+		"<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" style=\"max-width: 600px;\">\n" +
+		"<tr>\n" +
+		"<td bgcolor=\"#ffffff\" align=\"center\" valign=\"top\"\nstyle=\"padding: 40px 20px 20px 20px; " +
+		"border-radius: 4px 4px 0px 0px; color: #111111; font-family: Helvetica, Arial, sans-serif; font-size: 48px; " +
+		"font-weight: 400; letter-spacing: 4px; line-height: 48px;\">\n<h1 style=\"font-size: 48px; font-weight: 400; " +
+		"margin: 2;\">" + heading + "</h1>\n" +
+		"</td>\n" +
+		"</tr>\n" +
+		"</table>\n</td>\n" +
+		"</tr>\n" +
+		"<tr>\n<td bgcolor=\"#5ac5e6\" align=\"center\" style=\"padding: 0px 10px 0px 10px;\">\n" +
+		"<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" style=\"max-width: 600px;\">\n" +
+		"<tr>\n" +
+		"<td bgcolor=\"#ffffff\" align=\"center\"\nstyle=\"padding: 20px 30px 40px 30px; color: #666666; " +
+		"font-family: Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;\">\n" +
+		"<p style=\"margin: 0; font-size: 20px;\">" + text + "</p>\n" +
+		"</td>\n" +
+		"</tr>\n" +
+		"<tr>\n" +
+		"<td bgcolor=\"#ffffff\" align=\"left\">\n<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\n" +
+		"<tr>\n" +
+		"<td bgcolor=\"#ffffff\" align=\"center\" style=\"padding: 20px 30px 60px 30px;\">\n" +
+		"<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\n<tr>\n" +
+		"<td align=\"center\" style=\"border-radius: 3px; border: none;\"\n" +
+		"bgcolor=\"#5ac5e6\">\n" +
+		"<a href=\"" + url + "\"\n" +
+		"style=\"font-size: 20px; font-family: Helvetica, Arial, sans-serif; color: #ffffff; text-decoration: none; " +
+		"color: #ffffff; text-decoration: none; padding: 15px 25px; border-radius: 2px; display: inline-block;\">" + buttonText +
+		"</a>\n" +
+		"</td>\n</tr>\n" +
+		"</table>\n" +
+		"</td>\n" +
+		"</tr>\n</table>\n" +
+		"</td>\n" +
+		"</tr></table><br><br></body></html>"
+
+	return body
 }

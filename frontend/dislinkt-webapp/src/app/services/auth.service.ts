@@ -14,7 +14,7 @@ export class AuthService {
 
   }
 
-  login(user : any) {
+  login(user: any) {
     const body = {
       'username': user.username,
       'password': user.password
@@ -33,26 +33,59 @@ export class AuthService {
     localStorage.removeItem('jwt');
   }
 
-  register(user : any) {
+  register(user: any) {
     const body = {
       'username': user.username,
       'password': user.password,
-      'name' : user.name,
-      'surname' : user.surname,
-      'email' : user.email,
-      'role' : "user"
+      'name': user.name,
+      'surname': user.surname,
+      'email': user.email,
+      'role': "user"
     };
     return this.http.post("/api/auth/users", JSON.stringify(body));
   }
 
-  
-  changePassword(req : any) {
+  changePassword(req: any) {
     const body = {
       'username': 'petra',
       'oldPassword': req.oldPassword,
-      'NewPassword' : req.NewPassword,
+      'NewPassword': req.NewPassword,
     };
     return this.http.put("/api/auth/users/password", JSON.stringify(body));
+  }
+
+  forgotPassword(email: string) {
+    const body = { 'email': email };
+    return this.http.put("/api/auth/users/forgotten-password", JSON.stringify(body), { responseType: 'text' });
+  }
+
+  setPassword(password: string, token: string | null) {
+    const body = {
+      'token': token,
+      'newPassword': password
+    };
+
+    return this.http.put('/api/auth/users/account-recovery', JSON.stringify(body), { responseType: 'text' });
+  }
+
+  activateAccount(token: string | null) {
+    return this.http.get('/api/auth/activation/' + token);
+  }
+
+  passwordless(email: string) {
+    const body = { 'email': email };
+    return this.http.put("/api/auth/users/passwordless", JSON.stringify(body), { responseType: 'text' });
+  }
+
+  passwordlessLogin(token: string | null) {
+    const body = { 'token': token };
+    return this.http.put("/api/auth/session/passwordless", JSON.stringify(body)).pipe(
+      map((res: any) => {
+        console.log('Login success');
+        localStorage.setItem('jwt', res.responseStatus);
+        console.log(res);
+      })
+    )
   }
 
   getUser(): Observable<any> {

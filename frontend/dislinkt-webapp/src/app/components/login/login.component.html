@@ -3,36 +3,41 @@
   <h3>You are already logged in.</h3>
 </mat-card>
 <mat-card *ngIf="!logged">
-  <mat-card-content>
+  <mat-card-content *ngIf="!passwordless">
     <form #loginForm="ngForm" (ngSubmit)="submitForm()">
       <h2>Log In</h2>
       <mat-form-field>
-        <input
-          matInput
-          placeholder="Username"
-          [(ngModel)]="username"
-          name="username"
-          required
-        />
+        <input matInput placeholder="Username" [(ngModel)]="username" name="username" required />
       </mat-form-field>
       <mat-form-field>
-        <input
-          matInput
-          type="password"
-          placeholder="Password"
-          [(ngModel)]="password"
-          name="password"
-          required
-        />
+        <input matInput type="password" placeholder="Password" [(ngModel)]="password" name="password" required />
       </mat-form-field>
+      <div class="mb-3 forgotPass">
+        <a href="/forgot-password">Forgot password?</a>
+        <a class="link" (click)="passwordless = true">Passwordless?</a>
+      </div>
       <p class="my-3" style="color: red">{{ errorMessage }}</p>
-      <button
-        class="btn btn-primary"
-        mat-raised-button
-        color="primary"
-        [disabled]="username == '' || password == ''"
-      >
+      <button class="btn btn-primary" mat-raised-button color="primary" [disabled]="username == '' || password == ''">
         Login
+      </button>
+    </form>
+  </mat-card-content>
+
+  <mat-card-content *ngIf="passwordless">
+    <form #passwordlessForm="ngForm" (ngSubmit)="passwordlessLogin()">
+      <h2 class="mt-2 mx-2">Passwordless login?</h2>
+      <div class="message mb-2">
+        <p>A login link will be sent to entered email</p>
+      </div>
+      <mat-form-field>
+        <input matInput placeholder="Email" [(ngModel)]="email" name="email" required [formControl]="checkMail" />
+      </mat-form-field>
+      <p class="mt-3 mb-2" style="color: red">{{ errorMessage }}</p>
+      <mat-error style="text-align: center" *ngIf="checkMail.invalid">
+        Please enter a valid mail address!
+      </mat-error>
+      <button class="btn btn-primary" mat-raised-button color="primary" [disabled]="email == ''">
+        Submit
       </button>
     </form>
   </mat-card-content>

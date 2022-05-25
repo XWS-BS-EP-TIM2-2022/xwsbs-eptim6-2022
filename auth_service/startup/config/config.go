@@ -12,6 +12,11 @@ type Config struct {
 	ProfileServiceGrpcHost string
 	ProfileServiceGrpcPort string
 	SecretKey              string
+	EmailPort              string
+	EmailHost              string
+	EmailFrom              string
+	EmailPassword          string
+	FrontendUri            string
 }
 
 func NewConfig() *Config {
@@ -25,5 +30,10 @@ func NewConfig() *Config {
 		SecretKey:              os.Getenv("SECRET_KEY_AUTH"),
 		MongoDbName:       "auth_service_users", //os.Getenv("MONGODB_URI"),
 		MongoDbCollection: "users",              //os.Getenv("MONGODB_URI"),
+		EmailPort:              "587",
+		EmailHost:              "smtp.gmail.com",
+		EmailFrom:              os.Getenv("DISLINKT_MAIL"),          //bsepdislinkt@gmail.com
+		EmailPassword:          os.Getenv("DISLINKT_MAIL_PASSWORD"), //Dislinkt123
+		FrontendUri:            "localhost:4200",
 	}
 }
