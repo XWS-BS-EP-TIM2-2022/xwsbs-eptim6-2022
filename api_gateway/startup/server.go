@@ -26,8 +26,8 @@ type SecurityServer struct {
 }
 
 const (
-	serverCertFile = "D:\\Fakultet\\cetvrta\\xml\\xwsbs-eptim6-2022\\frontend\\dislinkt-webapp\\.cert\\cert.pem"
-	serverKeyFile  = "D:\\Fakultet\\cetvrta\\xml\\xwsbs-eptim6-2022\\frontend\\dislinkt-webapp\\.cert\\key.pem"
+	serverCertFile = "./startup/certificates/XWSBackend.pem"
+	serverKeyFile  = "./startup/certificates/XWSBackend.key"
 )
 
 func NewServer(config *cfg.Config) *Server {
@@ -105,17 +105,14 @@ func (server *Server) Start() {
 		Addr:    ":" + server.config.Port,
 		Handler: authWrapper(server.mux, server),
 	}
+
+	log.Fatal(gwServer.ListenAndServeTLS(serverCertFile, serverKeyFile))
+
 	//listener, err := net.Listen("tcp", gwServer.Addr)
 	//if err != nil {
 	//	log.Fatal("cannot start server: ", err)
 	//}
 	//log.Fatal(http.ServeTLS(listener, gwServer.Handler, serverCertFile, serverKeyFile))
-
-	err := gwServer.ListenAndServeTLS(serverCertFile, serverKeyFile)
-	if err != nil {
-		log.Fatal("ListenAndServe: ", err)
-	}
-
 	//s := fmt.Sprintf("Serving gRPC-Gateway on http://0.0.0.0:%s", server.config.Port)
 	//fmt.Println(s)
 	//log.Fatalln(gwServer.ListenAndServe())
