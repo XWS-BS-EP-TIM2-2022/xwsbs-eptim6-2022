@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpStatusCode } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 
@@ -9,13 +9,17 @@ import { Observable } from 'rxjs';
 })
 export class AuthService {
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) { 
+    http.options("",{})
+
+  }
 
   login(user: any) {
     const body = {
       'username': user.username,
       'password': user.password
     };
+    
     return this.http.put("/api/auth/session", JSON.stringify(body)).pipe(
       map((res: any) => {
         console.log('Login success');
