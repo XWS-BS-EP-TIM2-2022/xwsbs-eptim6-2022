@@ -1,5 +1,7 @@
 package config
 
+import "os"
+
 type Config struct {
 	Host                string
 	GatewayPort         string
@@ -11,11 +13,11 @@ type Config struct {
 
 func NewConfig() *Config {
 	return &Config{
-		GatewayPort:         "8005",            //os.Getenv("GATEWAY_PORT"),
-		GrpcPort:            "8007",            //os.Getenv("GRPC_PORT"),
-		MongoDbUri:          "localhost:27017", //os.Getenv("MONGODB_URI"),
-		Host:                "http://localhost",
-		AuthServiceGrpcHost: "localhost",
-		AuthServiceGrpcPort: "8051",
+		GatewayPort:         os.Getenv("GATEWAY_PROFILE_PORT"),
+		GrpcPort:            os.Getenv("GRPC_PROFILE_PORT"),
+		MongoDbUri:          os.Getenv("MONGO_DB_URI_PROFILE"),
+		Host:                os.Getenv("PROFILE_SERVICE_HOST"),
+		AuthServiceGrpcHost: os.Getenv("AUTH_SERVICE_GRPC_HOST"),
+		AuthServiceGrpcPort: os.Getenv("AUTH_SERVICE_GRPC_PORT"),
 	}
 }

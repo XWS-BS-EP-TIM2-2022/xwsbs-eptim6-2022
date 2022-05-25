@@ -1,6 +1,7 @@
 package config
 
 import (
+	"os"
 	"regexp"
 )
 
@@ -72,12 +73,12 @@ func NewConfig() *Config {
 
 	return &Config{
 		SecurityPermissions: &permissions,
-		Port:                "5000",      ///os.Getenv("GATEWAY_PORT"),
-		AuthHost:            "localhost", //os.Getenv("AUTH_SERVICE_HOST"),
-		AuthPort:            "8051",      //os.Getenv("AUTH_SERVICE_PORT"),
-		PostsHost:           "localhost", //os.Getenv("ORDERING_SERVICE_HOST"),
-		PostsPort:           "8011",      // os.Getenv("ORDERING_SERVICE_PORT"),
-		ProfileHost:         "localhost", //os.Getenv("SHIPPING_SERVICE_HOST"),
-		ProfilePort:         "8007",      //os.Getenv("SHIPPING_SERVICE_PORT"),
+		Port:                os.Getenv("GATEWAY_PORT"),
+		AuthHost:            os.Getenv("AUTH_SERVICE_HOST"),
+		AuthPort:            os.Getenv("AUTH_SERVICE_PORT"),
+		PostsHost:           os.Getenv("POSTS_SERVICE_HOST"),
+		PostsPort:           os.Getenv("POSTS_SERVICE_PORT"),
+		ProfileHost:         os.Getenv("PROFILE_SERVICE_HOST"),
+		ProfilePort:         os.Getenv("PROFILE_SERVICE_PORT"),
 	}
 }
