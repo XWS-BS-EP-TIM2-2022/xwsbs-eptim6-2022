@@ -1,0 +1,114 @@
+version: "3.8"
+
+services:
+  auth_service:
+    image: dusan/auth_service
+    container_name: auth_service
+    build:
+      context: ./auth_service
+    restart: on-failure
+    environment:
+      GATEWAY_AUTH_PORT: ${GATEWAY_AUTH_PORT}
+      GRPC_AUTH_PORT: ${GRPC_AUTH_PORT}
+      MONGO_DB_URI_AUTH: ${MONGO_DB_URI_AUTH}
+      AUTH_HOST: localhost
+      PROFILE_SERVICE_GRPC_HOST: ${PROFILE_SERVICE_GRPC_HOST}
+      PROFILE_SERVICE_GRPC_PORT: ${PROFILE_SERVICE_GRPC_PORT}
+      SECRET_KEY_AUTH: ${SECRET_KEY_AUTH}
+    depends_on:
+      - auth_db
+    networks:
+      - network
+
+  api_gateway:
+    image: aco99/api_gateway
+    container_name: api_gateway
+    build:
+      context: ./api_gateway
+    restart: on-failure
+    ports:
+      - ${GATEWAY_PORT}:${GATEWAY_PORT}
+    environment:
+      GATEWAY_PORT: ${GATEWAY_PORT}
+      AUTH_SERVICE_HOST: ${AUTH_SERVICE_HOST}
+      AUTH_SERVICE_PORT: ${AUTH_SERVICE_PORT}
+      POSTS_SERVICE_HOST: ${POSTS_SERVICE_HOST}
+      POSTS_SERVICE_PORT: ${POSTS_SERVICE_PORT}
+      PROFILE_SERVICE_HOST: ${PROFILE_SERVICE_HOST}
+      PROFILE_SERVICE_PORT: ${PROFILE_SERVICE_PORT}
+    networks:
+      - network
+
+  post_service:
+    image: dusan/post_service
+    container_name: post_service
+    build:
+      context: ./posts-service
+#      dockerfile: ./posts-service/Dockerfile
+    restart: on-failure
+    environment:
+      GATEWAY_POSTS_PORT: ${GATEWAY_POSTS_PORT}
+      GRPC_POSTS_PORT: ${GRPC_POSTS_PORT}
+      MONGO_DB_URI_POSTS: ${MONGO_DB_URI_POSTS}
+      PROFILE_SERVICE_HOST: localhost
+      AUTH_SERVICE_GRPC_HOST: ${AUTH_SERVICE_GRPC_HOST}
+      AUTH_SERVICE_GRPC_PORT: ${AUTH_SERVICE_GRPC_PORT}
+    depends_on:
+      - post_db
+    networks:
+      - network
+
+  profile_service:
+    image: dusan/profile_service
+    container_name: profile_service
+    build:
+      context: ./profile-service
+#      dockerfile: ./profile-service/Dockerfile
+    restart: on-failure
+    environment:
+      GATEWAY_PROFILE_PORT: ${GATEWAY_PROFILE_PORT}
+      GRPC_PROFILE_PORT: ${GRPC_PROFILE_PORT}
+      MONGO_DB_URI_PROFILE: ${MONGO_DB_URI_PROFILE}
+      PROFILE_SERVICE_HOST: localhost
+      AUTH_SERVICE_GRPC_HOST: ${AUTH_SERVICE_GRPC_HOST}
+      AUTH_SERVICE_GRPC_PORT: ${AUTH_SERVICE_GRPC_PORT}
+    depends_on:
+      - profile_db
+    networks:
+      - network
+
+  dislinkt_client:
+    build: ./frontend
+    image: dusan/dislinkt_client
+    ports:
+      - "4201:80"
+
+  profile_db:
+    image: mongo
+    container_name: profile_db
+    restart: on-failure
+    ports:
+      - 27020:27017
+    networks:
+      - network
+
+  post_db:
+    image: mongo
+    container_name: post_db
+    restart: on-failure
+    ports:
+      - 27019:27017
+    networks:
+      - network
+
+  auth_db:
+    image: mongo
+    container_name: auth_db
+    restart: on-failure
+    ports:
+      - 27018:27017
+    networks:
+      - network
+networks:
+  network:
+    driver: bridge
