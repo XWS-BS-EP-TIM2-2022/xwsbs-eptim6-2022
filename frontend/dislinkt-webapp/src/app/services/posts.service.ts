@@ -13,7 +13,7 @@ export class PostsService {
   public createNewPost(post : FormData){
     return this.http
       .post(
-        '/api/posts/new-post',
+        '/api/posts',
         post, { observe: 'response', responseType: 'text' });
   }
 
@@ -24,8 +24,8 @@ export class PostsService {
         comment, { observe: 'response', responseType: 'text' });
   }
 
-  public getAllPosts() : Observable<Post[]> {
-   return this.http.get<Post[]>('/api/posts');
+  public getAllPosts() : Observable<any> {
+   return this.http.get<any>('/api/posts');
   }
 
   public likePost(id : string) : Observable<Post> {

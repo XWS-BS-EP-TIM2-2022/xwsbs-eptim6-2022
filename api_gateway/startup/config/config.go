@@ -65,8 +65,6 @@ func (secPermissions *SecurityPermissions) ValidatePermission(userPermissions []
 func NewConfig() *Config {
 	permissions := SecurityPermissions{permissions: map[string][]string{}}
 	permissions.permissions[string(VIEW_USER)] = []string{"GET/api/auth/users", "GET/api/users"}
-	permissions.permissions[string(CREATE_POSTS)] = []string{"POST/api/posts"}
-	permissions.permissions[string(VIEW_POSTS)] = []string{"GET/api/posts"}
 	permissions.permissions[string(UPDATE_USER)] = []string{"PUT/api/users/experience", "PUT/users/follow/[a-zA-Z0-9]+"}
 	permissions.permissions[string(DELETE_USER)] = []string{"DELETE/api/users/[a-zA-Z0-9]+"}
 	return &Config{

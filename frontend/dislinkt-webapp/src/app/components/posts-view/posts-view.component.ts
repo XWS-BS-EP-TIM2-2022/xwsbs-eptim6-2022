@@ -51,26 +51,26 @@ export class PostsViewComponent implements OnInit {
     }
 
     this.commentText = ''
-    this.service.getAllPosts().subscribe(res => this.posts = res);
+    this.service.getAllPosts().toPromise().then(res => this.posts = res.posts);
   }
 
   likePost(id: string) {
     this.service.likePost(id).subscribe(res => {
-      this.service.getAllPosts().subscribe(res => this.posts = res);
+      //this.service.getAllPosts().subscribe(res => this.posts = res);
     });
   }
 
   dislikePost(id: string) {
     this.service.dislikePost(id).subscribe(res => {
-      this.service.getAllPosts().subscribe(res => this.posts = res);
+     // this.service.getAllPosts().subscribe(res => this.posts = res);
     });
   }
 
   commentPost() {
     let newComment = new Comment();
     newComment = {
-      Username: "",
-      Text: this.commentText
+      username: "",
+      text: this.commentText
     }
     this.service.commentPost(newComment, this.commentOnPost).subscribe(
       (data) => {

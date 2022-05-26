@@ -1,17 +1,15 @@
 export interface Post {
     _id        : string,
-	Username  : string,
-	Text      : string,
-	Likes     : number,
-	Liked     : string[],
-	Dislikes  : number,
-	Disliked  : string[],
+	username  : string,
+	text      : string,
+	liked     : string[],
+	disliked  : string[],
 	CreatedOn : string,
-	ImageUrl  : string,
-	Comments  : Comment[]
+	imageUrl  : string,
+	comments  : Comment[]
 }
 
 export class Comment {
-    Username! : string;
-    Text !    : string;
+    username! : string;
+    text !    : string;
 }
