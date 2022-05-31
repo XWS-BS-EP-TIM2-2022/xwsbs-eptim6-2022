@@ -1,1 +1,64 @@
-<p>new-job-offer works!</p>
+<app-navbar></app-navbar>
+
+<mat-card>
+  <mat-card-content>
+    <form #loginForm="ngForm">
+      <h2>New Job Offer</h2>
+      <div class="d-flex justify-content-evenly my-2">
+        <mat-form-field>
+          <input
+            matInput
+            placeholder="Position"
+            [(ngModel)]="position"
+            name="position"
+            required
+          />
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label> Experience </mat-label>
+          <select matNativeControl required>
+            <option value="it">With No Experience</option>
+            <option value="it">With Experience</option>
+          </select>
+        </mat-form-field>
+      </div>
+      <mat-form-field appearance="fill" class="my-2 mx-5">
+        <mat-label>Offer is Valid For Period</mat-label>
+        <mat-date-range-input [rangePicker]="picker" required>
+          <input matStartDate placeholder="Start date" />
+          <input matEndDate placeholder="End date" />
+        </mat-date-range-input>
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-date-range-picker #picker></mat-date-range-picker>
+      </mat-form-field>
+      <mat-form-field class="my-2 mx-5" appearance="fill">
+        <mat-label>Requirements</mat-label>
+        <textarea
+          matInput
+          cdkTextareaAutosize
+          #autosize="cdkTextareaAutosize"
+          cdkAutosizeMinRows="3"
+          cdkAutosizeMaxRows="6"
+          required
+          name="requirements"
+        ></textarea>
+      </mat-form-field>
+      <mat-form-field class="my-2 mx-5" appearance="fill">
+        <mat-label>What we Offer</mat-label>
+        <textarea
+          matInput
+          cdkTextareaAutosize
+          #autosize="cdkTextareaAutosize"
+          cdkAutosizeMinRows="3"
+          cdkAutosizeMaxRows="6"
+          required
+          name="description"
+        ></textarea>
+      </mat-form-field>
+      <p class="my-3" style="color: red">{{ errorMessage }}</p>
+      <button class="btn btn-danger" mat-raised-button [disabled]="true">
+        Create Offer
+      </button>
+    </form>
+  </mat-card-content>
+</mat-card>

@@ -13,6 +13,8 @@ import { MatInputModule } from '@angular/material/input';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NewCompanyComponent } from './components/new-company/new-company.component';
 import { NewJobOfferComponent } from './components/new-job-offer/new-job-offer.component';
+import {MatDatepickerModule} from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 
 @NgModule({
   declarations: [
@@ -32,7 +34,9 @@ import { NewJobOfferComponent } from './components/new-job-offer/new-job-offer.c
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
-    MatCardModule
+    MatCardModule,
+    MatDatepickerModule,
+    MatNativeDateModule
   ],
   providers: [],
   bootstrap: [AppComponent]

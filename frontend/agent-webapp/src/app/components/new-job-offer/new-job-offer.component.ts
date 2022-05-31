@@ -6,7 +6,8 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./new-job-offer.component.css']
 })
 export class NewJobOfferComponent implements OnInit {
-
+  errorMessage : string = ''
+  position : string = ''
   constructor() { }
 
   ngOnInit(): void {

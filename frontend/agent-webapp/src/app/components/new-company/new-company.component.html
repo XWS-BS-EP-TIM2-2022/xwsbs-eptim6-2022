@@ -8,6 +8,7 @@
           matInput
           placeholder="Company Name"
           [(ngModel)]="name"
+          name="name"
           required
         />
       </mat-form-field>
@@ -17,6 +18,7 @@
           type="text"
           placeholder="Address"
           [(ngModel)]="address"
+          name="address"
           required
         />
       </mat-form-field>
@@ -26,6 +28,7 @@
           type="email"
           placeholder="Email"
           [(ngModel)]="email"
+          name="email"
           required
         />
       </mat-form-field>
@@ -44,6 +47,7 @@
           cdkAutosizeMinRows="3"
           cdkAutosizeMaxRows="6"
           required
+          name="description"
         ></textarea>
       </mat-form-field>
       <p class="my-3" style="color: red">{{ errorMessage }}</p>
