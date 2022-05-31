@@ -1,0 +1,55 @@
+<app-navbar></app-navbar>
+<mat-card>
+  <mat-card-content>
+    <form #loginForm="ngForm">
+      <h2 class="bg-danger" style="color: white">Register Your Company</h2>
+      <mat-form-field class="my-2 mx-2">
+        <input
+          matInput
+          placeholder="Company Name"
+          [(ngModel)]="name"
+          required
+        />
+      </mat-form-field>
+      <mat-form-field class="my-2 mx-2">
+        <input
+          matInput
+          type="text"
+          placeholder="Address"
+          [(ngModel)]="address"
+          required
+        />
+      </mat-form-field>
+      <mat-form-field class="my-2 mx-2">
+        <input
+          matInput
+          type="email"
+          placeholder="Email"
+          [(ngModel)]="email"
+          required
+        />
+      </mat-form-field>
+      <mat-form-field class="my-2 mx-2">
+        <mat-label> Area of Expertise </mat-label>
+        <select matNativeControl required>
+          <option value="it">IT</option>
+        </select>
+      </mat-form-field>
+      <mat-form-field class="my-2 mx-2" appearance="fill">
+        <mat-label>Description</mat-label>
+        <textarea
+          matInput
+          cdkTextareaAutosize
+          #autosize="cdkTextareaAutosize"
+          cdkAutosizeMinRows="3"
+          cdkAutosizeMaxRows="6"
+          required
+        ></textarea>
+      </mat-form-field>
+      <p class="my-3" style="color: red">{{ errorMessage }}</p>
+      <button class="btn btn-secondary" mat-raised-button [disabled]="true">
+        Send Request
+      </button>
+    </form>
+  </mat-card-content>
+</mat-card>

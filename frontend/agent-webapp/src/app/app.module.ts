@@ -11,13 +11,17 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCardModule } from '@angular/material/card';
 import { MatInputModule } from '@angular/material/input';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { NewCompanyComponent } from './components/new-company/new-company.component';
+import { NewJobOfferComponent } from './components/new-job-offer/new-job-offer.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
     SignupComponent,
-    NavbarComponent
+    NavbarComponent,
+    NewCompanyComponent,
+    NewJobOfferComponent
   ],
   imports: [
     BrowserModule,
