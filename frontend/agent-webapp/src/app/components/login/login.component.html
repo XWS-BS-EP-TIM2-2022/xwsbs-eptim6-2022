@@ -1,0 +1,40 @@
+<app-navbar></app-navbar>
+
+<mat-card>
+  <mat-card-content>
+    <form #loginForm="ngForm">
+      <h2>Welcome Back</h2>
+      <mat-form-field class="my-2 mx-2">
+        <input
+          matInput
+          placeholder="Username"
+          [(ngModel)]="username"
+          name="username"
+          required
+        />
+      </mat-form-field>
+      <mat-form-field class="my-2 mx-2">
+        <input
+          matInput
+          type="password"
+          placeholder="Password"
+          [(ngModel)]="password"
+          name="password"
+          required
+        />
+      </mat-form-field>
+      <p class="my-3" style="color: red">{{ errorMessage }}</p>
+      <button
+        class="btn btn-secondary"
+        mat-raised-button
+        [disabled]="username == '' || password == ''"
+      >
+        Login
+      </button>
+    </form>
+    <div class="d-flex justify-content-center mt-3">
+      <h4 class="me-1">Don't have an account?</h4>
+      <a href="signup">Sign Up</a>
+    </div>
+  </mat-card-content>
+</mat-card>
