@@ -1,16 +1,18 @@
 package com.xws.agentska.model;
 
-import com.xws.agentska.model.enumerations.Status;
-
 import javax.persistence.*;
 
 @Entity
-public class JobPosition {
+public class ApiConnection {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    private boolean confirmed;
+    private String api;
+    private String apiKey;
+
+    public ApiConnection() {
+    }
 
     public Long getId() {
         return id;
@@ -28,11 +30,19 @@ public class JobPosition {
         this.name = name;
     }
 
-    public boolean isConfirmed() {
-        return confirmed;
+    public String getApi() {
+        return api;
     }
 
-    public void setConfirmed(boolean confirmed) {
-        this.confirmed = confirmed;
+    public void setApi(String api) {
+        this.api = api;
+    }
+
+    public String getApiKey() {
+        return apiKey;
+    }
+
+    public void setApiKey(String apiKey) {
+        this.apiKey = apiKey;
     }
 }

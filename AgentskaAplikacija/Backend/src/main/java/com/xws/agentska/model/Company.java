@@ -3,6 +3,7 @@ package com.xws.agentska.model;
 import com.xws.agentska.model.enumerations.Status;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -23,6 +24,8 @@ public class Company {
     private User owner;
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<JobOffer> jobOffers;
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<ApiConnection> apiConnections;
 
     public User getOwner() {
         return owner;
@@ -97,5 +100,31 @@ public class Company {
 
     public void setOwner(User owner) {
         this.owner = owner;
+    }
+
+    public Set<JobOffer> getJobOffers() {
+        return jobOffers;
+    }
+
+    public void setJobOffers(Set<JobOffer> jobOffers) {
+        this.jobOffers = jobOffers;
+    }
+
+    public Set<ApiConnection> getApiConnections() {
+        return apiConnections;
+    }
+
+    public void setApiConnections(Set<ApiConnection> apiConnections) {
+        this.apiConnections = apiConnections;
+    }
+
+    public void addNewApiConnection(ApiConnection con) {
+        if (this.apiConnections == null) this.apiConnections = new HashSet<>();
+        this.apiConnections.add(con);
+    }
+
+    public void addNewJobOffer(JobOffer offer) {
+        if (this.jobOffers == null) this.jobOffers = new HashSet<>();
+        this.jobOffers.add(offer);
     }
 }

@@ -1,8 +1,5 @@
 package com.xws.agentska.dto;
 
-import com.xws.agentska.model.Company;
-import com.xws.agentska.model.JobPosition;
-import com.xws.agentska.model.User;
 import com.xws.agentska.model.enumerations.ExperienceLevel;
 
 

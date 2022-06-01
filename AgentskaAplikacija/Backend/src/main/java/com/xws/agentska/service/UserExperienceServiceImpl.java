@@ -1,6 +1,8 @@
 package com.xws.agentska.service;
 
 import com.xws.agentska.model.Comment;
+import com.xws.agentska.model.InterviewExperience;
+import com.xws.agentska.model.SalaryExperience;
 import com.xws.agentska.model.UserExperience;
 import com.xws.agentska.repository.UserExperienceRepository;
 import com.xws.agentska.service.interfaces.CompanyService;
@@ -31,5 +33,15 @@ public class UserExperienceServiceImpl extends CustomGenericService<UserExperien
     @Override
     public List<Comment> findAllCommentsByCompanyId(long id) {
         return ((UserExperienceRepository)repository).findAllCommentsByCompanyId(id);
+    }
+
+    @Override
+    public List<SalaryExperience> findAllSalariesByCompanyId(long id) {
+        return ((UserExperienceRepository)repository).findAllSalariesByCompanyId(id);
+    }
+
+    @Override
+    public List<InterviewExperience> findAllInterviewsByCompanyId(long id) {
+        return ((UserExperienceRepository)repository).findAllInterviewsByCompanyId(id);
     }
 }

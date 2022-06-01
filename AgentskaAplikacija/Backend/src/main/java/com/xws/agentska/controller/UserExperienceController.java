@@ -1,8 +1,10 @@
 package com.xws.agentska.controller;
 
 import com.xws.agentska.dto.CommentDto;
-import com.xws.agentska.mapper.CommentModelMapper;
+import com.xws.agentska.dto.SalaryExperienceDto;
+import com.xws.agentska.dto.UserExperienceDto;
 import com.xws.agentska.mapper.CustomModelMapper;
+import com.xws.agentska.mapper.UserExperienceModelMapper;
 import com.xws.agentska.model.*;
 import com.xws.agentska.service.interfaces.UserExperienceService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,25 +19,36 @@ public class UserExperienceController {
     @Autowired
     private UserExperienceService service;
     @Autowired
-    private CustomModelMapper<Comment,CommentDto> commentModelMapper;
-    @PostMapping("/api/comments")
+    private UserExperienceModelMapper userExperienceModelMapper;
+
+    @GetMapping("/api/companies/{id}/comments")
+    public ResponseEntity<?> findAllCommentsByCompany(@PathVariable int id) {
+        return ResponseEntity.ok(service.findAllCommentsByCompanyId(id));
+    }
+
+    @GetMapping("/api/companies/{id}/salaries")
+    public ResponseEntity<?> findAllSalariesByCompany(@PathVariable int id) {
+        return ResponseEntity.ok(service.findAllSalariesByCompanyId(id));
+    }
+
+    @GetMapping("/api/companies/{id}/interviews")
+    public ResponseEntity<?> findAllInterviewsByCompany(@PathVariable int id) {
+        return ResponseEntity.ok(service.findAllInterviewsByCompanyId(id));
+    }
+
+    @PostMapping("/api/companies/{id}/comments")
     public ResponseEntity<?> createNewComment(@RequestBody CommentDto comment) {
-        saveUserExperience(commentModelMapper.convertToEntity(comment));
+        saveUserExperience(userExperienceModelMapper.convertToEntity(comment, Comment.class));
         return null;
     }
 
-    @GetMapping("/api/company/{id}/comments/")
-    public ResponseEntity<?> findAllCommentsByCompany(@PathVariable int id) {
-      return ResponseEntity.ok(service.findAllCommentsByCompanyId(id));
-    }
-
-    @PostMapping("/api/saleries")
-    public ResponseEntity<?> createNewSalleryExperience(@RequestBody SalleryExperience salleryExperience) {
-        saveUserExperience(salleryExperience);
+    @PostMapping("/api/companies/{id}/salaries")
+    public ResponseEntity<?> createNewSalaryExperience(@RequestBody SalaryExperienceDto salaryExperience) {
+        saveUserExperience(userExperienceModelMapper.convertToEntity(salaryExperience, SalaryExperience.class));
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/api/interviews")
+    @PostMapping("/api/companies/{id}/interviews")
     public ResponseEntity<?> createNewInterviewExperience(@RequestBody InterviewExperience interviewExperience) {
         saveUserExperience(interviewExperience);
         return ResponseEntity.ok().build();

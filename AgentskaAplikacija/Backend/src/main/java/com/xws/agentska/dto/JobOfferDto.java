@@ -1,27 +1,24 @@
-package com.xws.agentska.model;
+package com.xws.agentska.dto;
 
-
+import com.xws.agentska.model.JobPosition;
+import com.xws.agentska.model.WorkSchedule;
 import com.xws.agentska.model.enumerations.ExperienceLevel;
 
-import javax.persistence.*;
 import java.sql.Timestamp;
 
-@Entity
-public class JobOffer {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "position_id")
+public class JobOfferDto {
     private JobPosition position;
     private Timestamp validTo;
     private Timestamp createdAt;
     private String description;
     private ExperienceLevel experience;
-    @Embedded
     private WorkSchedule workSchedule;
 
-    public JobOffer() {
+    public JobOfferDto() {
+    }
+
+    public JobPosition getPosition() {
+        return position;
     }
 
     public void setPosition(JobPosition position) {
@@ -60,23 +57,11 @@ public class JobOffer {
         this.experience = experience;
     }
 
-    public void setWorkSchedule(WorkSchedule workSchedule) {
-        this.workSchedule = workSchedule;
-    }
-
-    public JobPosition getPosition() {
-        return position;
-    }
-
     public WorkSchedule getWorkSchedule() {
         return workSchedule;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
+    public void setWorkSchedule(WorkSchedule workSchedule) {
+        this.workSchedule = workSchedule;
     }
 }
