@@ -19,12 +19,17 @@ type Offer struct {
 	Description   string             `bson:"description"`
 	Preconditions Precondition       `bson:"preconditions"`
 	CreatedOn     string             `bson:"createdOn"`
+	ValidUntil    primitive.DateTime
+	WorkSchedule  WorkSchedule
 }
-
+type WorkSchedule struct {
+	Title        string
+	hoursPerWeek int
+}
 type Precondition struct {
-	Experiences []string `bson:"experiences"`
-	Educations  []string `bson:"educations"`
-	Skills      []string `bson:"skills"`
+	Experience string   `bson:"experience"`
+	Educations []string `bson:"educations"`
+	Skills     []string `bson:"skills"`
 }
 
 type JobOffersStore struct {

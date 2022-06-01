@@ -7,6 +7,7 @@ import (
 	"github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/auth_service/mappers"
 	"github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/auth_service/startup/config"
 	"github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/auth_service/store"
+	"github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common/consts"
 	authServicePb "github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common/proto/auth_service"
 	"google.golang.org/grpc/metadata"
 	"strings"
@@ -59,9 +60,17 @@ func (s *Server) GetUserPermissions(ctx context.Context, in *authServicePb.Valid
 	if err != nil {
 		return nil, err
 	}
+
 	permission, err := s.PermissionStore.FindByUserRole(userDb.Role)
 	if err != nil {
 		return nil, err
+	}
+	if in.Token.Token == userDb.ApiToken {
+		ownerPermissino, err := s.PermissionStore.FindByUserRole(string(consts.COMPANY_OWNER))
+		if err != nil {
+			return nil, err
+		}
+		return mappers.MapPermissions(ownerPermissino), nil
 	}
 	return mappers.MapPermissions(permission), nil
 }
@@ -113,7 +122,19 @@ func (s *Server) PasswordlessLogin(ctx context.Context, in *authServicePb.Activa
 
 	return &authServicePb.ActivationResponse{ResponseStatus: jwt.Token}, err
 }
-
+func (s *Server) GenerateApiToken(ctx context.Context, in *authServicePb.GetAllRequest) (*authServicePb.Token, error) {
+	loggedinUserToken := getTokenFromContext(ctx)
+	tokenUser, _ := s.AuthHandler.ValidateToken(loggedinUserToken)
+	apiKey, err := s.AuthHandler.GenerateJWT(handlers.JWTOptions{Username: tokenUser.Username, IsTokenNonExpired: true})
+	if err != nil {
+		return nil, err
+	}
+	err = s.AuthHandler.UserStore.UpdateApiKey(tokenUser.Username, apiKey)
+	if err != nil {
+		return nil, err
+	}
+	return &authServicePb.Token{Token: apiKey}, nil
+}
 func getTokenFromContext(ctx context.Context) string {
 	md, _ := metadata.FromIncomingContext(ctx)
 	fmt.Println(md.Get("authorization")[0])

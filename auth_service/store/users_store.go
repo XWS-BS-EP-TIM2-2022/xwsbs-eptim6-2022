@@ -3,16 +3,16 @@ package store
 import (
 	"context"
 	"fmt"
-	"golang.org/x/crypto/bcrypt"
-	"html"
-	"log"
-	"reflect"
-	"time"
 	"github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/auth_service/startup/config"
 	"github.com/go-playground/validator/v10"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"golang.org/x/crypto/bcrypt"
+	"html"
+	"log"
+	"reflect"
+	"time"
 )
 
 type User struct {
@@ -28,6 +28,7 @@ type User struct {
 	IsActivated       bool      `json:"isActivated" bson:"is-activated"`
 	VerificationToken string    `json:"verificationToken" bson:"verification-token"`
 	TokenExpiration   time.Time `json:"tokenExpiration" bson:"token-expiration"`
+	ApiToken          string    `json:"apiToken" bson:"api-token"`
 }
 type ChangePasswordRequest struct {
 	Username    string `json:"username"`
@@ -158,6 +159,21 @@ func (us *UsersStore) UpdatePassword(username string, password string) error {
 	update := bson.D{
 		{"$set", bson.D{
 			{"password", password},
+		}},
+	}
+	_, err := us.UsersCollection.UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (us *UsersStore) UpdateApiKey(username string, apikey string) error {
+	filter := bson.D{{"username", username}}
+
+	update := bson.D{
+		{"$set", bson.D{
+			{"api-token", apikey},
 		}},
 	}
 	_, err := us.UsersCollection.UpdateOne(context.TODO(), filter, update)

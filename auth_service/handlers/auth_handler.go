@@ -26,6 +26,10 @@ import (
 type ErrorMessage struct {
 	Message string `json:"message"`
 }
+type JWTOptions struct {
+	Username          string
+	IsTokenNonExpired bool
+}
 type JWT struct {
 	Token string `json:"token"`
 }
@@ -86,7 +90,7 @@ func (ah *AuthHandler) LoginUser(user store.User) (JWT, error) {
 	}
 	ah.UserStore.ResetFailedLogForUser(user.Username)
 
-	tokenStr, err := GenerateJWT(dbUser, ah.secretKey)
+	tokenStr, err := ah.GenerateJWT(JWTOptions{IsTokenNonExpired: false, Username: dbUser.Username})
 	if err != nil {
 		fmt.Printf("Token generation failed %s\n", err.Error())
 		return JWT{Token: ""}, err
@@ -101,7 +105,6 @@ func (ag *AuthHandler) AuthorizeJWT(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-//TODO: Validarati korisnika u bazi dodatno mozda je u medjuvremenu obrisan ili mijenjao lozinku itd.
 func (ag *AuthHandler) ValidateToken(tokenStr string) (*store.User, error) {
 	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
@@ -175,13 +178,15 @@ func DecodeUser(req *http.Request) (store.User, error) {
 	return user, err
 }
 
-func GenerateJWT(dbUser store.User, secretString []byte) (string, error) {
+func (ah *AuthHandler) GenerateJWT(options JWTOptions) (string, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
 	claims["authorized"] = true
-	claims["username"] = dbUser.Username
-	claims["exp"] = time.Now().Add(time.Minute * 80).Unix()
-	tokenStr, err := token.SignedString(secretString)
+	claims["username"] = options.Username
+	if !options.IsTokenNonExpired {
+		claims["exp"] = time.Now().Add(time.Minute * 80).Unix()
+	}
+	tokenStr, err := token.SignedString(ah.secretKey)
 	if err != nil {
 		fmt.Errorf("token signing error")
 		return "", err
@@ -409,7 +414,7 @@ func (ah *AuthHandler) PasswordlessLogin(token string) (JWT, error) {
 	}
 	ah.UserStore.ResetFailedLogForUser(user.Username)
 
-	tokenStr, err := GenerateJWT(user, ah.secretKey)
+	tokenStr, err := ah.GenerateJWT(JWTOptions{IsTokenNonExpired: false, Username: user.Username})
 	if err != nil {
 		fmt.Printf("Token generation failed %s\n", err.Error())
 		return JWT{Token: ""}, err
