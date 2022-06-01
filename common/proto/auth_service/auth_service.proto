@@ -42,8 +42,6 @@ service AuthService {
     };
   }
 
-
-
   rpc ActivateUserAccount(ActivationToken) returns (ActivationResponse){
     option (google.api.http) = {
       get: "/api/auth/activation/{token}"

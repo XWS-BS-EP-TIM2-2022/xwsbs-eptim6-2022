@@ -49,13 +49,14 @@ service PostsService {
 
 message EmptyRequest{}
 message Post{
-  string username = 1;
-  string text = 2;
-  repeated string liked = 3;
-  repeated string disliked = 4;
-  string CreatedOn = 5;
-  string imageUrl = 6;
-  repeated Comment comments = 7;
+  string id=1;
+  string username = 2;
+  string text = 3;
+  repeated string liked = 4;
+  repeated string disliked = 5;
+  string CreatedOn = 6;
+  string imageUrl = 7;
+  repeated Comment comments = 8;
 }
 message PostResponse{
   Post post=1;
