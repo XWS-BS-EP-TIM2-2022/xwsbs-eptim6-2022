@@ -33,6 +33,7 @@ type AuthServiceClient interface {
 	ResetPassword(ctx context.Context, in *ResetPasswordWithTokenMessage, opts ...grpc.CallOption) (*ActivationResponse, error)
 	GeneratePasswordlessLoginToken(ctx context.Context, in *UserEmailMessage, opts ...grpc.CallOption) (*ActivationResponse, error)
 	PasswordlessLogin(ctx context.Context, in *ActivationTokenMessage, opts ...grpc.CallOption) (*ActivationResponse, error)
+	GenerateApiToken(ctx context.Context, in *GetAllRequest, opts ...grpc.CallOption) (*Token, error)
 }
 
 type authServiceClient struct {
@@ -142,6 +143,15 @@ func (c *authServiceClient) PasswordlessLogin(ctx context.Context, in *Activatio
 	return out, nil
 }
 
+func (c *authServiceClient) GenerateApiToken(ctx context.Context, in *GetAllRequest, opts ...grpc.CallOption) (*Token, error) {
+	out := new(Token)
+	err := c.cc.Invoke(ctx, "/auth_service.AuthService/GenerateApiToken", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AuthServiceServer is the server API for AuthService service.
 // All implementations must embed UnimplementedAuthServiceServer
 // for forward compatibility
@@ -157,6 +167,7 @@ type AuthServiceServer interface {
 	ResetPassword(context.Context, *ResetPasswordWithTokenMessage) (*ActivationResponse, error)
 	GeneratePasswordlessLoginToken(context.Context, *UserEmailMessage) (*ActivationResponse, error)
 	PasswordlessLogin(context.Context, *ActivationTokenMessage) (*ActivationResponse, error)
+	GenerateApiToken(context.Context, *GetAllRequest) (*Token, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
 
@@ -196,6 +207,9 @@ func (UnimplementedAuthServiceServer) GeneratePasswordlessLoginToken(context.Con
 }
 func (UnimplementedAuthServiceServer) PasswordlessLogin(context.Context, *ActivationTokenMessage) (*ActivationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PasswordlessLogin not implemented")
+}
+func (UnimplementedAuthServiceServer) GenerateApiToken(context.Context, *GetAllRequest) (*Token, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GenerateApiToken not implemented")
 }
 func (UnimplementedAuthServiceServer) mustEmbedUnimplementedAuthServiceServer() {}
 
@@ -408,6 +422,24 @@ func _AuthService_PasswordlessLogin_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_GenerateApiToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAllRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).GenerateApiToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/auth_service.AuthService/GenerateApiToken",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).GenerateApiToken(ctx, req.(*GetAllRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AuthService_ServiceDesc is the grpc.ServiceDesc for AuthService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -458,6 +490,10 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "PasswordlessLogin",
 			Handler:    _AuthService_PasswordlessLogin_Handler,
+		},
+		{
+			MethodName: "GenerateApiToken",
+			Handler:    _AuthService_GenerateApiToken_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
