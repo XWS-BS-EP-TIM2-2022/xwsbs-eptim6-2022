@@ -29,6 +29,8 @@ export class UsersService {
 
   public logOut(): void {
     localStorage.removeItem('jwt');
+    localStorage.removeItem('role');
+    localStorage.removeItem('id');
   }
 
   signup(user: any) {

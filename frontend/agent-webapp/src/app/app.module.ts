@@ -16,6 +16,7 @@ import { NewJobOfferComponent } from './components/new-job-offer/new-job-offer.c
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { TokenInterceptor } from './interceptor/token-interceptor';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 @NgModule({
   declarations: [
@@ -37,7 +38,8 @@ import { TokenInterceptor } from './interceptor/token-interceptor';
     HttpClientModule,
     MatCardModule,
     MatDatepickerModule,
-    MatNativeDateModule
+    MatNativeDateModule,
+    MatSnackBarModule,
   ],
   providers: [ {
     provide: HTTP_INTERCEPTORS,

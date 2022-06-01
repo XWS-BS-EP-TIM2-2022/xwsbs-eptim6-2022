@@ -9,19 +9,30 @@ import { UsersService } from 'src/app/services/users.service';
 })
 export class NavbarComponent implements OnInit {
   logged: boolean = false
+  role: string = ''
 
   constructor(public service : UsersService, public router: Router) { }
 
   ngOnInit(): void {
     if (localStorage.getItem('jwt') != null)
       this.logged = true
-    else
+    else if (localStorage.getItem('jwt') == null)
       this.logged = false
+
+    if (localStorage.getItem('role') === 'ADMIN_ROLE')
+      this.role = 'admin'
+    else if (localStorage.getItem('role') === 'USER_ROLE')
+      this.role = 'user'
+    else if (localStorage.getItem('role') === 'COMPANY_OWNER_ROLE')
+      this.role = 'owner'
+    else
+      this.role = ''
   }
 
   logout(){
     this.service.logOut()
     this.logged = false
     this.router.navigate(['/login'])
+    this.role = ''
   }
 }

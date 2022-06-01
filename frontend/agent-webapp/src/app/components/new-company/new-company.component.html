@@ -33,14 +33,42 @@
         />
       </mat-form-field>
       <mat-form-field class="my-2 mx-2">
-        <mat-label> Area of Expertise </mat-label>
-        <select matNativeControl required>
-          <option value="it">IT</option>
-        </select>
+        <input
+          matInput
+          type="text"
+          placeholder="Phone"
+          [(ngModel)]="phone"
+          name="phone"
+          required
+        />
+      </mat-form-field>
+      <mat-form-field class="my-2 mx-2">
+        <input
+          matInput
+          type="number"
+          placeholder="Year Of Establishment"
+          [(ngModel)]="yearOfEstablishment"
+          name="yearOfEstablishment"
+          required
+        />
+      </mat-form-field>
+      <mat-form-field class="my-2 mx-2" appearance="fill">
+        <mat-label>Culture</mat-label>
+        <textarea
+          [(ngModel)]="culture"
+          matInput
+          cdkTextareaAutosize
+          #autosize="cdkTextareaAutosize"
+          cdkAutosizeMinRows="3"
+          cdkAutosizeMaxRows="6"
+          required
+          name="culture"
+        ></textarea>
       </mat-form-field>
       <mat-form-field class="my-2 mx-2" appearance="fill">
         <mat-label>Description</mat-label>
         <textarea
+          [(ngModel)]="description"
           matInput
           cdkTextareaAutosize
           #autosize="cdkTextareaAutosize"
@@ -51,7 +79,20 @@
         ></textarea>
       </mat-form-field>
       <p class="my-3" style="color: red">{{ errorMessage }}</p>
-      <button class="btn btn-secondary" mat-raised-button [disabled]="true">
+      <button
+        class="btn btn-secondary"
+        mat-raised-button
+        [disabled]="
+          name == '' ||
+          address == '' ||
+          email == '' ||
+          phone == '' ||
+          description == '' ||
+          culture == '' ||
+          yearOfEstablishment <= 0
+        "
+        (click)="registerCompany()"
+      >
         Send Request
       </button>
     </form>
