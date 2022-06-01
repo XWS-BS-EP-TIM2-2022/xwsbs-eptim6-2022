@@ -6,7 +6,7 @@ import (
 )
 
 func mapToPbPost(post *store.Post) *postsServicePb.Post {
-	return &postsServicePb.Post{Username: post.Username, CreatedOn: post.CreatedOn, ImageUrl: post.ImageUrl, Text: post.Text,
+	return &postsServicePb.Post{Id: post.ID.String(), Username: post.Username, CreatedOn: post.CreatedOn, ImageUrl: post.ImageUrl, Text: post.Text,
 		Liked: post.Liked, Disliked: post.Disliked, Comments: mapComments(post.Comments)}
 }
 
