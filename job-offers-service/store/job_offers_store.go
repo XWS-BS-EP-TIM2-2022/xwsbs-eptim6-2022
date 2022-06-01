@@ -19,12 +19,18 @@ type Offer struct {
 	Description   string             `bson:"description"`
 	Preconditions Precondition       `bson:"preconditions"`
 	CreatedOn     string             `bson:"createdOn"`
+	ValidUntil    string
+	WorkSchedule  WorkSchedule
+	JobOfferUrl   string
 }
-
+type WorkSchedule struct {
+	Title        string
+	HoursPerWeek int
+}
 type Precondition struct {
-	Experiences []string `bson:"experiences"`
-	Educations  []string `bson:"educations"`
-	Skills      []string `bson:"skills"`
+	Experience string   `bson:"experience"`
+	Educations []string `bson:"educations"`
+	Skills     []string `bson:"skills"`
 }
 
 type JobOffersStore struct {
@@ -48,22 +54,22 @@ func (p *Offer) ToJSON(w io.Writer) error {
 	return e.Encode(p)
 }
 
-func (ps *JobOffersStore) GetAll() (Offers, error) {
+func (ps *JobOffersStore) GetAll() (*[]Offer, error) {
 	cur, err := ps.JobOffersCollection.Find(context.TODO(), bson.D{{}}, options.Find())
 	if err != nil {
 		return nil, err
 	}
-	var offers Offers
+	var offers []Offer
 	for cur.Next(context.TODO()) {
 		var elem Offer
 		err := cur.Decode(&elem)
 		if err != nil {
 			return nil, err
 		}
-		offers = append(offers, &elem)
+		offers = append(offers, elem)
 	}
 	cur.Close(context.TODO())
-	return offers, nil
+	return &offers, nil
 }
 
 func (ps *JobOffersStore) GetByPosition(position string) (Offers, error) {
@@ -93,7 +99,7 @@ func (ps *JobOffersStore) CreateJobOffer(newOffer Offer) error {
 	return nil
 }
 
-func InitPostsStore(mongoUri string) *JobOffersStore {
+func InitJobOffersStore(mongoUri string) *JobOffersStore {
 	clientOptions := options.Client().ApplyURI("mongodb://" + mongoUri + "/?connect=direct")
 	client, err := mongo.Connect(context.TODO(), clientOptions)
 

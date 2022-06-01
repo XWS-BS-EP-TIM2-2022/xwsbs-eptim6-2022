@@ -72,18 +72,25 @@ service AuthService {
       body: "token"
     };
   }
+  rpc GenerateApiToken(GetAllRequest) returns (Token){
+    option (google.api.http) = {
+      post: "/api/auth/api-tokens"
+    };
+  }
+
+
 }
 message ChangePasswordRequest{
-  ChangePasswordMessage changePasswordMessage=1;
+  ChangePasswordMessage changePasswordMessage = 1;
 }
 
 
 message ResetPasswordWithToken{
-  string token=1;
-  string newPassword=2;
+  string token = 1;
+  string newPassword = 2;
 }
 message ResetPasswordWithTokenMessage{
-  ResetPasswordWithToken details=1;
+  ResetPasswordWithToken details = 1;
 }
 
 message ChangePasswordMessage  {
@@ -92,20 +99,20 @@ message ChangePasswordMessage  {
   string NewPassword = 3;
 }
 message UserEmail{
-  string email=1;
+  string email = 1;
 }
 message UserEmailMessage{
-  UserEmail email=1;
+  UserEmail email = 1;
 }
 message ActivationTokenMessage{
-  ActivationToken token=1;
+  ActivationToken token = 1;
 }
 message ActivationToken{
-  string token=1;
+  string token = 1;
 }
 
 message ActivationResponse{
-  string responseStatus=1;
+  string responseStatus = 1;
 }
 message Token {
   string token = 1;
@@ -138,7 +145,7 @@ message User {
   string birthDate = 8;
   string biography = 9;
   bool isPublic = 17;
-  string role=18;
+  string role = 18;
 }
 
 message CreateNewUser {

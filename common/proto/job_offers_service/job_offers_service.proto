@@ -1,0 +1,64 @@
+syntax = "proto3";
+
+option go_package = "github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common/proto/job_offers_service";
+
+package job_offers_service;
+import "google/api/annotations.proto";
+
+service JobOffersService {
+  rpc GetAllJobOffers (EmptyRequest) returns (JobOffersResponse){
+    option (google.api.http) = {
+      get: "/api/job-offers"
+    };
+  }
+  
+  rpc GetAllJobOffersByUsername (UsernameMessage) returns (JobOffersResponse){
+    option (google.api.http) = {
+      get: "/api/users/{username}/job-offers"
+    };
+  }
+
+  rpc CreateNewJobOffer (CreateJobOfferMessage) returns (JobOfferResponse){
+    option (google.api.http) = {
+      post: "/api/job-offers"
+      body: "offer"
+    };
+  }
+}
+
+message EmptyRequest{}
+message CreateJobOfferMessage{
+  CreateJobOffer offer=1;
+}
+message JobOfferResponse{
+  JobOffer offer=1;
+}
+message JobOffersResponse{
+  repeated JobOffer offers=1;
+}
+message UsernameMessage{
+  string username=1;
+}
+message CreateJobOffer{
+  string position = 1;
+  string description = 2;
+  string experience = 3;
+  string createdOn = 4;
+  string validUntil = 5;
+  string workScheduleTitle = 9;
+  string workScheduleHours=10;
+  string jobOfferUrl=11;
+}
+
+message JobOffer{
+  string id = 1;
+  string username = 2;
+  string position = 3;
+  string description = 4;
+  string experience = 5;
+  string createdOn = 6;
+  string validUntil = 8;
+  string WorkScheduleTitle = 9;
+  string WorkScheduleHours=10;
+  string jobOfferUrl=11;
+}

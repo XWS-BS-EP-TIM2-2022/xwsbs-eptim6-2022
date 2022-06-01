@@ -7,6 +7,6 @@ import com.xws.agentska.model.enumerations.Status;
 
 public interface CompanyService extends Service<Company,Long> {
     public void updateCompanyStatus(long companyId, Status newStatus);
-    public void addNewJobOffer(long companyId,JobOffer offer);
+    public void addNewJobOffer(long companyId,JobOffer offer,boolean share);
     public void addNewApiConnection(long companyId, ApiConnection connection);
 }

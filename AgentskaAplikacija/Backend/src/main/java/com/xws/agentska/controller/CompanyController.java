@@ -46,7 +46,7 @@ public class CompanyController {
 
     @PostMapping("/api/companies/{id}/job-offers")
     public ResponseEntity<?> createNewJobOffer(@PathVariable long id, @RequestBody JobOfferDto dto) {
-        service.addNewJobOffer(id, jobOfferModelMapper.convertToEntity(dto));
+        service.addNewJobOffer(id, jobOfferModelMapper.convertToEntity(dto),dto.isShareOnDislinkt());
         return ResponseEntity.ok().build();
     }
 
