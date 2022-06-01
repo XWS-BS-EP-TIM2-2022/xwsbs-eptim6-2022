@@ -12,6 +12,45 @@
           required
         />
       </mat-form-field>
+      <div class="d-flex justify-content-center my-2">
+        <mat-form-field>
+          <input
+            matInput
+            placeholder="Name"
+            name="name"
+            [(ngModel)]="name"
+            required
+          />
+        </mat-form-field>
+        <mat-form-field>
+          <input
+            matInput
+            placeholder="Surname"
+            name="surname"
+            [(ngModel)]="surname"
+            required
+          />
+        </mat-form-field>
+      </div>
+      <mat-form-field class="my-2 mx-2">
+        <input
+          matInput
+          placeholder="Email"
+          name="email"
+          type="email"
+          [(ngModel)]="email"
+          required
+        />
+      </mat-form-field>
+      <mat-form-field class="my-2 mx-2">
+        <input
+          matInput
+          placeholder="Phone"
+          name="phone"
+          [(ngModel)]="phone"
+          required
+        />
+      </mat-form-field>
       <mat-form-field class="my-2 mx-2">
         <input
           matInput
@@ -24,17 +63,24 @@
       </mat-form-field>
       <mat-form-field class="my-2 mx-2">
         <mat-label>Role</mat-label>
-        <select matNativeControl required>
-          <option value="admin">Admin</option>
-          <option value="user">User</option>
-          <option value="owner">Company Owner</option>
+        <select matNativeControl required [(ngModel)]="role" name="role">
+          <option *ngFor="let role of roles" [value]="role">{{ role }}</option>
         </select>
       </mat-form-field>
       <p class="my-3" style="color: red">{{ errorMessage }}</p>
       <button
         class="btn btn-secondary"
         mat-raised-button
-        [disabled]="username == '' || password == ''"
+        [disabled]="
+          username == '' ||
+          password == '' ||
+          name == '' ||
+          surname == '' ||
+          email == '' ||
+          phone == '' ||
+          role == ''
+        "
+        (click)="signup()"
       >
         Sign Up
       </button>

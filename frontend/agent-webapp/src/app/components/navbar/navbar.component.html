@@ -35,11 +35,26 @@
         </li>
       </ul>
       <div class="d-flex">
-        <button class="btn btn-outline-dark me-2" routerLink="/login">
+        <button
+          *ngIf="!logged"
+          class="btn btn-outline-dark me-2"
+          routerLink="/login"
+        >
           Login
         </button>
-        <button class="btn btn-outline-danger me-2" routerLink="/signup">
+        <button
+          *ngIf="!logged"
+          class="btn btn-outline-danger me-2"
+          routerLink="/signup"
+        >
           Signup
+        </button>
+        <button
+          *ngIf="logged"
+          class="btn btn-outline-dark me-2"
+          (click)="logout()"
+        >
+          Log Out
         </button>
       </div>
     </div>

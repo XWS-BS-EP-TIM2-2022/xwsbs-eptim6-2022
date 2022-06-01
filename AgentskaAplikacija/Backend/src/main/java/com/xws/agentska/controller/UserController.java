@@ -9,15 +9,13 @@ import com.xws.agentska.security.TokenBasedAuthentication;
 import com.xws.agentska.security.util.TokenUtils;
 import com.xws.agentska.service.interfaces.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class UserController {
@@ -27,12 +25,12 @@ public class UserController {
     private AuthenticationManager authenticationManager;
     @Autowired
     private TokenUtils tokenUtils;
-    @PostMapping("/api/users")
+    @PostMapping(value = "/api/users", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> save(@RequestBody UserDto dto) {
         usersService.save(mapToUser(dto));
         return ResponseEntity.ok().build();
     }
-    @PutMapping("/api/users/session")
+    @PutMapping(value ="/api/users/session", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> login(@RequestBody UserDto dto) {
         Authentication authentication = authenticationManager
                 .authenticate(new UsernamePasswordAuthenticationToken(dto.getUsername(), dto.getPassword()));

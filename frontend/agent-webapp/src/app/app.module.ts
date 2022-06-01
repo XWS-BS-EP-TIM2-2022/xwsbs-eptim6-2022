@@ -15,6 +15,7 @@ import { NewCompanyComponent } from './components/new-company/new-company.compon
 import { NewJobOfferComponent } from './components/new-job-offer/new-job-offer.component';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { TokenInterceptor } from './interceptor/token-interceptor';
 
 @NgModule({
   declarations: [
@@ -38,7 +39,11 @@ import { MatNativeDateModule } from '@angular/material/core';
     MatDatepickerModule,
     MatNativeDateModule
   ],
-  providers: [],
+  providers: [ {
+    provide: HTTP_INTERCEPTORS,
+    useClass: TokenInterceptor,
+    multi: true
+  },],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

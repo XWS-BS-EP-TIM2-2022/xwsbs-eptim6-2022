@@ -28,6 +28,7 @@
         class="btn btn-secondary"
         mat-raised-button
         [disabled]="username == '' || password == ''"
+        (click)="login()"
       >
         Login
       </button>
