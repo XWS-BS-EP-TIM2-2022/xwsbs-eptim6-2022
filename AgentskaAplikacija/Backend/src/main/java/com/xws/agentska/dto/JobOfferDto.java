@@ -13,8 +13,17 @@ public class JobOfferDto {
     private String description;
     private ExperienceLevel experience;
     private WorkSchedule workSchedule;
+    private boolean shareOnDislinkt;
 
     public JobOfferDto() {
+    }
+
+    public boolean isShareOnDislinkt() {
+        return shareOnDislinkt;
+    }
+
+    public void setShareOnDislinkt(boolean shareOnDislinkt) {
+        this.shareOnDislinkt = shareOnDislinkt;
     }
 
     public JobPosition getPosition() {

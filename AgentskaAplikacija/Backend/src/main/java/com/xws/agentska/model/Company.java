@@ -24,8 +24,8 @@ public class Company {
     private User owner;
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<JobOffer> jobOffers;
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Set<ApiConnection> apiConnections;
+    @OneToOne(cascade = CascadeType.ALL)
+    private ApiConnection apiConnection;
 
     public User getOwner() {
         return owner;
@@ -110,17 +110,12 @@ public class Company {
         this.jobOffers = jobOffers;
     }
 
-    public Set<ApiConnection> getApiConnections() {
-        return apiConnections;
+    public ApiConnection getApiConnection() {
+        return apiConnection;
     }
 
-    public void setApiConnections(Set<ApiConnection> apiConnections) {
-        this.apiConnections = apiConnections;
-    }
-
-    public void addNewApiConnection(ApiConnection con) {
-        if (this.apiConnections == null) this.apiConnections = new HashSet<>();
-        this.apiConnections.add(con);
+    public void setApiConnection(ApiConnection apiConnection) {
+        this.apiConnection = apiConnection;
     }
 
     public void addNewJobOffer(JobOffer offer) {
