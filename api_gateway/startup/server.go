@@ -95,6 +95,7 @@ func authWrapper(h http.Handler, s *Server) http.Handler {
 			h.ServeHTTP(w, r)
 		} else {
 			w.WriteHeader(http.StatusForbidden)
+
 			fmt.Fprintf(w, "Not Authorized")
 		}
 	})
