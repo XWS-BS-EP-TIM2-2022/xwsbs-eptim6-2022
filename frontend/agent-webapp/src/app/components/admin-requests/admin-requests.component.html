@@ -1,0 +1,57 @@
+<app-navbar></app-navbar>
+<div class="card mt-5 mx-5 shadow-sm" style="height: 650px">
+  <div class="row my-5">
+    <div class="d-flex justify-content-center">
+      <h2>Requests For New Companies</h2>
+    </div>
+  </div>
+  <div class="row mx-5" style="height: 400px">
+    <div class="col-11 mx-auto">
+      <div style="height: 350px; overflow: auto">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th scope="col">Name</th>
+              <th scope="col">Owner</th>
+              <th scope="col">Email</th>
+              <th scope="col">Phone</th>
+              <th scope="col">Year Of Establishment</th>
+              <th scope="col">Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              *ngFor="let req of requests"
+              (click)="selectRequest(req)"
+              [ngClass]="selectedRequest == req ? 'selected' : 'notSelected'"
+            >
+              <td *ngIf="req.status === 'PENDING'">{{ req.name }}</td>
+              <td *ngIf="req.status === 'PENDING'">
+                {{ req.owner.name }} {{ req.owner.surname }}
+              </td>
+              <td *ngIf="req.status === 'PENDING'">
+                {{ req.contactInfo.email }}
+              </td>
+              <td *ngIf="req.status === 'PENDING'">
+                {{ req.contactInfo.phone }}
+              </td>
+              <td *ngIf="req.status === 'PENDING'">
+                {{ req.yearOfEstablishment }}
+              </td>
+              <td *ngIf="req.status === 'PENDING'">{{ req.description }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="d-flex justify-content-center">
+    <button
+      class="btn btn-danger my-5"
+      [disabled]="selectedRequest == undefined"
+      (click)="approveRequest()"
+    >
+      Approve request
+    </button>
+  </div>
+</div>

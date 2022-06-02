@@ -17,6 +17,7 @@ import {MatDatepickerModule} from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { TokenInterceptor } from './interceptor/token-interceptor';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { AdminRequestsComponent } from './components/admin-requests/admin-requests.component';
 
 @NgModule({
   declarations: [
@@ -25,7 +26,8 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
     SignupComponent,
     NavbarComponent,
     NewCompanyComponent,
-    NewJobOfferComponent
+    NewJobOfferComponent,
+    AdminRequestsComponent
   ],
   imports: [
     BrowserModule,

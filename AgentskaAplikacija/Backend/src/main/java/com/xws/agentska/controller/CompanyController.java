@@ -5,6 +5,7 @@ import com.xws.agentska.mapper.JobOfferModelMapper;
 import com.xws.agentska.model.ApiConnection;
 import com.xws.agentska.model.Company;
 import com.xws.agentska.model.User;
+import com.xws.agentska.model.enumerations.Status;
 import com.xws.agentska.security.TokenBasedAuthentication;
 import com.xws.agentska.service.interfaces.CompanyService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,8 +40,8 @@ public class CompanyController {
     }
 
     @PutMapping("/api/companies/{id}")
-    public ResponseEntity<?> createResponseToNewCompanyRequest(@PathVariable long id, @RequestBody Company company) {
-        service.updateCompanyStatus(id, company.getStatus());
+    public ResponseEntity<?> createResponseToNewCompanyRequest(@PathVariable long id) {
+        service.updateCompanyStatus(id, Status.ADMIN_CONFIRMED);
         return ResponseEntity.ok().build();
     }
 
