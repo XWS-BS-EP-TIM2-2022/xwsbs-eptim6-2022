@@ -13,7 +13,9 @@ export class ProfileService {
   getUser(): Observable<any> {
     return this._http.get<Observable<any>>('/api/whoami');
   }
-
+  getUserApiKey(): Observable<any> {
+    return this._http.get<Observable<any>>('/api/auth/api-tokens');
+  }
   updateUser(user: any): Observable<any> {
     return this._http.put<Observable<any>>('http://localhost:5000/', user);
   }
@@ -44,5 +46,10 @@ export class ProfileService {
     .pipe(
       tap(data => console.log("data: ", data))
     )
+  }
+  generateApiToken(): Observable<any> {
+    return this._http.post<any>('api/auth/api-tokens','').pipe(tap(
+      resp=>{console.log(resp)}
+    ))
   }
 }
