@@ -16,36 +16,54 @@
         </mat-form-field>
         <mat-form-field>
           <mat-label> Experience </mat-label>
-          <select matNativeControl required>
-            <option value="it">With No Experience</option>
-            <option value="it">With Experience</option>
+          <select
+            matNativeControl
+            required
+            [(ngModel)]="experience"
+            name="experience"
+          >
+            <option *ngFor="let level of exp" [value]="level">
+              {{ level }}
+            </option>
           </select>
         </mat-form-field>
       </div>
+      <div class="d-flex justify-content-evenly my-2">
+        <mat-form-field>
+          <input
+            matInput
+            placeholder="Work Schedule Type"
+            [(ngModel)]="workSchedule"
+            name="schedule"
+            required
+          />
+        </mat-form-field>
+        <mat-form-field>
+          <input
+            type="number"
+            matInput
+            placeholder="Hours per week"
+            [(ngModel)]="hoursPerWeek"
+            name="hours"
+            required
+          />
+        </mat-form-field>
+      </div>
       <mat-form-field appearance="fill" class="my-2 mx-5">
-        <mat-label>Offer is Valid For Period</mat-label>
-        <mat-date-range-input [rangePicker]="picker" required>
-          <input matStartDate placeholder="Start date" />
-          <input matEndDate placeholder="End date" />
-        </mat-date-range-input>
-        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-        <mat-date-range-picker #picker></mat-date-range-picker>
-      </mat-form-field>
-      <mat-form-field class="my-2 mx-5" appearance="fill">
-        <mat-label>Requirements</mat-label>
-        <textarea
-          matInput
-          cdkTextareaAutosize
-          #autosize="cdkTextareaAutosize"
-          cdkAutosizeMinRows="3"
-          cdkAutosizeMaxRows="6"
+        <mat-label>Offer is Valid Until</mat-label>
+        <input
+          [formControl]="validTo"
           required
-          name="requirements"
-        ></textarea>
+          matInput
+          [matDatepicker]="picker"
+        />
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
       </mat-form-field>
       <mat-form-field class="my-2 mx-5" appearance="fill">
-        <mat-label>What we Offer</mat-label>
+        <mat-label>Job Description</mat-label>
         <textarea
+          [(ngModel)]="description"
           matInput
           cdkTextareaAutosize
           #autosize="cdkTextareaAutosize"
@@ -55,8 +73,21 @@
           name="description"
         ></textarea>
       </mat-form-field>
+      <mat-checkbox [(ngModel)]="shareOnDislinkt" name="checkbox"
+        >Do you want to share offer on Dislinkt?</mat-checkbox
+      >
       <p class="my-3" style="color: red">{{ errorMessage }}</p>
-      <button class="btn btn-danger" mat-raised-button [disabled]="true">
+      <button
+        class="btn btn-danger"
+        mat-raised-button
+        [disabled]="
+          position == '' ||
+          experience == '' ||
+          description == '' ||
+          workSchedule == ''
+        "
+        (click)="createJobOffer()"
+      >
         Create Offer
       </button>
     </form>

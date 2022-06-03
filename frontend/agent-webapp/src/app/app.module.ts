@@ -18,6 +18,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { TokenInterceptor } from './interceptor/token-interceptor';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { AdminRequestsComponent } from './components/admin-requests/admin-requests.component';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 
 @NgModule({
   declarations: [
@@ -42,6 +43,7 @@ import { AdminRequestsComponent } from './components/admin-requests/admin-reques
     MatDatepickerModule,
     MatNativeDateModule,
     MatSnackBarModule,
+    MatCheckboxModule
   ],
   providers: [ {
     provide: HTTP_INTERCEPTORS,

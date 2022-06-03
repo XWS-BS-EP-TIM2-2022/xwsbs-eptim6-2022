@@ -20,11 +20,11 @@ const routes: Routes = [
     component: NewCompanyComponent,
   },
   {
-    path: 'create-job-offer',
+    path: '',
     component: NewJobOfferComponent,
   },
   {
-    path: '',
+    path: 'admin',
     component: AdminRequestsComponent,
   },
 ];
