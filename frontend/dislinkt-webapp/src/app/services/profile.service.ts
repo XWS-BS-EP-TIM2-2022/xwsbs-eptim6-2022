@@ -18,7 +18,7 @@ export class ProfileService {
     return this._http.put<Observable<any>>('http://localhost:5000/', user);
   }
 
-  addNewExperience(experience:any): Observable<any> {
+  addNewExperience(experience: any): Observable<any> {
     return this._http.put<any>('/api/users/experience', experience)
     .pipe(
       tap(data => console.log("data: ", data))
@@ -26,21 +26,21 @@ export class ProfileService {
   }
 
   addNewEducation(education:any): Observable<any> {
-    return this._http.get<any>('http://localhost:5000/users/education', education)
+    return this._http.put<any>('api/users/education', education)
     .pipe(
       tap(data => console.log("data: ", data))
     )
   }
 
   addNewSkill(skill:any): Observable<any> {
-    return this._http.get<any>('http://localhost:5000/users/skill', skill)
+    return this._http.put<any>('api/users/skill', skill)
     .pipe(
       tap(data => console.log("data: ", data))
     )
   }
 
   addNewInterest(interest:any): Observable<any> {
-    return this._http.get<any>('http://localhost:5000/users/experience', interest)
+    return this._http.put<any>('api/users/interest', interest)
     .pipe(
       tap(data => console.log("data: ", data))
     )
