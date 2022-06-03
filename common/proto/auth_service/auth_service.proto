@@ -72,12 +72,16 @@ service AuthService {
       body: "token"
     };
   }
-  rpc GenerateApiToken(GetAllRequest) returns (Token){
+  rpc GenerateApiKey(GetAllRequest) returns (Token){
     option (google.api.http) = {
       post: "/api/auth/api-tokens"
     };
   }
-
+  rpc GetUserApiKey(GetAllRequest) returns (Token){
+    option (google.api.http) = {
+      get: "/api/auth/api-tokens"
+    };
+  }
 
 }
 message ChangePasswordRequest{
