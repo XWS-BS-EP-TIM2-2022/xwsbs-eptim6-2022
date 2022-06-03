@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Education, Experience, Interest, Skill } from 'src/app/model/profile';
 import { ProfileService } from 'src/app/services/profile.service';
 
 @Component({
@@ -33,16 +34,16 @@ export class ProfileComponent implements OnInit {
                   biography: []
                 });
                 this.experienceFormGroup = this.formBuilder.group({
-                  experience: Validators.required
+                  experience: ''
                 });
                 this.educationFormGroup = this.formBuilder.group({
-                  education: Validators.required
+                  education: ''
                 });
                 this.skillFormGroup = this.formBuilder.group({
-                  skill: Validators.required
+                  skill: ''
                 });
                 this.interestFormGroup = this.formBuilder.group({
-                  interest: Validators.required
+                  interest: ''
                 });
               }
 
@@ -78,7 +79,17 @@ export class ProfileComponent implements OnInit {
       return;
     }
 
-    this.profileService.addNewExperience(this.experienceFormGroup.getRawValue()).subscribe({
+    if (this.experienceFormGroup.get('experience')?.value == ""){
+      alert('invalid input');
+      return;
+    }
+
+    let newExperience = new Experience;
+    newExperience = {
+      text: this.experienceFormGroup.get('experience')?.value
+    }
+
+    this.profileService.addNewExperience(newExperience).subscribe({
       next: (data) => {
       alert("Succesfully added!")
       this.getUser();
@@ -92,8 +103,17 @@ export class ProfileComponent implements OnInit {
       alert('Invalid input');
       return;
     }
+    if (this.educationFormGroup.get('education')?.value == ""){
+      alert('invalid input');
+      return;
+    }
 
-    this.profileService.addNewEducation(this.educationFormGroup.getRawValue()).subscribe({
+    let newEducation = new Education();
+    newEducation = {
+      text: this.educationFormGroup.get('education')?.value
+    }
+
+    this.profileService.addNewEducation(newEducation).subscribe({
       next: (data) => {
       alert("Succesfully added!")
       this.getUser();
@@ -107,8 +127,17 @@ export class ProfileComponent implements OnInit {
       alert('Invalid input');
       return;
     }
+    if (this.skillFormGroup.get('skill')?.value == ""){
+      alert('invalid input');
+      return;
+    }
 
-    this.profileService.addNewSkill(this.skillFormGroup.getRawValue()).subscribe({
+    let newSkill = new Skill();
+    newSkill = {
+      text: this.skillFormGroup.get('skill')?.value
+    }
+
+    this.profileService.addNewSkill(newSkill).subscribe({
       next: (data) => {
       alert("Succesfully added!")
       this.getUser();
@@ -122,8 +151,17 @@ export class ProfileComponent implements OnInit {
       alert('Invalid input');
       return;
     }
+    if (this.interestFormGroup.get('interest')?.value == ""){
+      alert('invalid input');
+      return;
+    }
 
-    this.profileService.addNewInterest(this.interestFormGroup.getRawValue()).subscribe({
+    let newInterest = new Interest();
+    newInterest = {
+      text: this.interestFormGroup.get('interest')?.value
+    }
+
+    this.profileService.addNewInterest(newInterest).subscribe({
       next: (data) => {
       alert("Succesfully added!")
       this.getUser();
