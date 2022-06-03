@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Education, Experience, Interest, Skill } from 'src/app/model/profile';
+import { Education, Experience, Interest, Skill, UpdateUser } from 'src/app/model/profile';
 import { ProfileService } from 'src/app/services/profile.service';
 
 @Component({
@@ -51,6 +51,20 @@ export class ProfileComponent implements OnInit {
     this.getUser();
   }
 
+  ngAfterViewInit(): void {
+    this.updateUpdateForm();
+  }
+
+  updateUpdateForm() {
+    this.updateFormGroup.get('name')?.setValue(this.user.name);
+    this.updateFormGroup.get('surname')?.setValue(this.user.surname);
+    this.updateFormGroup.get('email')?.setValue(this.user.email);
+    this.updateFormGroup.get('telephone')?.setValue(this.user.telephone);
+    this.updateFormGroup.get('gender')?.setValue(this.user.gender);
+    this.updateFormGroup.get('birthdate')?.setValue(this.user.birthdate);
+    this.updateFormGroup.get('biography')?.setValue(this.user.biography);
+  }
+
   getUser() {
     this.profileService.getUser().subscribe((res: any) => {
       console.log(res.user)
@@ -64,7 +78,18 @@ export class ProfileComponent implements OnInit {
       return;
     }
 
-    this.profileService.updateUser(this.updateFormGroup.getRawValue()).subscribe({
+    let updateUser = new UpdateUser();
+    updateUser = {
+      name : this.updateFormGroup.get('name')?.value,
+      surname : this.updateFormGroup.get('surname')?.value,
+      email : this.updateFormGroup.get('email')?.value,
+      telephone : this.updateFormGroup.get('telephone')?.value,
+      gender: this.updateFormGroup.get('gender')?.value,
+      birthDate : this.updateFormGroup.get('birthdate')?.value,
+      biography : this.updateFormGroup.get('biography')?.value
+    }
+
+    this.profileService.updateUser(updateUser).subscribe({
       next: (data) => {
       alert("Succesfully updated!")
       this.getUser();

@@ -13,3 +13,13 @@ export class Skill {
 export class Interest {
     text! : string;
 }
+
+export class UpdateUser {
+    name! : string;
+    surname! : string;
+    email! : string;
+    telephone! : string;
+    gender! : string;
+    birthDate! : string;
+    biography! : string;
+}

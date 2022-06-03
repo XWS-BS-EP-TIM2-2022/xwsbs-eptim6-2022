@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { Education, Experience, Interest, Skill } from '../model/profile';
+import { Education, Experience, Interest, Skill, UpdateUser } from '../model/profile';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +15,7 @@ export class ProfileService {
     return this._http.get<Observable<any>>('/api/whoami');
   }
 
-  updateUser(user: any): Observable<any> {
+  updateUser(user: UpdateUser): Observable<any> {
     return this._http.put<Observable<any>>('http://localhost:5000/', user);
   }
 
