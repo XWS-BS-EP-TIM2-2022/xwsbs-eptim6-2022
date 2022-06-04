@@ -23,6 +23,10 @@ import { AccountActivationInfoComponent } from './components/account-activation-
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AllUsersComponent } from './components/all-users/all-users.component';
 import { FollowRequestsComponent } from './components/follow-requests/follow-requests.component';
+import {MatListModule} from '@angular/material/list';
+import {MatGridListModule} from '@angular/material/grid-list';
+
+
 
 
 @NgModule({
@@ -54,7 +58,9 @@ import { FollowRequestsComponent } from './components/follow-requests/follow-req
     MatSnackBarModule,
     MatCardModule,
     MatSnackBarModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatListModule,
+    MatGridListModule
   ],
   providers: [
     {

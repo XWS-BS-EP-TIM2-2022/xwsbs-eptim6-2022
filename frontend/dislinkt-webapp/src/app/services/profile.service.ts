@@ -17,7 +17,7 @@ export class ProfileService {
   getUserApiKey(): Observable<any> {
     return this._http.get<Observable<any>>('/api/auth/api-tokens');
   }
-  
+
   updateUser(user: any): Observable<any> {
     return this._http.put<Observable<any>>('http://localhost:5000/', user);
   }
@@ -57,8 +57,15 @@ export class ProfileService {
     )
   }
 
-  followUser(): Observable<any> {
-    return this._http.put<any>('api/users/follow/629a572f221153591b535feb', {})
+  followUser(id : any): Observable<any> {
+    return this._http.put<any>('api/users/follow/' + id, {})
+    .pipe(
+      tap(data => console.log("data2: ", data))
+    )
+  }
+
+  unfollowUser(id : any): Observable<any> {
+    return this._http.put<any>('api/users/unfollow/' + id, {})
     .pipe(
       tap(data => console.log("data2: ", data))
     )
