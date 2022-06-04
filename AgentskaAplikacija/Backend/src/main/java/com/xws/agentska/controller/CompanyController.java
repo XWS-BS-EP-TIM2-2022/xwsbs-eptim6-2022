@@ -34,6 +34,11 @@ public class CompanyController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/api/users/{id}/companies")
+    public ResponseEntity<?> findCompanyByOwnerId(@PathVariable long id) {
+        return ResponseEntity.ok().body(service.findByOwnerId(id));
+    }
+
     @GetMapping("/api/companies/{id}")
     public ResponseEntity<?> findById(@PathVariable long id) {
         return ResponseEntity.ok().body(service.findById(id));
@@ -47,13 +52,13 @@ public class CompanyController {
 
     @PostMapping("/api/companies/{id}/job-offers")
     public ResponseEntity<?> createNewJobOffer(@PathVariable long id, @RequestBody JobOfferDto dto) {
-        service.addNewJobOffer(id, jobOfferModelMapper.convertToEntity(dto),dto.isShareOnDislinkt());
+        service.addNewJobOffer(id, jobOfferModelMapper.convertToEntity(dto), dto.isShareOnDislinkt());
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/api/companies/{id}/api-connections")
     public ResponseEntity<?> addNewConnection(@PathVariable long id, @RequestBody ApiConnection conn) {
-        service.addNewApiConnection(id,conn);
+        service.addNewApiConnection(id, conn);
         return ResponseEntity.ok().build();
     }
 }

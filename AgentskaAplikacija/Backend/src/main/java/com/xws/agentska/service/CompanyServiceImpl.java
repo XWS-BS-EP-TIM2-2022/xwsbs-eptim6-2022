@@ -3,6 +3,7 @@ package com.xws.agentska.service;
 import com.xws.agentska.dto.JobOfferDislinktDto;
 import com.xws.agentska.model.*;
 import com.xws.agentska.model.enumerations.Status;
+import com.xws.agentska.repository.CompanyRepository;
 import com.xws.agentska.service.interfaces.CompanyService;
 import com.xws.agentska.service.interfaces.JobPositionService;
 import com.xws.agentska.service.interfaces.UsersService;
@@ -72,5 +73,10 @@ public class CompanyServiceImpl extends CustomGenericService<Company, Long> impl
         Company company = this.findById(companyId);
         company.setApiConnection(connection);
         this.update(company);
+    }
+
+    @Override
+    public Company findByOwnerId(long id) {
+        return ((CompanyRepository)repository).findByOwnerId(id);
     }
 }
