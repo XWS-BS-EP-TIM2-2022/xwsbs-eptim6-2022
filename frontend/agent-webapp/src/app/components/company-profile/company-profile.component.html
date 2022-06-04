@@ -97,6 +97,21 @@
           <form #loginForm="ngForm">
             <div class="d-flex justify-content-center">
               <mat-form-field class="my-2">
+                <mat-label>Your Experience </mat-label>
+                <select
+                  matNativeControl
+                  required
+                  [(ngModel)]="experienceLevel"
+                  name="experience"
+                >
+                  <option *ngFor="let level of exp" [value]="level">
+                    {{ level }}
+                  </option>
+                </select>
+              </mat-form-field>
+            </div>
+            <div class="d-flex justify-content-center">
+              <mat-form-field class="my-2">
                 <mat-label>Rate</mat-label>
                 <select
                   matNativeControl
@@ -136,7 +151,12 @@
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
           Close
         </button>
-        <button type="button" class="btn btn-danger" [disabled]="comment == ''">
+        <button
+          type="button"
+          class="btn btn-danger"
+          [disabled]="comment == ''"
+          (click)="addComment()"
+        >
           Add Comment
         </button>
       </div>
@@ -170,6 +190,21 @@
           <form #loginForm="ngForm">
             <div class="d-flex justify-content-center">
               <mat-form-field class="my-2">
+                <mat-label>Your Experience </mat-label>
+                <select
+                  matNativeControl
+                  required
+                  [(ngModel)]="experienceLevel"
+                  name="experience"
+                >
+                  <option *ngFor="let level of exp" [value]="level">
+                    {{ level }}
+                  </option>
+                </select>
+              </mat-form-field>
+            </div>
+            <div class="d-flex justify-content-center">
+              <mat-form-field class="my-2">
                 <input
                   matInput
                   type="number"
@@ -192,6 +227,7 @@
           type="button"
           class="btn btn-danger"
           [disabled]="salary == undefined || salary <= 0"
+          (click)="addSalary()"
         >
           Submit
         </button>
@@ -224,6 +260,21 @@
       <div class="modal-body">
         <div class="row">
           <form #loginForm="ngForm">
+            <div class="d-flex justify-content-center">
+              <mat-form-field class="my-2">
+                <mat-label>Your Experience </mat-label>
+                <select
+                  matNativeControl
+                  required
+                  [(ngModel)]="experienceLevel"
+                  name="experience"
+                >
+                  <option *ngFor="let level of exp" [value]="level">
+                    {{ level }}
+                  </option>
+                </select>
+              </mat-form-field>
+            </div>
             <div class="d-flex justify-content-center">
               <mat-form-field class="my-2" style="width: 350px">
                 <mat-label>Difficulty Level</mat-label>
@@ -266,6 +317,7 @@
           type="button"
           class="btn btn-danger"
           [disabled]="duration == undefined || duration <= 0"
+          (click)="addInterview()"
         >
           Submit
         </button>

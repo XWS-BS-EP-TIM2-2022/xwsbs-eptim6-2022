@@ -1,6 +1,7 @@
 package com.xws.agentska.controller;
 
 import com.xws.agentska.dto.CommentDto;
+import com.xws.agentska.dto.InterviewExperienceDto;
 import com.xws.agentska.dto.SalaryExperienceDto;
 import com.xws.agentska.dto.UserExperienceDto;
 import com.xws.agentska.mapper.CustomModelMapper;
@@ -49,8 +50,8 @@ public class UserExperienceController {
     }
 
     @PostMapping("/api/companies/{id}/interviews")
-    public ResponseEntity<?> createNewInterviewExperience(@RequestBody InterviewExperience interviewExperience) {
-        saveUserExperience(interviewExperience);
+    public ResponseEntity<?> createNewInterviewExperience(@RequestBody InterviewExperienceDto interviewExperience) {
+        saveUserExperience(userExperienceModelMapper.convertToEntity(interviewExperience, InterviewExperience.class));
         return ResponseEntity.ok().build();
     }
 
