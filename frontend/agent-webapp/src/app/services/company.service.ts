@@ -31,6 +31,14 @@ export class CompanyService {
     return this.http.get<any>('api/companies');
   }
 
+  getByOwner(id : any) : Observable<any> {
+    return this.http.get<any>('api/users/' + encodeURIComponent(id) + '/companies');
+  }
+
+  getById(id : any) : Observable<any> {
+    return this.http.get<any>('api/companies/' + encodeURIComponent(id));
+  }
+
   approveRequest(company : any){
     return this.http.put('/api/companies/' + encodeURIComponent(company.id), company);
   }

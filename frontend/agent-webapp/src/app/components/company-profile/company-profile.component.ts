@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-company-profile',
@@ -6,6 +7,9 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./company-profile.component.css']
 })
 export class CompanyProfileComponent implements OnInit {
+  companyId!: number
+  isOwner : boolean = false
+
   rate : number = 5
   rates : number[] = [ 1, 2, 3, 4, 5]
   comment : string = ''
@@ -15,9 +19,15 @@ export class CompanyProfileComponent implements OnInit {
   duration! : number 
   state : string = 'info'
 
-  constructor() { }
+  constructor(private route: ActivatedRoute) {
+    this.route.params.subscribe((params) => {
+      this.companyId = +params['id'];
+    });
+   }
 
   ngOnInit(): void {
+    if (localStorage.getItem('role') === 'COMPANY_OWNER_ROLE')
+      this.isOwner = true
   }
 
 }

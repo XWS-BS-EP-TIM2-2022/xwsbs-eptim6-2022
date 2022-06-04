@@ -21,17 +21,17 @@ const routes: Routes = [
     component: NewCompanyComponent,
   },
   {
-    path: 'new-job-offer',
+    path: 'create-job-offer',
     component: NewJobOfferComponent,
   },
   {
     path: 'admin',
     component: AdminRequestsComponent,
   },
-  {
-    path: '',
-    component: CompanyProfileComponent,
-  },
+  { 
+    path: 'company/:id',
+    component: CompanyProfileComponent
+ },
 ];
 
 @NgModule({

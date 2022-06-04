@@ -33,10 +33,6 @@ export class UsersService {
     localStorage.removeItem('id');
   }
 
-  public getUser(id : string) : Observable<any> {
-      return this.http.get<Observable<any>>('/api/users/' + encodeURIComponent(id));
-  }
-
   signup(user: any) {
     const body = {
       'username': user.username,

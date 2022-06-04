@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { CompanyService } from 'src/app/services/company.service';
 import { UsersService } from 'src/app/services/users.service';
 
 @Component({
@@ -11,9 +12,10 @@ export class LoginComponent implements OnInit {
   username: string = ""
   password: string = ""
   errorMessage: string = ""
+  company! : any
   user : any
 
-  constructor(public service : UsersService, public router : Router) { }
+  constructor(public service : UsersService, public router : Router, public companyService : CompanyService) { }
 
   ngOnInit(): void {
   }
@@ -26,16 +28,18 @@ export class LoginComponent implements OnInit {
 
     this.service.login(user).subscribe(
       (data) => {
-
-        let id = localStorage.getItem('id');
+        let id = localStorage.getItem('id')
         if (id == null)
-          id = '0'
-        this.service.getUser(id).subscribe(res => 
-          {
-            this.user = res;
-            console.log(this.user);
-            //this.router.navigate(['/register-company'])
-          });
+          id ='0'
+        this.companyService.getByOwner(id).subscribe(
+          res => {
+            this.company = res
+            if (this.company == null)
+              this.router.navigate(['/register-company'])
+            else
+              this.router.navigate(['/company/' + this.company.id])
+          }
+        );
       },
       (error) => {
         this.errorMessage = 'Invalid credentials';

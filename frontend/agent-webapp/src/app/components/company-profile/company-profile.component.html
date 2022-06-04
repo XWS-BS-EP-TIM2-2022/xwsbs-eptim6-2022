@@ -40,6 +40,7 @@
         class="btn btn-danger"
         data-bs-toggle="modal"
         data-bs-target="#commentModal"
+        *ngIf="!isOwner"
       >
         Add Comment
       </button>
@@ -50,20 +51,25 @@
         class="btn btn-danger"
         data-bs-toggle="modal"
         data-bs-target="#salaryModal"
+        *ngIf="!isOwner"
       >
         Add Your Experience
       </button>
     </div>
-  </div>
-  <div class="d-flex justify-content-center my-5" *ngIf="state == 'interview'">
-    <button
-      type="button"
-      class="btn btn-danger"
-      data-bs-toggle="modal"
-      data-bs-target="#interviewModal"
+    <div
+      class="d-flex justify-content-center my-5"
+      *ngIf="state == 'interview'"
     >
-      Add Your Experience
-    </button>
+      <button
+        type="button"
+        class="btn btn-danger"
+        data-bs-toggle="modal"
+        data-bs-target="#interviewModal"
+        *ngIf="!isOwner"
+      >
+        Add Your Experience
+      </button>
+    </div>
   </div>
 </div>
 

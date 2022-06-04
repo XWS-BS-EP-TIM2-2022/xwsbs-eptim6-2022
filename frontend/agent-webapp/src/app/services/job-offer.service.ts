@@ -8,7 +8,7 @@ export class JobOfferService {
 
   constructor(private http: HttpClient) { }
 
-  createJobOffer(offer : any)
+  createJobOffer(offer : any, id : any)
   {
     var body ={
       'position':{
@@ -24,6 +24,7 @@ export class JobOfferService {
           'hoursPerWeek': offer.hoursPerWeek
       }
   }
-    return this.http.post("/api/companies/" + encodeURIComponent("1")+ "/job-offers", body, { responseType: 'text' });
+
+    return this.http.post("/api/companies/" + encodeURIComponent(id)+ "/job-offers", body, { responseType: 'text' });
   }
 }
