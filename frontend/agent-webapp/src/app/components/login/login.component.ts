@@ -11,6 +11,7 @@ export class LoginComponent implements OnInit {
   username: string = ""
   password: string = ""
   errorMessage: string = ""
+  user : any
 
   constructor(public service : UsersService, public router : Router) { }
 
@@ -25,7 +26,16 @@ export class LoginComponent implements OnInit {
 
     this.service.login(user).subscribe(
       (data) => {
-        this.router.navigate(['/register-company'])
+
+        let id = localStorage.getItem('id');
+        if (id == null)
+          id = '0'
+        this.service.getUser(id).subscribe(res => 
+          {
+            this.user = res;
+            console.log(this.user);
+            //this.router.navigate(['/register-company'])
+          });
       },
       (error) => {
         this.errorMessage = 'Invalid credentials';

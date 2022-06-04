@@ -19,6 +19,9 @@ import { TokenInterceptor } from './interceptor/token-interceptor';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { AdminRequestsComponent } from './components/admin-requests/admin-requests.component';
 import {MatCheckboxModule} from '@angular/material/checkbox';
+import { CompanyProfileComponent } from './components/company-profile/company-profile.component';
+import { CompanyInfoComponent } from './components/company-info/company-info.component';
+import { CompanyCommentsComponent } from './components/company-comments/company-comments.component';
 
 @NgModule({
   declarations: [
@@ -28,7 +31,10 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
     NavbarComponent,
     NewCompanyComponent,
     NewJobOfferComponent,
-    AdminRequestsComponent
+    AdminRequestsComponent,
+    CompanyProfileComponent,
+    CompanyInfoComponent,
+    CompanyCommentsComponent
   ],
   imports: [
     BrowserModule,

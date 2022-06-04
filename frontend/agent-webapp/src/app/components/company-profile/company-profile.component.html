@@ -1,0 +1,269 @@
+<app-navbar></app-navbar>
+<div class="row mx-5 my-3">
+  <div class="btn-group" role="group" aria-label="First group">
+    <button
+      type="button"
+      class="btn btn-outline-danger"
+      (click)="state = 'info'"
+    >
+      About Company
+    </button>
+    <button
+      type="button"
+      class="btn btn-outline-danger"
+      (click)="state = 'comments'"
+    >
+      Comments
+    </button>
+    <button
+      type="button"
+      class="btn btn-outline-danger"
+      (click)="state = 'salary'"
+    >
+      Salary
+    </button>
+    <button
+      type="button"
+      class="btn btn-outline-danger"
+      (click)="state = 'interview'"
+    >
+      Interview Proccess
+    </button>
+  </div>
+</div>
+<div class="row mx-5">
+  <div class="card shadow-sm">
+    <app-company-info *ngIf="state == 'info'"></app-company-info>
+    <div class="d-flex justify-content-center my-5" *ngIf="state == 'comments'">
+      <button
+        type="button"
+        class="btn btn-danger"
+        data-bs-toggle="modal"
+        data-bs-target="#commentModal"
+      >
+        Add Comment
+      </button>
+    </div>
+    <div class="d-flex justify-content-center my-5" *ngIf="state == 'salary'">
+      <button
+        type="button"
+        class="btn btn-danger"
+        data-bs-toggle="modal"
+        data-bs-target="#salaryModal"
+      >
+        Add Your Experience
+      </button>
+    </div>
+  </div>
+  <div class="d-flex justify-content-center my-5" *ngIf="state == 'interview'">
+    <button
+      type="button"
+      class="btn btn-danger"
+      data-bs-toggle="modal"
+      data-bs-target="#interviewModal"
+    >
+      Add Your Experience
+    </button>
+  </div>
+</div>
+
+<!-- Add Comment Modal -->
+<div
+  class="modal fade"
+  id="commentModal"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="exampleModalLabel">Comment Company</h2>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <form #loginForm="ngForm">
+            <div class="d-flex justify-content-center">
+              <mat-form-field class="my-2">
+                <mat-label>Rate</mat-label>
+                <select
+                  matNativeControl
+                  required
+                  [(ngModel)]="rate"
+                  name="rate"
+                >
+                  <option *ngFor="let rate of rates" [value]="rate">
+                    {{ rate }}
+                  </option>
+                </select>
+              </mat-form-field>
+            </div>
+            <div class="d-flex justify-content-center">
+              <mat-form-field
+                class="my-2"
+                appearance="fill"
+                style="width: 400px"
+              >
+                <mat-label>Comment</mat-label>
+                <textarea
+                  [(ngModel)]="comment"
+                  matInput
+                  cdkTextareaAutosize
+                  #autosize="cdkTextareaAutosize"
+                  cdkAutosizeMinRows="3"
+                  cdkAutosizeMaxRows="6"
+                  required
+                  name="comment"
+                ></textarea>
+              </mat-form-field>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Close
+        </button>
+        <button type="button" class="btn btn-danger" [disabled]="comment == ''">
+          Add Comment
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add Salary Modal -->
+<div
+  class="modal fade"
+  id="salaryModal"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="exampleModalLabel">
+          Add your salary experience
+        </h2>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <form #loginForm="ngForm">
+            <div class="d-flex justify-content-center">
+              <mat-form-field class="my-2">
+                <input
+                  matInput
+                  type="number"
+                  placeholder="Salary"
+                  [(ngModel)]="salary"
+                  name="salary"
+                  required
+                />
+              </mat-form-field>
+              <h3 class="ms-2 mt-3">din</h3>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Close
+        </button>
+        <button
+          type="button"
+          class="btn btn-danger"
+          [disabled]="salary == undefined || salary <= 0"
+        >
+          Submit
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add Interview Exp Modal -->
+<div
+  class="modal fade"
+  id="interviewModal"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="exampleModalLabel">
+          Add Your Experience with Interviews
+        </h2>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <form #loginForm="ngForm">
+            <div class="d-flex justify-content-center">
+              <mat-form-field class="my-2" style="width: 350px">
+                <mat-label>Difficulty Level</mat-label>
+                <select
+                  matNativeControl
+                  required
+                  [(ngModel)]="level"
+                  name="level"
+                >
+                  <option
+                    *ngFor="let level of difficultyLevels"
+                    [value]="level"
+                  >
+                    {{ level }}
+                  </option>
+                </select>
+              </mat-form-field>
+            </div>
+            <div class="d-flex justify-content-center">
+              <mat-form-field class="my-2" style="width: 290px">
+                <input
+                  matInput
+                  type="number"
+                  placeholder="Selection proccess duration"
+                  [(ngModel)]="duration"
+                  name="duration"
+                  required
+                />
+              </mat-form-field>
+              <h3 class="ms-2 mt-3">in days</h3>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Close
+        </button>
+        <button
+          type="button"
+          class="btn btn-danger"
+          [disabled]="duration == undefined || duration <= 0"
+        >
+          Submit
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
