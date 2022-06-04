@@ -1,0 +1,41 @@
+<app-navbar></app-navbar>
+<br>
+<span *ngFor="let user of users">
+<p >
+<mat-card class="example-card">
+    <mat-card-title>{{user.name}} {{user.surname}}</mat-card-title>
+    <mat-card-subtitle>{{user.biography}}</mat-card-subtitle>
+    <mat-card-content>
+      <p><strong>Experiences: </strong></p>
+      <p *ngFor="let exp of user.experiences">{{exp.text}}</p>
+    </mat-card-content>
+    <mat-card-content>
+        <p><strong>Education: </strong></p>
+        <p *ngFor="let edu of user.educations">{{edu.text}}</p>
+    </mat-card-content>
+    <mat-card-content>
+        <p><strong>Skills: </strong></p>
+        <p *ngFor="let skill of user.skills">{{skill.text}}</p>
+    </mat-card-content>
+    <mat-card-content>
+        <p><strong>Interests: </strong></p>
+        <p *ngFor="let int of user.interests">{{int.text}}</p>
+    </mat-card-content>
+    <ng-container *ngIf="isUserFollowing(user.username); then isFollowing; else notFollowing">
+  </ng-container>
+  <ng-template #notFollowing>
+    <mat-card-actions>
+      <button mat-button *ngIf="user.isPublic" (click)="followUser(user.username)">Follow</button>
+      <button mat-button *ngIf="!user.isPublic" (click)="followUser(user.username)">Send Follow Request</button>
+    </mat-card-actions>
+  </ng-template>
+    <ng-template #isFollowing>
+    <mat-card-actions>
+      <button mat-button (click)="followUser(user.username)">UnFollow</button>
+    </mat-card-actions>
+  </ng-template>
+
+</mat-card>
+<br>
+</p>
+</span>

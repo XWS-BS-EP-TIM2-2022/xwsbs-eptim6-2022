@@ -46,4 +46,18 @@ export class ProfileService {
       tap(data => console.log("data: ", data))
     )
   }
+
+  getAllUsers(): Observable<any> {
+    return this._http.get<any>('api/users')
+    .pipe(
+      tap(data => console.log("data2: ", data))
+    )
+  }
+
+  followUser(): Observable<any> {
+    return this._http.put<any>('api/users/follow/629a572f221153591b535feb', {})
+    .pipe(
+      tap(data => console.log("data2: ", data))
+    )
+  }
 }
