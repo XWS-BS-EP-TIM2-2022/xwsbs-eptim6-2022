@@ -17,6 +17,11 @@ import {MatDatepickerModule} from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { TokenInterceptor } from './interceptor/token-interceptor';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { JobOffersComponent } from './components/job-offers/job-offers.component';
+import {MatGridListModule} from '@angular/material/grid-list';
+import {MatDividerModule} from '@angular/material/divider';
+
+
 
 @NgModule({
   declarations: [
@@ -25,7 +30,8 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
     SignupComponent,
     NavbarComponent,
     NewCompanyComponent,
-    NewJobOfferComponent
+    NewJobOfferComponent,
+    JobOffersComponent
   ],
   imports: [
     BrowserModule,
@@ -40,6 +46,8 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
     MatDatepickerModule,
     MatNativeDateModule,
     MatSnackBarModule,
+    MatGridListModule,
+    MatDividerModule
   ],
   providers: [ {
     provide: HTTP_INTERCEPTORS,
