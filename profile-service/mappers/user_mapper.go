@@ -2,11 +2,14 @@ package mappers
 
 import (
 	usersServicePb "github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common/proto/profile_service"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"profile-service/store"
 )
 
 func MapToUser(in *usersServicePb.User) *store.User {
+	objid, _ := primitive.ObjectIDFromHex(in.Id)
 	return &store.User{
+		ID:        objid,
 		Username:  in.Username,
 		Password:  in.Password,
 		Biography: in.Biography,
@@ -29,6 +32,7 @@ func MapToUsersResponse(users []store.User) *usersServicePb.UsersResponse {
 }
 func mapToUserPb(usr *store.User) *usersServicePb.User {
 	return &usersServicePb.User{
+		Id:             usr.ID.Hex(),
 		Username:       usr.Username,
 		Password:       usr.Password,
 		Biography:      usr.Biography,
