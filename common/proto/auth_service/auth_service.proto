@@ -82,7 +82,6 @@ service AuthService {
       get: "/api/auth/api-tokens"
     };
   }
-
 }
 message ChangePasswordRequest{
   ChangePasswordMessage changePasswordMessage = 1;

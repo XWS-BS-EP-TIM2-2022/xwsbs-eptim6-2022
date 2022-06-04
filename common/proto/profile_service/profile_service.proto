@@ -129,20 +129,21 @@ message EducationRequest{
 }
 
 message User {
-  string username = 1;
-  string name = 2;
-  string surname = 3;
-  string password = 4;
-  string email = 5;
-  string telephone = 6;
-  string gender = 7;
-  string birthDate = 8;
-  string biography = 9;
-  repeated  Experience experiences = 10;
-  repeated Education educations = 11;
-  repeated Skill skills = 12;
-  repeated Interest interests = 13;
-  repeated Follower followers = 14;
+  string id=1;
+  string username = 2;
+  string name = 3;
+  string surname =4;
+  string password = 5;
+  string email = 6;
+  string telephone = 7;
+  string gender = 8;
+  string birthDate = 9;
+  string biography = 10;
+  repeated  Experience experiences = 11;
+  repeated Education educations = 12;
+  repeated Skill skills = 13;
+  repeated Interest interests = 14;
+  repeated Follower followers = 15;
   repeated Follower followings = 16;
   bool isPublic = 17;
   repeated Follower followRequests = 18;
