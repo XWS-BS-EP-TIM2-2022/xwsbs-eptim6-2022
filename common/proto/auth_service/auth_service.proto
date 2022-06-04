@@ -72,12 +72,16 @@ service AuthService {
       body: "token"
     };
   }
-  rpc GenerateApiToken(GetAllRequest) returns (Token){
+  rpc GenerateApiKey(GetAllRequest) returns (Token){
     option (google.api.http) = {
       post: "/api/auth/api-tokens"
     };
   }
-
+  rpc GetUserApiKey(GetAllRequest) returns (Token){
+    option (google.api.http) = {
+      get: "/api/auth/api-tokens"
+    };
+  }
 
 }
 message ChangePasswordRequest{
@@ -146,6 +150,7 @@ message User {
   string biography = 9;
   bool isPublic = 17;
   string role = 18;
+  string apiKey=19;
 }
 
 message CreateNewUser {

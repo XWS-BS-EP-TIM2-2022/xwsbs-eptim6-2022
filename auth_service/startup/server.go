@@ -122,7 +122,7 @@ func (s *Server) PasswordlessLogin(ctx context.Context, in *authServicePb.Activa
 
 	return &authServicePb.ActivationResponse{ResponseStatus: jwt.Token}, err
 }
-func (s *Server) GenerateApiToken(ctx context.Context, in *authServicePb.GetAllRequest) (*authServicePb.Token, error) {
+func (s *Server) GenerateApiKey(ctx context.Context, in *authServicePb.GetAllRequest) (*authServicePb.Token, error) {
 	loggedinUserToken := getTokenFromContext(ctx)
 	tokenUser, _ := s.AuthHandler.ValidateToken(loggedinUserToken)
 	apiKey, err := s.AuthHandler.GenerateJWT(handlers.JWTOptions{Username: tokenUser.Username, IsTokenNonExpired: true})
@@ -134,6 +134,15 @@ func (s *Server) GenerateApiToken(ctx context.Context, in *authServicePb.GetAllR
 		return nil, err
 	}
 	return &authServicePb.Token{Token: apiKey}, nil
+}
+func (s *Server) GetUserApiKey(ctx context.Context, in *authServicePb.GetAllRequest) (*authServicePb.Token, error) {
+	loggedinUserToken := getTokenFromContext(ctx)
+	tokenUser, _ := s.AuthHandler.ValidateToken(loggedinUserToken)
+	dbUser, err := s.AuthHandler.UserStore.FindByUsername(tokenUser.Username)
+	if err != nil {
+		return nil, err
+	}
+	return &authServicePb.Token{Token: dbUser.ApiToken}, nil
 }
 func getTokenFromContext(ctx context.Context) string {
 	md, _ := metadata.FromIncomingContext(ctx)

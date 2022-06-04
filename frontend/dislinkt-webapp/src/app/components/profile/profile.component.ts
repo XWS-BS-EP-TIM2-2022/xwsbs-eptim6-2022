@@ -49,6 +49,7 @@ export class ProfileComponent implements OnInit {
 
   ngOnInit(): void {
     this.getUser();
+   
   }
 
   ngAfterViewInit(): void {
@@ -67,11 +68,22 @@ export class ProfileComponent implements OnInit {
 
   getUser() {
     this.profileService.getUser().subscribe((res: any) => {
-      console.log(res.user)
       this.user = res.user
     });
+    this.profileService.getUserApiKey().subscribe((res: any) => {
+        this.user.apiKey=res.token
+        console.log(this.user)
+    });
   }
-
+  generateApiToken(){
+    this.profileService.generateApiToken().subscribe({
+      next:(data)=>{
+        alert(data)
+      },
+      error:(err)=>{alert(err)}
+    })
+    console.log("Generate api token")
+  }
   update() {
     if (this.updateFormGroup.invalid) {
       alert('Invalid input');

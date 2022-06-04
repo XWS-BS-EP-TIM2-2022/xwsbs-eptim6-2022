@@ -33,7 +33,8 @@ type AuthServiceClient interface {
 	ResetPassword(ctx context.Context, in *ResetPasswordWithTokenMessage, opts ...grpc.CallOption) (*ActivationResponse, error)
 	GeneratePasswordlessLoginToken(ctx context.Context, in *UserEmailMessage, opts ...grpc.CallOption) (*ActivationResponse, error)
 	PasswordlessLogin(ctx context.Context, in *ActivationTokenMessage, opts ...grpc.CallOption) (*ActivationResponse, error)
-	GenerateApiToken(ctx context.Context, in *GetAllRequest, opts ...grpc.CallOption) (*Token, error)
+	GenerateApiKey(ctx context.Context, in *GetAllRequest, opts ...grpc.CallOption) (*Token, error)
+	GetUserApiKey(ctx context.Context, in *GetAllRequest, opts ...grpc.CallOption) (*Token, error)
 }
 
 type authServiceClient struct {
@@ -143,9 +144,18 @@ func (c *authServiceClient) PasswordlessLogin(ctx context.Context, in *Activatio
 	return out, nil
 }
 
-func (c *authServiceClient) GenerateApiToken(ctx context.Context, in *GetAllRequest, opts ...grpc.CallOption) (*Token, error) {
+func (c *authServiceClient) GenerateApiKey(ctx context.Context, in *GetAllRequest, opts ...grpc.CallOption) (*Token, error) {
 	out := new(Token)
-	err := c.cc.Invoke(ctx, "/auth_service.AuthService/GenerateApiToken", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/auth_service.AuthService/GenerateApiKey", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) GetUserApiKey(ctx context.Context, in *GetAllRequest, opts ...grpc.CallOption) (*Token, error) {
+	out := new(Token)
+	err := c.cc.Invoke(ctx, "/auth_service.AuthService/GetUserApiKey", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -167,7 +177,8 @@ type AuthServiceServer interface {
 	ResetPassword(context.Context, *ResetPasswordWithTokenMessage) (*ActivationResponse, error)
 	GeneratePasswordlessLoginToken(context.Context, *UserEmailMessage) (*ActivationResponse, error)
 	PasswordlessLogin(context.Context, *ActivationTokenMessage) (*ActivationResponse, error)
-	GenerateApiToken(context.Context, *GetAllRequest) (*Token, error)
+	GenerateApiKey(context.Context, *GetAllRequest) (*Token, error)
+	GetUserApiKey(context.Context, *GetAllRequest) (*Token, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
 
@@ -208,8 +219,11 @@ func (UnimplementedAuthServiceServer) GeneratePasswordlessLoginToken(context.Con
 func (UnimplementedAuthServiceServer) PasswordlessLogin(context.Context, *ActivationTokenMessage) (*ActivationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PasswordlessLogin not implemented")
 }
-func (UnimplementedAuthServiceServer) GenerateApiToken(context.Context, *GetAllRequest) (*Token, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GenerateApiToken not implemented")
+func (UnimplementedAuthServiceServer) GenerateApiKey(context.Context, *GetAllRequest) (*Token, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GenerateApiKey not implemented")
+}
+func (UnimplementedAuthServiceServer) GetUserApiKey(context.Context, *GetAllRequest) (*Token, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserApiKey not implemented")
 }
 func (UnimplementedAuthServiceServer) mustEmbedUnimplementedAuthServiceServer() {}
 
@@ -422,20 +436,38 @@ func _AuthService_PasswordlessLogin_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AuthService_GenerateApiToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _AuthService_GenerateApiKey_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetAllRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AuthServiceServer).GenerateApiToken(ctx, in)
+		return srv.(AuthServiceServer).GenerateApiKey(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/auth_service.AuthService/GenerateApiToken",
+		FullMethod: "/auth_service.AuthService/GenerateApiKey",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServiceServer).GenerateApiToken(ctx, req.(*GetAllRequest))
+		return srv.(AuthServiceServer).GenerateApiKey(ctx, req.(*GetAllRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_GetUserApiKey_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAllRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).GetUserApiKey(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/auth_service.AuthService/GetUserApiKey",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).GetUserApiKey(ctx, req.(*GetAllRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -492,8 +524,12 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _AuthService_PasswordlessLogin_Handler,
 		},
 		{
-			MethodName: "GenerateApiToken",
-			Handler:    _AuthService_GenerateApiToken_Handler,
+			MethodName: "GenerateApiKey",
+			Handler:    _AuthService_GenerateApiKey_Handler,
+		},
+		{
+			MethodName: "GetUserApiKey",
+			Handler:    _AuthService_GetUserApiKey_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

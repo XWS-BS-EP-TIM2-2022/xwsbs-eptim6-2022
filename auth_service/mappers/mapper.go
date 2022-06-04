@@ -19,6 +19,7 @@ func MapUserToPb(user *store.User) *authServicePb.User {
 		Name:     user.Name,
 		Surname:  user.Surname,
 		Password: user.Password,
+		ApiKey:   user.ApiToken,
 	}
 	return userPb
 }
