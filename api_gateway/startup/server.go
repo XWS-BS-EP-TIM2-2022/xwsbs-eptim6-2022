@@ -89,16 +89,16 @@ func authWrapper(h http.Handler, s *Server) http.Handler {
 				fmt.Fprintf(w, "Not Authorized")
 			}
 		}
-		h.ServeHTTP(w, r)
-		//userPermissions, _ := s.authService.GetUserPermissions(token)
-		//hasPermissions := s.config.SecurityPermissions.ValidatePermission(userPermissions, request)
-		//if hasPermissions {
-		//	h.ServeHTTP(w, r)
-		//} else {
-		//	w.WriteHeader(http.StatusForbidden)
-		//
-		//	fmt.Fprintf(w, "Not Authorized")
-		//}
+		//h.ServeHTTP(w, r)
+		userPermissions, _ := s.authService.GetUserPermissions(token)
+		hasPermissions := s.config.SecurityPermissions.ValidatePermission(userPermissions, request)
+		if hasPermissions {
+			h.ServeHTTP(w, r)
+		} else {
+			w.WriteHeader(http.StatusForbidden)
+
+			fmt.Fprintf(w, "Not Authorized")
+		}
 	})
 }
 
