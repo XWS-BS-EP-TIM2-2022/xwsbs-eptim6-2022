@@ -1,0 +1,17 @@
+<app-navbar></app-navbar>
+<mat-grid-list cols="1" rows="1" rowHeight="10rem">
+<mat-grid-tile><h1><strong>Available jobs: </strong></h1> </mat-grid-tile>
+<mat-grid-tile *ngFor="let offer of jobOffersAll">
+<mat-card class="example-card" >
+    <mat-card-title>{{offer.WorkScheduleTitle}} / {{offer.WorkScheduleHours}}h</mat-card-title>
+    <mat-divider [vertical]="true"></mat-divider>
+    <mat-card-subtitle><strong>{{offer.position}}</strong></mat-card-subtitle>
+    <mat-card-content>
+      <p>{{offer.description}}</p>
+    </mat-card-content>
+    <mat-card-content>
+        <p>Valid to: {{offer.validUntill | date:'dd/MM/yyyy'}}</p>
+      </mat-card-content>
+  </mat-card>
+</mat-grid-tile>
+</mat-grid-list> 

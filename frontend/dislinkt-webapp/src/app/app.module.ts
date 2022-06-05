@@ -25,6 +25,7 @@ import { AllUsersComponent } from './components/all-users/all-users.component';
 import { FollowRequestsComponent } from './components/follow-requests/follow-requests.component';
 import {MatListModule} from '@angular/material/list';
 import {MatGridListModule} from '@angular/material/grid-list';
+import { JobOffersViewComponent } from './components/job-offers-view/job-offers-view.component';
 
 
 
@@ -43,7 +44,8 @@ import {MatGridListModule} from '@angular/material/grid-list';
     SetNewPasswordComponent,
     AccountActivationInfoComponent,
     AllUsersComponent,
-    FollowRequestsComponent
+    FollowRequestsComponent,
+    JobOffersViewComponent
 
   ],
   imports: [
