@@ -13,6 +13,7 @@ import { ChangePasswordComponent } from './components/change-password/change-pas
 import { HomepageComponent } from './components/homepage/homepage.component';
 import { AllUsersComponent } from './components/all-users/all-users.component';
 import { FollowRequestsComponent } from './components/follow-requests/follow-requests.component';
+import { JobOffersViewComponent } from './components/job-offers-view/job-offers-view.component';
 
 const routes: Routes = [
   {
@@ -71,6 +72,10 @@ const routes: Routes = [
   {
     path: 'follow-requests',
     component: FollowRequestsComponent,
+  },
+  {
+    path: 'job-offers',
+    component: JobOffersViewComponent,
   }
 ];
 
