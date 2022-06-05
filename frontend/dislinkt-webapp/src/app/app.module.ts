@@ -21,6 +21,12 @@ import { ForgotPasswordComponent } from './components/forgot-password/forgot-pas
 import { SetNewPasswordComponent } from './components/set-new-password/set-new-password.component';
 import { AccountActivationInfoComponent } from './components/account-activation-info/account-activation-info.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { AllUsersComponent } from './components/all-users/all-users.component';
+import { FollowRequestsComponent } from './components/follow-requests/follow-requests.component';
+import {MatListModule} from '@angular/material/list';
+import {MatGridListModule} from '@angular/material/grid-list';
+
+
 
 
 @NgModule({
@@ -35,7 +41,9 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     ChangePasswordComponent,
     ForgotPasswordComponent,
     SetNewPasswordComponent,
-    AccountActivationInfoComponent
+    AccountActivationInfoComponent,
+    AllUsersComponent,
+    FollowRequestsComponent
 
   ],
   imports: [
@@ -50,7 +58,9 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     MatSnackBarModule,
     MatCardModule,
     MatSnackBarModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatListModule,
+    MatGridListModule
   ],
   providers: [
     {
