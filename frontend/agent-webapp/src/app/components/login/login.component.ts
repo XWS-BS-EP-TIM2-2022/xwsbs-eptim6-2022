@@ -28,18 +28,26 @@ export class LoginComponent implements OnInit {
 
     this.service.login(user).subscribe(
       (data) => {
-        let id = localStorage.getItem('id')
-        if (id == null)
-          id ='0'
-        this.companyService.getByOwner(id).subscribe(
-          res => {
-            this.company = res
-            if (this.company == null)
-              this.router.navigate(['/register-company'])
-            else
-              this.router.navigate(['/company/' + this.company.id])
-          }
-        );
+        if (localStorage.getItem('role') === 'COMPANY_OWNER_ROLE')
+        {
+          let id = localStorage.getItem('id')
+          if (id == null)
+            id ='0'
+          this.companyService.getByOwner(id).subscribe(
+            res => {
+              this.company = res
+              if (this.company == null)
+                this.router.navigate(['/register-company'])
+              else
+                this.router.navigate(['/company/' + this.company.id])
+            }
+          );
+        }
+        if (localStorage.getItem('role') === 'ADMIN_ROLE')
+          this.router.navigate(['/admin'])
+        if (localStorage.getItem('role') === 'USER_ROLE')
+          this.router.navigate(['/job-offers'])
+       
       },
       (error) => {
         this.errorMessage = 'Invalid credentials';
