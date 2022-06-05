@@ -1,0 +1,9 @@
+.example-card {
+    max-width: 400px;
+    display: inline-block;
+    background-color: rgb(247, 252, 252);
+  }
+
+  mat-grid-tile {
+    background: lightblue;
+  }

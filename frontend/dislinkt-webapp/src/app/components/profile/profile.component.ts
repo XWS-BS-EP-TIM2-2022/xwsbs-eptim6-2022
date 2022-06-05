@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Education, Experience, Interest, Skill, UpdateUser } from 'src/app/model/profile';
 import { ProfileService } from 'src/app/services/profile.service';
 
 @Component({
@@ -33,22 +34,36 @@ export class ProfileComponent implements OnInit {
                   biography: []
                 });
                 this.experienceFormGroup = this.formBuilder.group({
-                  experience: Validators.required
+                  experience: ''
                 });
                 this.educationFormGroup = this.formBuilder.group({
-                  education: Validators.required
+                  education: ''
                 });
                 this.skillFormGroup = this.formBuilder.group({
-                  skill: Validators.required
+                  skill: ''
                 });
                 this.interestFormGroup = this.formBuilder.group({
-                  interest: Validators.required
+                  interest: ''
                 });
               }
 
   ngOnInit(): void {
     this.getUser();
    
+  }
+
+  ngAfterViewInit(): void {
+    this.updateUpdateForm();
+  }
+
+  updateUpdateForm() {
+    this.updateFormGroup.get('name')?.setValue(this.user.name);
+    this.updateFormGroup.get('surname')?.setValue(this.user.surname);
+    this.updateFormGroup.get('email')?.setValue(this.user.email);
+    this.updateFormGroup.get('telephone')?.setValue(this.user.telephone);
+    this.updateFormGroup.get('gender')?.setValue(this.user.gender);
+    this.updateFormGroup.get('birthdate')?.setValue(this.user.birthdate);
+    this.updateFormGroup.get('biography')?.setValue(this.user.biography);
   }
 
   getUser() {
@@ -75,7 +90,18 @@ export class ProfileComponent implements OnInit {
       return;
     }
 
-    this.profileService.updateUser(this.updateFormGroup.getRawValue()).subscribe({
+    let updateUser = new UpdateUser();
+    updateUser = {
+      name : this.updateFormGroup.get('name')?.value,
+      surname : this.updateFormGroup.get('surname')?.value,
+      email : this.updateFormGroup.get('email')?.value,
+      telephone : this.updateFormGroup.get('telephone')?.value,
+      gender: this.updateFormGroup.get('gender')?.value,
+      birthDate : this.updateFormGroup.get('birthdate')?.value,
+      biography : this.updateFormGroup.get('biography')?.value
+    }
+
+    this.profileService.updateUser(updateUser).subscribe({
       next: (data) => {
       alert("Succesfully updated!")
       this.getUser();
@@ -90,7 +116,17 @@ export class ProfileComponent implements OnInit {
       return;
     }
 
-    this.profileService.addNewExperience(this.experienceFormGroup.getRawValue()).subscribe({
+    if (this.experienceFormGroup.get('experience')?.value == ""){
+      alert('invalid input');
+      return;
+    }
+
+    let newExperience = new Experience;
+    newExperience = {
+      text: this.experienceFormGroup.get('experience')?.value
+    }
+
+    this.profileService.addNewExperience(newExperience).subscribe({
       next: (data) => {
       alert("Succesfully added!")
       this.getUser();
@@ -104,8 +140,17 @@ export class ProfileComponent implements OnInit {
       alert('Invalid input');
       return;
     }
+    if (this.educationFormGroup.get('education')?.value == ""){
+      alert('invalid input');
+      return;
+    }
 
-    this.profileService.addNewEducation(this.educationFormGroup.getRawValue()).subscribe({
+    let newEducation = new Education();
+    newEducation = {
+      text: this.educationFormGroup.get('education')?.value
+    }
+
+    this.profileService.addNewEducation(newEducation).subscribe({
       next: (data) => {
       alert("Succesfully added!")
       this.getUser();
@@ -119,8 +164,17 @@ export class ProfileComponent implements OnInit {
       alert('Invalid input');
       return;
     }
+    if (this.skillFormGroup.get('skill')?.value == ""){
+      alert('invalid input');
+      return;
+    }
 
-    this.profileService.addNewSkill(this.skillFormGroup.getRawValue()).subscribe({
+    let newSkill = new Skill();
+    newSkill = {
+      text: this.skillFormGroup.get('skill')?.value
+    }
+
+    this.profileService.addNewSkill(newSkill).subscribe({
       next: (data) => {
       alert("Succesfully added!")
       this.getUser();
@@ -134,8 +188,17 @@ export class ProfileComponent implements OnInit {
       alert('Invalid input');
       return;
     }
+    if (this.interestFormGroup.get('interest')?.value == ""){
+      alert('invalid input');
+      return;
+    }
 
-    this.profileService.addNewInterest(this.interestFormGroup.getRawValue()).subscribe({
+    let newInterest = new Interest();
+    newInterest = {
+      text: this.interestFormGroup.get('interest')?.value
+    }
+
+    this.profileService.addNewInterest(newInterest).subscribe({
       next: (data) => {
       alert("Succesfully added!")
       this.getUser();

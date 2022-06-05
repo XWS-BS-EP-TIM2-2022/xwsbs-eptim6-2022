@@ -138,16 +138,16 @@ func (us *UsersStore) UpdateUser(id primitive.ObjectID, user User) error {
 
 	update := bson.D{
 		{Key: "$set", Value: bson.D{
-			{Key: "username", Value: user.Username},
+			//{Key: "username", Value: user.Username},
 			{Key: "name", Value: user.Name},
 			{Key: "surname", Value: user.Surname},
-			{Key: "password", Value: user.Password},
+			//{Key: "password", Value: user.Password},
 			{Key: "email", Value: user.Email},
 			{Key: "telephone", Value: user.Telephone},
 			{Key: "gender", Value: user.Gender},
 			{Key: "birthdate", Value: user.BirthDate},
 			{Key: "biography", Value: user.Biography},
-			{Key: "public", Value: user.IsPublic},
+			//{Key: "public", Value: user.IsPublic},
 		}},
 	}
 

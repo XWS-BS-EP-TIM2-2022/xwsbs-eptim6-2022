@@ -97,7 +97,9 @@ func (s *Server) FollowUser(ctx context.Context, in *usersServicePb.GetByIdReque
 	if err != nil {
 		return nil, err
 	}
-	return nil, nil
+	user, err := s.userHandler.GetUser(username)
+	out := mappers.MapToUserResponse(&user)
+	return out, nil
 }
 
 func (s *Server) GetUserById(ctx context.Context, in *usersServicePb.GetByIdRequest) (*usersServicePb.UserResponse, error) {
@@ -117,7 +119,17 @@ func (s *Server) GetLoggedinUser(ctx context.Context, in *usersServicePb.EmptyRe
 }
 
 func (s *Server) UnFollowUser(ctx context.Context, in *usersServicePb.GetByIdRequest) (*usersServicePb.UserResponse, error) {
-	return nil, nil
+	username, err := s.validateLoggedinUser(getTokenFromContext(ctx))
+	if err != nil {
+		return nil, err
+	}
+	err = s.userHandler.UnfollowUser(username, in.Id)
+	if err != nil {
+		return nil, err
+	}
+	user, err := s.userHandler.GetUser(username)
+	out := mappers.MapToUserResponse(&user)
+	return out, nil
 }
 func (s *Server) AcceptFollow(ctx context.Context, in *usersServicePb.GetByIdRequest) (*usersServicePb.UserResponse, error) {
 	return nil, nil

@@ -89,6 +89,7 @@ func authWrapper(h http.Handler, s *Server) http.Handler {
 				fmt.Fprintf(w, "Not Authorized")
 			}
 		}
+		//h.ServeHTTP(w, r)
 		userPermissions, _ := s.authService.GetUserPermissions(token)
 		hasPermissions := s.config.SecurityPermissions.ValidatePermission(userPermissions, request)
 		if hasPermissions {
@@ -106,7 +107,13 @@ func (server *Server) Start() {
 		Addr:    ":" + server.config.Port,
 		Handler: authWrapper(server.mux, server),
 	}
-
+	//cors := handlers.CORS(
+	//	handlers.AllowedOrigins([]string{"https://localhost:4200", "https://localhost:4200/**", "http://localhost:4200", "http://localhost:4200/**"}),
+	//	handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}),
+	//	handlers.AllowedHeaders([]string{"Accept", "Accept-Language", "Content-Type", "Content-Language", "Origin", "Authorization", "Access-Control-Allow-Origin", "*"}),
+	//	handlers.AllowCredentials(),
+	//)
+	//
 	log.Fatal(gwServer.ListenAndServeTLS(serverCertFile, serverKeyFile))
 
 	//listener, err := net.Listen("tcp", gwServer.Addr)
