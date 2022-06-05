@@ -16,9 +16,11 @@ export class JobOffersViewComponent implements OnInit {
   }
 
   getJobOffers(){
-    this.jobOffersAll = [];
+    //this.jobOffersAll = [];
     this.jobOfferService.getJobOffers().subscribe((res: any) => {
-      for (let job of res){
+      console.log(res);
+      //this.jobOffersAll = res;
+      for (let job of res.offers){
         if ( this.convertDate(job.validTo) > new Date(new Date().toDateString()) ){
           this.jobOffersAll.push(job);
         }
