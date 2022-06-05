@@ -55,6 +55,11 @@ export class CompanyService {
     return this.http.get<any[]>('api/companies/' + encodeURIComponent(id) + '/interviews');
   }
 
+  addApiConnection(apiConnection: any,id:any):Observable<any[]> {
+    apiConnection.name="Dislinkt"
+    return this.http.post<any[]>(`/api/companies/${encodeURIComponent(id)}/api-connections`,apiConnection);
+  }
+
   addComment(comment : any, id : any)
   {
     var body = {
