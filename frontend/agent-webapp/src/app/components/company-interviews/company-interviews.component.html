@@ -1,0 +1,18 @@
+<hr style="width: 500px" />
+<div *ngFor="let interview of interviews">
+  <div class="d-flex justify-content-center">
+    <h3>{{ interview.difficultyLevel }}</h3>
+    <h3 class="ms-1">
+      (Selection duration: {{ interview.selectionProcessDuration }} days)
+    </h3>
+  </div>
+  <div class="d-flex justify-content-center">
+    <h4 style="font-weight: bold">
+      {{ interview.creator.name }} {{ interview.creator.surname }}
+    </h4>
+    <h4 class="ms-1">
+      ({{ interview.position.name }}, {{ interview.experienceLevel }})
+    </h4>
+  </div>
+  <hr style="width: 500px" />
+</div>

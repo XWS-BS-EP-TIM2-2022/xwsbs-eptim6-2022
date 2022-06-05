@@ -39,18 +39,28 @@ export class NewJobOfferComponent implements OnInit {
     }
 
     this.getCompanyId()
-    this.service.createJobOffer(offer, this.company.id).subscribe((data) => {
-      this.matSnackBar.open("Job offer successfully posted!", 'Dismiss', {
+    if (this.company.status === 'PENDING') {
+      this.matSnackBar.open("Your company still needs to be verified!", 'Dismiss', {
         duration: 2000
       })
 
       setTimeout(() => {
         window.location.reload();
       }, 1000)
-    },
-    (error) => {
-      this.errorMessage = error.error;
-    })
+    }else{
+      this.service.createJobOffer(offer, this.company.id).subscribe((data) => {
+        this.matSnackBar.open("Job offer successfully posted!", 'Dismiss', {
+          duration: 2000
+        })
+  
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000)
+      },
+      (error) => {
+        this.errorMessage = error.error;
+      })
+    }
   }
 
   getCompanyId() {

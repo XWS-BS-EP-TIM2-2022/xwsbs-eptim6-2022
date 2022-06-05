@@ -45,6 +45,9 @@
         Add Comment
       </button>
     </div>
+    <div class="d-flex justify-content-center mb-5" *ngIf="state == 'comments'">
+      <app-company-comments></app-company-comments>
+    </div>
     <div class="d-flex justify-content-center my-5" *ngIf="state == 'salary'">
       <button
         type="button"
@@ -55,6 +58,9 @@
       >
         Add Your Experience
       </button>
+    </div>
+    <div class="d-flex justify-content-center mb-5" *ngIf="state == 'salary'">
+      <app-company-salary></app-company-salary>
     </div>
     <div
       class="d-flex justify-content-center my-5"
@@ -69,6 +75,12 @@
       >
         Add Your Experience
       </button>
+    </div>
+    <div
+      class="d-flex justify-content-center mb-5"
+      *ngIf="state == 'interview'"
+    >
+      <app-company-interviews></app-company-interviews>
     </div>
   </div>
 </div>

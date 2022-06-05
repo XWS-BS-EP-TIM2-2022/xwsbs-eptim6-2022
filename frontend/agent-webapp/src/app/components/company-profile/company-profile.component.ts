@@ -31,7 +31,7 @@ export class CompanyProfileComponent implements OnInit {
 
   ngOnInit(): void {
     if (localStorage.getItem('role') === 'COMPANY_OWNER_ROLE')
-      this.isOwner = false
+      this.isOwner = true
   }
 
   addComment()

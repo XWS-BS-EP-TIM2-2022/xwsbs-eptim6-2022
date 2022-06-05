@@ -22,6 +22,8 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
 import { CompanyProfileComponent } from './components/company-profile/company-profile.component';
 import { CompanyInfoComponent } from './components/company-info/company-info.component';
 import { CompanyCommentsComponent } from './components/company-comments/company-comments.component';
+import { CompanySalaryComponent } from './components/company-salary/company-salary.component';
+import { CompanyInterviewsComponent } from './components/company-interviews/company-interviews.component';
 
 @NgModule({
   declarations: [
@@ -34,7 +36,9 @@ import { CompanyCommentsComponent } from './components/company-comments/company-
     AdminRequestsComponent,
     CompanyProfileComponent,
     CompanyInfoComponent,
-    CompanyCommentsComponent
+    CompanyCommentsComponent,
+    CompanySalaryComponent,
+    CompanyInterviewsComponent
   ],
   imports: [
     BrowserModule,
