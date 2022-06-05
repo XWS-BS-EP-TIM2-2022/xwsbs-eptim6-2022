@@ -22,7 +22,7 @@ public class JobOfferDislinktDto {
         this.validUntil=offer.getValidTo().toString();
         this.workScheduleTitle=offer.getWorkSchedule().getName();
         this.workScheduleHours= String.valueOf(offer.getWorkSchedule().getHoursPerWeek());
-        this.jobOfferUrl="http://localhost";//TODO: Implementirati
+        this.jobOfferUrl="http://localhost:3200/job-offers";//TODO: Implementirati
     }
 
 

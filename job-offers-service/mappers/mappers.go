@@ -14,14 +14,13 @@ func stringToInt(s string) int {
 	return atoi
 }
 func MapToPb(offer store.Offer) *jobOffersPb.JobOffer {
-
 	return &jobOffersPb.JobOffer{Username: offer.User,
 		Id: offer.ID.Hex(), CreatedOn: offer.CreatedOn, Description: offer.Description, Position: offer.Position,
-		ValidUntil: string(offer.ValidUntil), WorkScheduleHours: strconv.Itoa(offer.WorkSchedule.HoursPerWeek), WorkScheduleTitle: offer.WorkSchedule.Title, JobOfferUrl: offer.JobOfferUrl, Experience: offer.Preconditions.Experience}
+		ValidUntil: offer.ValidUntil, WorkScheduleHours: strconv.Itoa(offer.WorkSchedule.HoursPerWeek), WorkScheduleTitle: offer.WorkSchedule.Title, JobOfferUrl: offer.JobOfferUrl, Experience: offer.Preconditions.Experience}
 }
 func MapToStore(offer *jobOffersPb.CreateJobOffer) store.Offer {
 	return store.Offer{
-		CreatedOn: offer.CreatedOn, Description: offer.Description, Position: offer.Position,
+		CreatedOn: offer.CreatedOn, Description: offer.Description, Position: offer.Position, ValidUntil: offer.ValidUntil,
 		WorkSchedule: store.WorkSchedule{Title: offer.WorkScheduleTitle, HoursPerWeek: stringToInt(offer.WorkScheduleHours)}, JobOfferUrl: offer.JobOfferUrl,
 		Preconditions: store.Precondition{Experience: offer.Experience}}
 }

@@ -7,4 +7,4 @@ INSERT INTO USERS(email, phone, name, password, surname, username, role_id)
 	VALUES ('abrkljac9@gmail.com', '0628104308', 'Aleksandar', 'Lozinka123', 'Brki', 'aco11', '3');
 
 INSERT INTO company(email, phone, culture, description, name, status, web, year_of_establishment, owner_id)
-	VALUES ('info@onyx.com', '056258484', 'Kultura ne znam ni sam','Opis dodatni kompanije', 'OnyxIt',0, 'http://onyx.com', 2009, 1);
+	VALUES ('info@onyx.com', '056258484', 'Kultura ne znam ni sam','Opis dodatni kompanije', 'OnyxIt',0, 'http://onyx.com', 2009, 4);

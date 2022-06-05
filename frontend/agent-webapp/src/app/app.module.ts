@@ -27,6 +27,7 @@ import { CompanyInterviewsComponent } from './components/company-interviews/comp
 import { JobOffersComponent } from './components/job-offers/job-offers.component';
 import {MatGridListModule} from '@angular/material/grid-list';
 import {MatDividerModule} from '@angular/material/divider';
+import { CompanyDislinktComponent } from './components/company-dislinkt/company-dislinkt.component';
 
 
 
@@ -44,7 +45,8 @@ import {MatDividerModule} from '@angular/material/divider';
     CompanyCommentsComponent,
     CompanySalaryComponent,
     CompanyInterviewsComponent,
-    JobOffersComponent
+    JobOffersComponent,
+    CompanyDislinktComponent
   ],
   imports: [
     BrowserModule,
