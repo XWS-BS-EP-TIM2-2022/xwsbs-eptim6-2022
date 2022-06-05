@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AdminRequestsComponent } from './components/admin-requests/admin-requests.component';
+import { AllCompaniesComponent } from './components/all-companies/all-companies.component';
 import { CompanyProfileComponent } from './components/company-profile/company-profile.component';
 import { JobOffersComponent } from './components/job-offers/job-offers.component';
 import { LoginComponent } from './components/login/login.component';
@@ -36,6 +37,10 @@ const routes: Routes = [
   {
     path: 'job-offers',
     component: JobOffersComponent,
+  },
+  {
+    path: 'all-companies',
+    component: AllCompaniesComponent,
   }
 ];
 
