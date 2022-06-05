@@ -17,6 +17,8 @@ type Config struct {
 	PostsPort           string
 	ProfileHost         string
 	ProfilePort         string
+	JobOffersHost       string
+	JobOffersPort       string
 	SecurityPermissions *SecurityPermissions
 }
 
@@ -65,6 +67,8 @@ func NewConfig() *Config {
 		PostsPort:           "5002",
 		ProfileHost:         "localhost",
 		ProfilePort:         "5003",
+		JobOffersPort:       "5020",
+		JobOffersHost:       "localhost",
 	}
 	//return &Config{
 	//	SecurityPermissions: &permissions,
@@ -75,5 +79,7 @@ func NewConfig() *Config {
 	//	PostsPort:           os.Getenv("POSTS_SERVICE_PORT"),
 	//	ProfileHost:         os.Getenv("PROFILE_SERVICE_HOST"),
 	//	ProfilePort:         os.Getenv("PROFILE_SERVICE_PORT"),
+	//	JobOffersPort:       os.Getenv("JOBOFFERS_SERVICE_HOST"),
+	//	JobOffersHost:       os.Getenv("JOBOFFERS_SERVICE_PORT"),
 	//}
 }

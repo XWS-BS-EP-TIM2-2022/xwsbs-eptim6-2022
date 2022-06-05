@@ -6,6 +6,7 @@ import (
 	"github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/api_gateway/infrastructure/service"
 	cfg "github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/api_gateway/startup/config"
 	authGw "github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common/proto/auth_service"
+	jobOffersPb "github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common/proto/job_offers_service"
 	postsGw "github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common/proto/posts_service"
 	profileGw "github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common/proto/profile_service"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
@@ -53,11 +54,19 @@ func (server *Server) initHandlers() {
 	if err != nil {
 		panic(err)
 	}
+
 	postsEndpoint := fmt.Sprintf("%s:%s", server.config.PostsHost, server.config.PostsPort)
 	err = postsGw.RegisterPostsServiceHandlerFromEndpoint(context.TODO(), server.mux, postsEndpoint, opts)
 	if err != nil {
 		panic(err)
 	}
+
+	jobOffersEndpoint := fmt.Sprintf("%s:%s", server.config.JobOffersHost, server.config.JobOffersPort)
+	err = jobOffersPb.RegisterJobOffersServiceHandlerFromEndpoint(context.TODO(), server.mux, jobOffersEndpoint, opts)
+	if err != nil {
+		panic(err)
+	}
+
 	/*inventoryEmdpoint := fmt.Sprintf("%s:%s", server.config.InventoryHost, server.config.InventoryPort)
 	err = inventoryGw.RegisterInventoryServiceHandlerFromEndpoint(context.TODO(), server.mux, inventoryEmdpoint, opts)
 	if err != nil {
