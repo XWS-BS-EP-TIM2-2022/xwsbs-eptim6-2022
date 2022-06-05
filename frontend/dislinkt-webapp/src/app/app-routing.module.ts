@@ -28,7 +28,7 @@ const routes: Routes = [
   {
     path: 'posts',
     component: PostsViewComponent,
-    canActivate: [AdminGuard]
+    canActivate: [UserGuard]
   },
   {
     path: 'profile',

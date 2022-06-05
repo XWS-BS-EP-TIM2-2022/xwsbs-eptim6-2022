@@ -20,7 +20,7 @@ export class PostsService {
   public commentPost(comment : Comment, id : string){
     return this.http
       .post(
-        '/api/posts/new-comment/'+ encodeURIComponent(id),
+        '/api/posts/'+ encodeURIComponent(id) + '/comments',
         comment, { observe: 'response', responseType: 'text' });
   }
 
@@ -28,12 +28,12 @@ export class PostsService {
    return this.http.get<any>('/api/posts');
   }
 
-  public likePost(id : string) : Observable<Post> {
-    return this.http.get<Post>('/api/posts/like/' + encodeURIComponent(id));
+  public likePost(id : string) {
+    return this.http.put('/api/posts/'  + encodeURIComponent(id)+ '/likes', id);
   }
 
-  public dislikePost(id : string) : Observable<Post> {
-    return this.http.get<Post>('/api/posts/dislike/' + encodeURIComponent(id));
+  public dislikePost(id : string){
+    return this.http.put('/api/posts/'  + encodeURIComponent(id)+ '/dislikes', id);
   }
 
 }

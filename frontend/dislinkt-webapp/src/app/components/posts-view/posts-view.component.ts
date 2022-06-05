@@ -56,13 +56,13 @@ export class PostsViewComponent implements OnInit {
 
   likePost(id: string) {
     this.service.likePost(id).subscribe(res => {
-      //this.service.getAllPosts().subscribe(res => this.posts = res);
+      this.service.getAllPosts().toPromise().then(res => this.posts = res.posts);
     });
   }
 
   dislikePost(id: string) {
     this.service.dislikePost(id).subscribe(res => {
-     // this.service.getAllPosts().subscribe(res => this.posts = res);
+      this.service.getAllPosts().toPromise().then(res => this.posts = res.posts);
     });
   }
 
@@ -80,6 +80,7 @@ export class PostsViewComponent implements OnInit {
 
         setTimeout(() => {
         }, 1000);
+        this.service.getAllPosts().toPromise().then(res => this.posts = res.posts);
       },
       (error) => {
         this._snackBar.open('Commenting failed', 'Dissmiss', {

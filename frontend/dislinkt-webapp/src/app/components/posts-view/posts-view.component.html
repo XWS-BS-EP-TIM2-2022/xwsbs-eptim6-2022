@@ -93,13 +93,13 @@
             <div class="d-flex justify-content-end">
               <button
                 class="btn btn-secondary me-2"
-                (click)="likePost(post._id)"
+                (click)="likePost(post.id)"
               >
                 Like
               </button>
               <button
                 class="btn btn-secondary me-2"
-                (click)="dislikePost(post._id)"
+                (click)="dislikePost(post.id)"
               >
                 Dislike
               </button>
@@ -108,7 +108,7 @@
                 style="background: #f59494"
                 data-bs-toggle="modal"
                 data-bs-target="#commentModal"
-                (click)="commentOnPost = post._id"
+                (click)="commentOnPost = post.id"
               >
                 Comment
               </button>
