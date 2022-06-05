@@ -39,6 +39,14 @@
             >Companies</a
           >
         </li>
+        <li class="nav-item" *ngIf="role == 'user'">
+          <a
+            class="nav-link active"
+            aria-current="page"
+            routerLink="/job-offers"
+            >Job Offers</a
+          >
+        </li>
         <li class="nav-item" *ngIf="role == 'admin'">
           <a
             class="nav-link active"

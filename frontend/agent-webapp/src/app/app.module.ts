@@ -24,6 +24,11 @@ import { CompanyInfoComponent } from './components/company-info/company-info.com
 import { CompanyCommentsComponent } from './components/company-comments/company-comments.component';
 import { CompanySalaryComponent } from './components/company-salary/company-salary.component';
 import { CompanyInterviewsComponent } from './components/company-interviews/company-interviews.component';
+import { JobOffersComponent } from './components/job-offers/job-offers.component';
+import {MatGridListModule} from '@angular/material/grid-list';
+import {MatDividerModule} from '@angular/material/divider';
+
+
 
 @NgModule({
   declarations: [
@@ -38,7 +43,8 @@ import { CompanyInterviewsComponent } from './components/company-interviews/comp
     CompanyInfoComponent,
     CompanyCommentsComponent,
     CompanySalaryComponent,
-    CompanyInterviewsComponent
+    CompanyInterviewsComponent,
+    JobOffersComponent
   ],
   imports: [
     BrowserModule,
@@ -53,7 +59,9 @@ import { CompanyInterviewsComponent } from './components/company-interviews/comp
     MatDatepickerModule,
     MatNativeDateModule,
     MatSnackBarModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    MatGridListModule,
+    MatDividerModule
   ],
   providers: [ {
     provide: HTTP_INTERCEPTORS,
