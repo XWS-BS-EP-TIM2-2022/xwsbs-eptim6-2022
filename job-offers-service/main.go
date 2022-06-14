@@ -2,7 +2,9 @@ package main
 
 import (
 	"context"
+	"github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common/logger"
 	jobOffersPb "github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common/proto/job_offers_service"
+	"github.com/jasonlvhit/gocron"
 	otgo "github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/ext"
 
@@ -15,6 +17,13 @@ import (
 	"net/http"
 )
 
+var logs *logger.LoggerWrapper
+
+func init() {
+	s := gocron.NewScheduler()
+	logs = logger.InitLogger("job-offers-service", s)
+}
+
 func main() {
 	serverConfig := config.NewConfig()
 	lis, err := net.Listen("tcp", ":"+serverConfig.GrpcPort)
@@ -25,7 +34,7 @@ func main() {
 	// Create a gRPC server object
 	s := grpc.NewServer()
 
-	service, err := startup.NewServer(*serverConfig)
+	service, err := startup.NewServer(*serverConfig, logs)
 	if err != nil {
 		log.Fatal(err.Error())
 		return
