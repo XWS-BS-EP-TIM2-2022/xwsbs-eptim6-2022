@@ -2,76 +2,99 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/auth_service/startup"
 	"github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/auth_service/startup/config"
+	logger "github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common/logger"
 	authServicePb "github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common/proto/auth_service"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"github.com/jasonlvhit/gocron"
 	otgo "github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/ext"
+	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
-	"log"
 	"net"
 	"net/http"
 )
 
-func main() {
+var log *logger.LoggerWrapper
 
+func init() {
+	s := gocron.NewScheduler()
+	log = logger.InitLogger("auth_service", s)
+}
+func main() {
 	serverConfig := config.NewConfig()
-	_, done := createGrpcServer(serverConfig)
-	if done {
+	err := createGrpcServer(serverConfig)
+	if err != nil {
+		log.Writeln(logger.LogMessage{Message: err.Error(), Level: logrus.FatalLevel, Component: "auth_service.main.createGrpcServer"})
 		return
 	}
-	creategRPCGateway(serverConfig)
+	err = creategRPCGateway(serverConfig)
+	if err != nil {
+		log.Writeln(logger.LogMessage{Message: err.Error(), Level: logrus.FatalLevel, Component: "auth_service.main.creategRPCGateway"})
+		return
+	}
+	<-log.Scheduler.Start()
 }
 
-func creategRPCGateway(serverConfig *config.Config) {
+func creategRPCGateway(serverConfig *config.Config) error {
 	conn, err := grpc.DialContext(
 		context.Background(),
 		serverConfig.Host+":"+serverConfig.GrpcPort,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {
-		log.Fatalln("Failed to dial server:", err)
+		log.Writeln(logger.LogMessage{Message: fmt.Sprintf("Failed to dial server: %s", err), Level: logrus.FatalLevel, Component: "auth_service.main.creategRPCGateway"})
+		return err
 	}
 
 	gwmux := runtime.NewServeMux()
 	// Register Greeter
 	err = authServicePb.RegisterAuthServiceHandler(context.Background(), gwmux, conn)
 	if err != nil {
-		log.Fatalln("Failed to register gateway:", err)
+		log.Writeln(logger.LogMessage{Message: fmt.Sprintf("Failed to register gateway: %s", err), Level: logrus.FatalLevel, Component: "auth_service.main.creategRPCGateway"})
+		return err
 	}
 
 	gwServer := &http.Server{
 		Addr:    ":" + serverConfig.GatewayPort,
 		Handler: tracingWrapper(gwmux),
 	}
-
-	log.Println("Serving gRPC-Gateway on http://0.0.0.0:" + serverConfig.GatewayPort)
-	log.Fatalln(gwServer.ListenAndServe())
+	log.Writeln(logger.LogMessage{Message: fmt.Sprintf("Serving gRPC-Gateway on http://0.0.0.0:%s", serverConfig.GatewayPort), Level: logrus.InfoLevel, Component: startup.GetComponentName(creategRPCGateway)})
+	err = gwServer.ListenAndServe()
+	if err != nil {
+		log.Writeln(logger.LogMessage{Message: fmt.Sprintf("Serving gRPC-Gateway on http://0.0.0.0:%s", serverConfig.GatewayPort), Level: logrus.FatalLevel, Component: startup.GetComponentName(creategRPCGateway)})
+		return err
+	}
+	return nil
 }
 
-func createGrpcServer(serverConfig *config.Config) (error, bool) {
+func createGrpcServer(serverConfig *config.Config) error {
 	lis, err := net.Listen("tcp", ":"+serverConfig.GrpcPort)
 	if err != nil {
-		log.Fatalln("Failed to listen:", err)
+		return err
 	}
 
 	// Create a gRPC server object
 	s := grpc.NewServer()
 
-	service, err := startup.NewServer(serverConfig)
+	service, err := startup.NewServer(serverConfig, log)
 	if err != nil {
-		log.Fatal(err.Error())
-		return nil, true
+		return err
 	}
 
 	authServicePb.RegisterAuthServiceServer(s, service)
-	log.Println("Serving gRPC on:" + serverConfig.GrpcPort)
+	log.Writeln(logger.LogMessage{Message: fmt.Sprintf("Serving gRPC on: %s", serverConfig.GrpcPort), Level: logrus.InfoLevel, Component: startup.GetComponentName(createGrpcServer)})
 	go func() {
-		log.Fatalln(s.Serve(lis))
+		err := s.Serve(lis)
+		if err != nil {
+			log.Writeln(logger.LogMessage{Message: err.Error(), Level: logrus.FatalLevel, Component: startup.GetComponentName(createGrpcServer)})
+			return
+		}
 	}()
-	return err, false
+	return err
 }
 
 var grpcGatewayTag = otgo.Tag{Key: string(ext.Component), Value: "grpc-gateway"}
@@ -94,14 +117,3 @@ func tracingWrapper(h http.Handler) http.Handler {
 		h.ServeHTTP(w, r)
 	})
 }
-
-/*func RegisterRouts() *mux.Router {
-	router := mux.NewRouter().StrictSlash(true)
-	rg := handlers.InitAuthHandler()
-	router.HandleFunc("/api/auth/users", rg.GetAll).Methods("GET")
-	router.HandleFunc("/api/auth/users", rg.AddNewUser).Methods("POST")
-	router.HandleFunc("/api/auth/session", rg.LoginUserRequest).Methods("PUT")
-	router.HandleFunc("/api/auth/session/validations", rg.AuthorizeJWT).Methods("PUT")
-	return router
-}
-*/

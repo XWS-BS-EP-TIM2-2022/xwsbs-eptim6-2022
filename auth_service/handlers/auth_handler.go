@@ -6,9 +6,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common/logger"
+	"github.com/sirupsen/logrus"
 	"math/rand"
 	"net/http"
 	"net/smtp"
+	"reflect"
+	"runtime"
 	"strings"
 	"time"
 	"unicode"
@@ -37,6 +41,7 @@ type AuthHandler struct {
 	UserStore                *store.UsersStore
 	secretKey                []byte
 	profileServiceGrpcClient profileGw.ProfileServiceClient
+	log                      *logger.LoggerWrapper
 }
 
 type ActivationRequest struct {
@@ -46,54 +51,44 @@ type ActivationRequest struct {
 func getConnection(address string) (*grpc.ClientConn, error) {
 	return grpc.Dial(address, grpc.WithTransportCredentials(insecure.NewCredentials()))
 }
-func InitAuthHandler(serverConfig *config.Config) *AuthHandler {
+func InitAuthHandler(serverConfig *config.Config, wrapper *logger.LoggerWrapper) (*AuthHandler, error) {
 	userStore := store.InitUsersStore(*serverConfig)
 	endpoint := fmt.Sprintf("%s:%s", serverConfig.ProfileServiceGrpcHost, serverConfig.ProfileServiceGrpcPort)
 	conn, err := getConnection(endpoint)
 	if err != nil {
-		fmt.Println("Fatal error init profile service connection!")
-		return nil
+		return nil, errors.New(fmt.Sprintf("Fatal error init profile service connection! %s", err.Error()))
 	}
 	client := profileGw.NewProfileServiceClient(conn)
-	return &AuthHandler{UserStore: userStore, profileServiceGrpcClient: client, secretKey: []byte(serverConfig.SecretKey)}
+	return &AuthHandler{UserStore: userStore, profileServiceGrpcClient: client, secretKey: []byte(serverConfig.SecretKey), log: wrapper}, nil
 }
 
-func (ag *AuthHandler) LoginUserRequest(w http.ResponseWriter, r *http.Request) {
-	user, err := DecodeUser(r)
-	if err != nil {
-		println("Error while parsing json")
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-	ag.LoginUser(user)
-}
 func (ah *AuthHandler) LoginUser(user store.User) (JWT, error) {
 	dbUser, err := ah.UserStore.FindByUsername(user.Username)
 	if err != nil {
-		fmt.Println("User not found")
-		return JWT{Token: ""}, err
+		return JWT{Token: ""}, errors.New(fmt.Sprintf("User with specified username not found. Username: %s", user.Username))
 	}
 	if dbUser.IsActivated == false {
-		err := errors.New("Account not activated!")
+		return JWT{Token: ""}, errors.New(fmt.Sprintf("User account not activated. Username: %s", user.Username))
+	}
+
+	if err = CheckPasswordHash(user.Password, dbUser.Password); err != nil {
+		err = ah.HandleFailedLogin(dbUser)
+		ah.log.Writeln(logger.LogMessage{Message: fmt.Sprintf("Login failed. %s", err.Error()), Component: getComponentName(CheckPasswordHash), Level: logrus.WarnLevel})
 		return JWT{Token: ""}, err
 	}
-	if !CheckPasswordHash(user.Password, dbUser.Password) {
-		err := ah.HandleFailedLogin(dbUser)
-		return JWT{Token: ""}, err
-	}
+
 	if dbUser.Blocked {
 		if time.Now().After(user.BlockedUntil) {
 			ah.UserStore.ResetFailedLogForUser(user.Username)
 		} else {
-			return JWT{Token: ""}, errors.New("Blocked account")
+			return JWT{Token: ""}, errors.New(fmt.Sprintf("User account blocked. Username: %s", user.Username))
 		}
 	}
 	ah.UserStore.ResetFailedLogForUser(user.Username)
 
 	tokenStr, err := ah.GenerateJWT(JWTOptions{IsTokenNonExpired: false, Username: dbUser.Username})
 	if err != nil {
-		fmt.Printf("Token generation failed %s\n", err.Error())
-		return JWT{Token: ""}, err
+		return JWT{Token: ""}, errors.New(fmt.Sprintf("Generation of JWT faild. %s", err.Error()))
 	}
 	return JWT{Token: tokenStr}, nil
 }
@@ -113,17 +108,15 @@ func (ag *AuthHandler) ValidateToken(tokenStr string) (*store.User, error) {
 		return ag.secretKey, nil
 	})
 	if err != nil {
-		fmt.Println("Error")
+		ag.log.Writeln(logger.LogMessage{Message: fmt.Sprintf("Specified token is not valid."), Level: logrus.WarnLevel, Component: getComponentName(jwt.Parse)})
 		return nil, err
 	}
 	if !token.Valid {
+		ag.log.Writeln(logger.LogMessage{Message: fmt.Sprintf("Specified token is not valid."), Level: logrus.WarnLevel, Component: getComponentName(ag.ValidateToken)})
 		return nil, errors.New("JWT not valid")
 	}
-	fmt.Println("VALID")
 	username := token.Claims.(jwt.MapClaims)["username"]
-	str := fmt.Sprintf("%v", username)
-	fmt.Println(str)
-	return &store.User{Username: str}, nil
+	return &store.User{Username: fmt.Sprintf("%v", username)}, nil
 
 }
 func (ag *AuthHandler) AddNewUser(user *store.User) error {
@@ -140,9 +133,12 @@ func (ag *AuthHandler) AddNewUser(user *store.User) error {
 	verificationHash, urlToken := ag.GenerateVerificationToken()
 	user.VerificationToken = verificationHash
 	user.TokenExpiration = time.Now().Add(time.Hour * 2)
-	ag.SendEmail(user.Email, ag.MailActivationMessage(urlToken))
+	err := ag.SendEmail(user.Email, ag.MailActivationMessage(urlToken))
+	if err != nil {
+		return err
+	}
 
-	err := ag.UserStore.AddNew(user)
+	err = ag.UserStore.AddNew(user)
 	if err != nil {
 		return err
 	}
@@ -150,7 +146,6 @@ func (ag *AuthHandler) AddNewUser(user *store.User) error {
 }
 
 func (ag *AuthHandler) NotifyProfileServiceAboutRegistration(in *authServicePb.User, dbUser *store.User) error {
-	fmt.Println("Post request")
 	_, err := ag.profileServiceGrpcClient.AddNewUser(context.TODO(), &profileGw.UserRequest{User: &profileGw.User{
 		Username:  in.Username,
 		Password:  dbUser.Password,
@@ -199,9 +194,9 @@ func HashPassword(password string) (string, error) {
 	return string(bytes), err
 }
 
-func CheckPasswordHash(password, hash string) bool {
+func CheckPasswordHash(password, hash string) error {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
-	return err == nil
+	return err
 }
 
 func isPasswordValid(password string) bool {
@@ -235,23 +230,22 @@ func (ah *AuthHandler) HandleFailedLogin(user store.User) error {
 		if time.Now().After(user.BlockedUntil) {
 			ah.UserStore.ResetFailedLogForUser(user.Username)
 		} else {
-			return errors.New("Blocked account")
+			return errors.New(fmt.Sprintf("User account blocked. Username: %s", user.Username))
 		}
 	} else {
 		if user.FailedLogins == 5 {
 			ah.UserStore.BlockUser(user.Username)
-			return errors.New("Blocked account")
+			return errors.New(fmt.Sprintf("User account blocked. Username: %s", user.Username))
 		}
 	}
 	_ = ah.UserStore.UpdateFailedLogForUser(user.Username)
-	return errors.New("Invalid credentials")
+	return errors.New(fmt.Sprintf("Invalid user password. Username: %s", user.Username))
 }
 
 func (ah *AuthHandler) GenerateVerificationToken() (string, string) {
 	randomBytes := make([]byte, 10)
 	rand.Seed(time.Now().UnixNano())
 	rand.Read(randomBytes)
-	fmt.Println(randomBytes)
 	encoded := base64.RawURLEncoding.EncodeToString(randomBytes)
 
 	token, _ := bcrypt.GenerateFromPassword([]byte(encoded), 14)
@@ -260,16 +254,15 @@ func (ah *AuthHandler) GenerateVerificationToken() (string, string) {
 
 func (ah *AuthHandler) ChangePassword(request store.ChangePasswordRequest) (*store.User, error) {
 	user, err := ah.UserStore.FindByUsername(request.Username)
-
 	if err != nil {
 		return &user, err
 	}
 	er := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(request.OldPassword))
 	if er != nil {
-		return &user, errors.New("Wrong old password")
+		return &user, errors.New(fmt.Sprintf("Specified old password is not corect."))
 	} else {
 		if !isPasswordValid(request.NewPassword) {
-			return &user, errors.New("Incorrect password format")
+			return &user, errors.New(fmt.Sprintf("Incorrect format of new password."))
 		}
 		newPassword, _ := HashPassword(request.NewPassword)
 		err := ah.UserStore.UpdatePassword(request.Username, newPassword)
@@ -280,7 +273,7 @@ func (ah *AuthHandler) ChangePassword(request store.ChangePasswordRequest) (*sto
 	return &user, nil
 }
 
-func (ah *AuthHandler) SendEmail(emailTo string, mailMessage []byte) {
+func (ah *AuthHandler) SendEmail(emailTo string, mailMessage []byte) error {
 	from := config.NewConfig().EmailFrom
 	password := config.NewConfig().EmailPassword
 	to := []string{emailTo}
@@ -292,8 +285,9 @@ func (ah *AuthHandler) SendEmail(emailTo string, mailMessage []byte) {
 
 	err := smtp.SendMail(address, auth, from, to, mailMessage)
 	if err != nil {
-		panic(err)
+		return err
 	}
+	return nil
 }
 
 func (ah *AuthHandler) MailActivationMessage(token string) []byte {
@@ -306,37 +300,37 @@ func (ah *AuthHandler) MailActivationMessage(token string) []byte {
 	return message
 }
 
-func (ah *AuthHandler) ActivateAccount(token string) error {
+func (ah *AuthHandler) ActivateAccount(token string) (string, error) {
 	user := ah.UserStore.FindByToken(token)
 	if user == (store.User{}) {
-		return errors.New("Activation failed, invalid token!")
+		return "", errors.New(fmt.Sprintf("User account activation failed. Invalid token! Username: %s", user.Username))
 	}
 
 	if user.TokenExpiration.Before(time.Now()) {
-		return errors.New("Activation token expired!")
+		return "", errors.New(fmt.Sprintf("User account activation failed. Token expired! Username: %s", user.Username))
 	}
 
 	validateToken := bcrypt.CompareHashAndPassword([]byte(user.VerificationToken), []byte(token))
 	if validateToken != nil {
-		return errors.New("Activation failed, invalid token!")
+		return "", errors.New(fmt.Sprintf("User account activation failed. Invalid token! Username: %s", user.Username))
 	}
 
 	err := ah.UserStore.ActivateAccount(user.Username)
-	return err
+	return user.Username, err
 }
 
-func (ah *AuthHandler) AccountRecoveryEmail(email string) error {
+func (ah *AuthHandler) AccountRecoveryEmail(email string) (store.User, error) {
 	user, noUserFound := ah.UserStore.FindByEmail(email)
 
 	if noUserFound != nil {
-		return errors.New("Account with this email doesn't exist!")
+		return user, errors.New(fmt.Sprintf("Account with this email doesn't exist! Email: %s", email))
 	}
 
 	verificationHash, urlToken := ah.GenerateVerificationToken()
 
-	invalidToken := ah.UserStore.RefreshToken(user.Username, verificationHash)
-	if invalidToken != nil {
-		return errors.New("Error occured while updating token!")
+	err := ah.UserStore.RefreshToken(user.Username, verificationHash)
+	if err != nil {
+		return user, err
 	}
 
 	resetLink := "https://" + config.NewConfig().FrontendUri + "/set-password/" + urlToken
@@ -344,36 +338,39 @@ func (ah *AuthHandler) AccountRecoveryEmail(email string) error {
 	mime := "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
 	body := ah.GenerateMailBody(resetLink, "Account Recovery", "Press the button below to reset password", "Reset Password")
 	message := []byte(subject + mime + body)
-	ah.SendEmail(user.Email, message)
-	return nil
+	err = ah.SendEmail(user.Email, message)
+	if err != nil {
+		return store.User{}, err
+	}
+	return user, nil
 }
 
-func (ah *AuthHandler) ResetPassword(token string, newPassword string) error {
+func (ah *AuthHandler) ResetPassword(token string, newPassword string) (string, error) {
 	user := ah.UserStore.FindByToken(token)
 	if user == (store.User{}) {
-		return errors.New("Account recovery failed, invalid token!")
+		return user.Username, errors.New(fmt.Sprintf("User account recovery failed. Invalid token!"))
 	}
 
 	if !isPasswordValid(newPassword) {
-		return errors.New("Incorrect password format")
+		return user.Username, errors.New(fmt.Sprintf("User account recovery failed. Incorrect password format"))
 	}
 
 	password, _ := HashPassword(newPassword)
 	err := ah.UserStore.UpdatePassword(user.Username, password)
-	return err
+	return user.Username, err
 }
 
-func (ah *AuthHandler) SendPasswordlessLoginEmail(email string) error {
+func (ah *AuthHandler) SendPasswordlessLoginEmail(email string) (string, error) {
 	user, noUserFound := ah.UserStore.FindByEmail(email)
 
 	if noUserFound != nil {
-		return errors.New("Account with this email doesn't exist!")
+		return "", errors.New(fmt.Sprintf("Account with this email doesn't exist! Email: %s", email))
 	}
 
 	verificationHash, urlToken := ah.GenerateVerificationToken()
-	invalidToken := ah.UserStore.RefreshToken(user.Username, verificationHash)
-	if invalidToken != nil {
-		return errors.New("Error occured while updating token!")
+	err := ah.UserStore.RefreshToken(user.Username, verificationHash)
+	if err != nil {
+		return user.Username, err
 	}
 
 	resetLink := "https://" + config.NewConfig().FrontendUri + "/passwordless/" + urlToken
@@ -381,8 +378,11 @@ func (ah *AuthHandler) SendPasswordlessLoginEmail(email string) error {
 	subject := "Subject: Dislinkt passwordless login\n"
 	body := ah.GenerateMailBody(resetLink, "Dislinkt passwordless login", "Press the button below to login!", "Login")
 	message := []byte(subject + mime + body)
-	ah.SendEmail(user.Email, message)
-	return nil
+	err = ah.SendEmail(user.Email, message)
+	if err != nil {
+		return user.Username, err
+	}
+	return user.Username, nil
 }
 
 func (ah *AuthHandler) PasswordlessLogin(token string) (JWT, error) {
@@ -401,23 +401,21 @@ func (ah *AuthHandler) PasswordlessLogin(token string) (JWT, error) {
 	}
 
 	if user.IsActivated == false {
-		err := errors.New("Account not activated!")
-		return JWT{Token: ""}, err
+		return JWT{Token: ""}, errors.New(fmt.Sprintf("User account not activated. Username: %s", user.Username))
 	}
 
 	if user.Blocked {
 		if time.Now().After(user.BlockedUntil) {
 			ah.UserStore.ResetFailedLogForUser(user.Username)
 		} else {
-			return JWT{Token: ""}, errors.New("Blocked account")
+			return JWT{Token: ""}, errors.New(fmt.Sprintf("User account is blocked. Username: %s", user.Username))
 		}
 	}
 	ah.UserStore.ResetFailedLogForUser(user.Username)
 
 	tokenStr, err := ah.GenerateJWT(JWTOptions{IsTokenNonExpired: false, Username: user.Username})
 	if err != nil {
-		fmt.Printf("Token generation failed %s\n", err.Error())
-		return JWT{Token: ""}, err
+		return JWT{Token: ""}, errors.New(fmt.Sprintf("Generation of JWT faild. %s", err.Error()))
 	}
 	return JWT{Token: tokenStr}, nil
 }
@@ -470,4 +468,7 @@ func (ah *AuthHandler) GenerateMailBody(url string, heading string, text string,
 		"</tr></table><br><br></body></html>"
 
 	return body
+}
+func getComponentName(methode interface{}) string {
+	return runtime.FuncForPC(reflect.ValueOf(methode).Pointer()).Name()
 }

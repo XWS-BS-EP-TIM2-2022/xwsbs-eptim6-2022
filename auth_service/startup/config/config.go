@@ -30,8 +30,8 @@ func NewConfig() *Config {
 		MongoDbCollection:      "users",              //os.Getenv("MONGODB_URI"),
 		EmailPort:              "587",
 		EmailHost:              "smtp.gmail.com",
-		EmailFrom:              "bsepdislinkt@gmail.com", //bsepdislinkt@gmail.com
-		EmailPassword:          "Dislinkt123",            //Dislinkt123
+		EmailFrom:              "abrkljac9@gmail.com", //bsepdislinkt@gmail.com
+		EmailPassword:          "ntrxgywsflextwcj",    //Dislinkt123
 		FrontendUri:            "localhost:4200",
 	}
 	//return &Config{

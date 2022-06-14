@@ -1,7 +1,6 @@
 package mappers
 
 import (
-	"fmt"
 	"github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/auth_service/store"
 	authServicePb "github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common/proto/auth_service"
 )
@@ -32,7 +31,6 @@ func MapUsersToPb(users []store.User) (*authServicePb.GetAllResponse, error) {
 }
 
 func MapPbToUser(user *authServicePb.User) store.User {
-	fmt.Println("MAP USER" + user.Username)
 	userPb := store.User{
 		Username: user.Username,
 		Name:     user.Name,
