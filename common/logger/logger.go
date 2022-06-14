@@ -10,19 +10,19 @@ import (
 )
 
 type LogMessage struct {
-	component string
-	level     logrus.Level
-	message   string
+	Component string
+	Level     logrus.Level
+	Message   string
 }
 
-var COMPONENT = "component"
+var COMPONENT = "Component"
 
 type LoggerWrapper struct {
 	stdLogger   *logrus.Logger
 	fileLogger  *logrus.Logger
 	file        *os.File
-	serviceName string
-	scheduler   *gocron.Scheduler
+	ServiceName string
+	Scheduler   *gocron.Scheduler
 }
 
 func InitLogger(serviceName string, s *gocron.Scheduler) *LoggerWrapper {
@@ -33,7 +33,7 @@ func InitLogger(serviceName string, s *gocron.Scheduler) *LoggerWrapper {
 	fileLogger.Out = file
 	fileLogger.SetFormatter(&logrus.JSONFormatter{})
 	stdLogger.SetFormatter(&logrus.JSONFormatter{})
-	loggerWrap := &LoggerWrapper{stdLogger: stdLogger, fileLogger: fileLogger, file: file, serviceName: serviceName, scheduler: s}
+	loggerWrap := &LoggerWrapper{stdLogger: stdLogger, fileLogger: fileLogger, file: file, ServiceName: serviceName, Scheduler: s}
 	err := s.Every(24).Hour().Do(loggerWrap.rotate)
 	if err != nil {
 		return nil
@@ -43,16 +43,16 @@ func InitLogger(serviceName string, s *gocron.Scheduler) *LoggerWrapper {
 
 func (logger *LoggerWrapper) Writeln(message LogMessage) {
 	logger.fileLogger.WithFields(logrus.Fields{
-		COMPONENT: message.component,
-	}).Log(message.level, message.message)
+		COMPONENT: message.Component,
+	}).Log(message.Level, message.Message)
 
 	logger.stdLogger.WithFields(logrus.Fields{
-		COMPONENT: message.component,
-	}).Log(message.level, message.message)
+		COMPONENT: message.Component,
+	}).Log(message.Level, message.Message)
 }
 
 func (logger *LoggerWrapper) rotate() {
-	file := openFile(generateLogFileName(logger.serviceName))
+	file := openFile(generateLogFileName(logger.ServiceName))
 	logger.file.Close()
 	logger.file = file
 	logger.fileLogger.Out = file
