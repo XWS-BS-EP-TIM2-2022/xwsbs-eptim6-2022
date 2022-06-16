@@ -91,7 +91,7 @@ service AuthService {
     };
   }
 
-  rpc Get2FAToken(UserUsernameMessage) returns (Token){
+  rpc Get2FAToken(EmptyMessage) returns (Token){
     option (google.api.http) = {
       get: "/api/auth/users/two-fact-auth"
     };
