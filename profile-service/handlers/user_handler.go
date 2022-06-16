@@ -13,9 +13,9 @@ type UserHandler struct {
 	UserStore *store.UsersStore
 }
 
-func InitUserHandler(config config.Config) *UserHandler {
+func InitUserHandler(config config.Config) (*UserHandler, error) {
 	userStore := store.InitUsersStore(config)
-	return &UserHandler{UserStore: userStore}
+	return &UserHandler{UserStore: userStore}, nil
 }
 
 func (uh *UserHandler) GetUser(username string) (store.User, error) {
@@ -30,7 +30,7 @@ func (uh *UserHandler) GetAll() []store.User {
 	return uh.UserStore.FindAll()
 }
 
-func (uh *UserHandler) AddNewUser(user *store.User) *store.User {
+func (uh *UserHandler) AddNewUser(user *store.User) (*store.User, error) {
 	user.Experiences = []store.Experience{}
 	user.Educations = []store.Education{}
 	user.Skills = []store.Skill{}
@@ -38,8 +38,11 @@ func (uh *UserHandler) AddNewUser(user *store.User) *store.User {
 	user.Followers = []store.Follower{}
 	user.Followings = []store.Following{}
 	user.FollowRequests = []string{}
-	uh.UserStore.AddUser(user)
-	return user
+	_, err := uh.UserStore.AddUser(user)
+	if err != nil {
+		return &store.User{}, errors.New("Error adding user.")
+	}
+	return user, nil
 }
 
 func (uh *UserHandler) UpdateUser(username string, newUserInfo store.User) (store.User, error) {
@@ -47,7 +50,7 @@ func (uh *UserHandler) UpdateUser(username string, newUserInfo store.User) (stor
 	id := user.ID
 	err = uh.UserStore.UpdateUser(id, newUserInfo)
 	if err != nil {
-		return store.User{}, err
+		return store.User{}, errors.New("Error updating user with {id}")
 	}
 	return newUserInfo, nil
 }
@@ -56,28 +59,40 @@ func (uh *UserHandler) AddExperience(username string, experience store.Experienc
 	user, _ := uh.GetUser(username)
 	id := user.ID
 	err := uh.UserStore.InsertExperience(id, experience)
-	return user, err
+	if err != nil {
+		return user, errors.New("Error adding experience to user with {id}")
+	}
+	return user, nil
 }
 
 func (uh *UserHandler) AddEducation(username string, text string) (store.User, error) {
 	user, _ := uh.GetUser(username)
 	id := user.ID
 	err1 := uh.UserStore.InsertEducation(id, store.Education{Text: text})
-	return user, err1
+	if err1 != nil {
+		return user, errors.New("Error adding education to user with {id}")
+	}
+	return user, nil
 }
 
 func (uh *UserHandler) AddSkill(username string, text string) (store.User, error) {
 	user, _ := uh.GetUser(username)
 	id := user.ID
 	err1 := uh.UserStore.InsertSkill(id, store.Skill{Text: text})
-	return user, err1
+	if err1 != nil {
+		return user, errors.New("Error adding skill to user with {id}")
+	}
+	return user, nil
 }
 
 func (uh *UserHandler) AddInterest(username string, text string) (store.User, error) {
 	user, _ := uh.GetUser(username)
 	id := user.ID
 	err1 := uh.UserStore.InsertInterest(id, store.Interest{Text: text})
-	return user, err1
+	if err1 != nil {
+		return user, errors.New("Error adding interest to user with {id}")
+	}
+	return user, nil
 }
 
 //TODO: TESTIRATI

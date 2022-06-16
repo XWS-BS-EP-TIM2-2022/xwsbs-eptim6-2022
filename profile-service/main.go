@@ -2,68 +2,101 @@ package main
 
 import (
 	"context"
-	usersServicePb "github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common/proto/profile_service"
-	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
-	otgo "github.com/opentracing/opentracing-go"
-	"github.com/opentracing/opentracing-go/ext"
-	"google.golang.org/grpc"
-	"log"
+	"fmt"
 	"net"
 	"net/http"
+
 	"profile-service/startup"
 	"profile-service/startup/config"
+
+	logger "github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common/logger"
+	usersServicePb "github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common/proto/profile_service"
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"github.com/jasonlvhit/gocron"
+	otgo "github.com/opentracing/opentracing-go"
+	"github.com/opentracing/opentracing-go/ext"
+	"github.com/sirupsen/logrus"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
+var log *logger.LoggerWrapper
+
+func init() {
+	s := gocron.NewScheduler()
+	log = logger.InitLogger("profile_service", s)
+}
 func main() {
-	//router := RegisterRouts()
-	//fmt.Println("START Listening")
-	//log.Fatal(http.ListenAndServe(":8080", router))
-	// Create a listener on TCP port
 	serverConfig := config.NewConfig()
-	lis, err := net.Listen("tcp", ":"+serverConfig.GrpcPort)
+	err := createGrpcServer(serverConfig)
 	if err != nil {
-		log.Fatalln("Failed to listen:", err)
-	}
-
-	// Create a gRPC server object
-	s := grpc.NewServer()
-
-	service, err := startup.NewServer(serverConfig)
-	if err != nil {
-		log.Fatal(err.Error())
+		log.Writeln(logger.LogMessage{Message: err.Error(), Level: logrus.FatalLevel, Component: "profile_service.main.createGrpcServer"})
 		return
 	}
-	usersServicePb.RegisterProfileServiceServer(s, service)
-	log.Println("Serving gRPC on 0.0.0.0:" + serverConfig.GrpcPort)
-	go func() {
-		log.Fatalln(s.Serve(lis))
-	}()
-	// Create a client connection to the gRPC server we just started
-	// This is where the gRPC-Gateway proxies the requests
+	err = creategRPCGateway(serverConfig)
+	if err != nil {
+		log.Writeln(logger.LogMessage{Message: err.Error(), Level: logrus.FatalLevel, Component: "profile_service.main.creategRPCGateway"})
+		return
+	}
+	<-log.Scheduler.Start()
+}
+
+func creategRPCGateway(serverConfig *config.Config) error {
 	conn, err := grpc.DialContext(
 		context.Background(),
-		"0.0.0.0:"+serverConfig.GrpcPort,
-		grpc.WithBlock(),
-		grpc.WithInsecure(),
+		serverConfig.Host+":"+serverConfig.GrpcPort,
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {
-		log.Fatalln("Failed to dial server:", err)
+		log.Writeln(logger.LogMessage{Message: fmt.Sprintf("Failed to dial server: %s", err), Level: logrus.FatalLevel, Component: "profile_service.main.creategRPCGateway"})
+		return err
 	}
 
 	gwmux := runtime.NewServeMux()
 	// Register Greeter
 	err = usersServicePb.RegisterProfileServiceHandler(context.Background(), gwmux, conn)
 	if err != nil {
-		log.Fatalln("Failed to register gateway:", err)
+		log.Writeln(logger.LogMessage{Message: fmt.Sprintf("Failed to register gateway: %s", err), Level: logrus.FatalLevel, Component: "profile_service.main.creategRPCGateway"})
+		return err
 	}
 
 	gwServer := &http.Server{
 		Addr:    ":" + serverConfig.GatewayPort,
 		Handler: tracingWrapper(gwmux),
 	}
+	log.Writeln(logger.LogMessage{Message: fmt.Sprintf("Serving gRPC-Gateway on http://0.0.0.0:%s", serverConfig.GatewayPort), Level: logrus.InfoLevel, Component: startup.GetComponentName(creategRPCGateway)})
+	err = gwServer.ListenAndServe()
+	if err != nil {
+		log.Writeln(logger.LogMessage{Message: fmt.Sprintf("Serving gRPC-Gateway on http://0.0.0.0:%s", serverConfig.GatewayPort), Level: logrus.FatalLevel, Component: startup.GetComponentName(creategRPCGateway)})
+		return err
+	}
+	return nil
+}
 
-	log.Println("Serving gRPC-Gateway on http://0.0.0.0:" + serverConfig.GatewayPort)
-	log.Fatalln(gwServer.ListenAndServe())
+func createGrpcServer(serverConfig *config.Config) error {
+	lis, err := net.Listen("tcp", ":"+serverConfig.GrpcPort)
+	if err != nil {
+		return err
+	}
+
+	// Create a gRPC server object
+	s := grpc.NewServer()
+
+	service, err := startup.NewServer(serverConfig, log)
+	if err != nil {
+		return err
+	}
+
+	usersServicePb.RegisterProfileServiceServer(s, service)
+	log.Writeln(logger.LogMessage{Message: fmt.Sprintf("Serving gRPC on: %s", serverConfig.GrpcPort), Level: logrus.InfoLevel, Component: startup.GetComponentName(createGrpcServer)})
+	go func() {
+		err := s.Serve(lis)
+		if err != nil {
+			log.Writeln(logger.LogMessage{Message: err.Error(), Level: logrus.FatalLevel, Component: startup.GetComponentName(createGrpcServer)})
+			return
+		}
+	}()
+	return err
 }
 
 var grpcGatewayTag = otgo.Tag{Key: string(ext.Component), Value: "grpc-gateway"}
