@@ -33,10 +33,11 @@ func (p *PostsHandler) GetByUser(username string) (store.Posts, error) {
 
 func (p *PostsHandler) CreatePost(in *postsServicePb.Post) (store.Post, error) {
 	post := store.Post{Username: in.Username, ImageUrl: in.ImageUrl, Text: in.Text, Liked: []string{}, Disliked: []string{}, Comments: []store.Comment{}, CreatedOn: in.CreatedOn}
-	err := p.postsStore.CreatePost(post)
+	err, id := p.postsStore.CreatePost(post)
 	if err != nil {
-		return store.Post{}, errors.New("Could not create in")
+		return store.Post{}, errors.New("Could not create")
 	}
+	post.ID = id
 	return post, nil
 }
 

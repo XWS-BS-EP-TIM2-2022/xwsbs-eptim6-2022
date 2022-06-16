@@ -102,13 +102,13 @@ func (ps *PostsStore) GetById(id primitive.ObjectID) (Post, error) {
 	return post, nil
 }
 
-func (ps *PostsStore) CreatePost(newPost Post) error {
+func (ps *PostsStore) CreatePost(newPost Post) (error, primitive.ObjectID) {
 	post, err := ps.PostsCollection.InsertOne(context.TODO(), newPost)
-	if err != nil {
-		return err
-	}
 	newPost.ID = post.InsertedID.(primitive.ObjectID)
-	return nil
+	if err != nil {
+		return err, newPost.ID
+	}
+	return nil, newPost.ID
 }
 
 func (ps *PostsStore) LikePost(id primitive.ObjectID, user string) (Post, error) {
