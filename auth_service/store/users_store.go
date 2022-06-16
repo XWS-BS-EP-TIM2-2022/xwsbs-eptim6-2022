@@ -16,20 +16,28 @@ import (
 )
 
 type User struct {
-	Username          string    `json:"username" validate:"required,lt=50"`
-	Name              string    `json:"name" validate:"required"`
-	Surname           string    `json:"surname" validate:"required"`
-	Password          string    `json:"password" validate:"required"`
-	Email             string    `json:"email" validate:"required,email"`
-	Role              string    `json:"role" validate:"required"`
-	FailedLogins      int       `json:"failed-logins" bson:"failed-logins"`
-	Blocked           bool      `json:"blocked"`
-	BlockedUntil      time.Time `json:"blocked-until" bson:"blocked-until"`
-	IsActivated       bool      `json:"isActivated" bson:"is-activated"`
-	VerificationToken string    `json:"verificationToken" bson:"verification-token"`
-	TokenExpiration   time.Time `json:"tokenExpiration" bson:"token-expiration"`
-	ApiToken          string    `json:"apiToken" bson:"api-token"`
+	Username          string      `json:"username" validate:"required,lt=50"`
+	Name              string      `json:"name" validate:"required"`
+	Surname           string      `json:"surname" validate:"required"`
+	Password          string      `json:"password" validate:"required"`
+	Email             string      `json:"email" validate:"required,email"`
+	Role              string      `json:"role" validate:"required"`
+	FailedLogins      int         `json:"failed-logins" bson:"failed-logins"`
+	Blocked           bool        `json:"blocked"`
+	BlockedUntil      time.Time   `json:"blocked-until" bson:"blocked-until"`
+	IsActivated       bool        `json:"isActivated" bson:"is-activated"`
+	VerificationToken string      `json:"verificationToken" bson:"verification-token"`
+	TokenExpiration   time.Time   `json:"tokenExpiration" bson:"token-expiration"`
+	ApiToken          string      `json:"apiToken" bson:"api-token"`
+	TwoFactAuth       TwoFactAuth `json:"twoFactAuth" bson:"two-fact-auth"`
 }
+
+type TwoFactAuth struct {
+	Enabled   bool      `json:"enabled" bson:"enabled"`
+	Token     string    `json:"token"  bson:"token"`
+	CreatedAt time.Time `json:"createdAt" bson:"createdAt"`
+}
+
 type ChangePasswordRequest struct {
 	Username    string `json:"username"`
 	OldPassword string `json:"old-password"`

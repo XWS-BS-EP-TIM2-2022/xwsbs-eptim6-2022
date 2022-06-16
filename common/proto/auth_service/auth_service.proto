@@ -82,6 +82,27 @@ service AuthService {
       get: "/api/auth/api-tokens"
     };
   }
+
+
+
+  rpc Enable2FA(UserUsernameMessage) returns (EmptyMessage){
+    option (google.api.http) = {
+      put: "/api/auth/users/{username}/two-fact-auth"
+    };
+  }
+
+  rpc Get2FAToken(UserUsernameMessage) returns (EmptyMessage){
+    option (google.api.http) = {
+      get: "/api/auth/users/two-fact-auth"
+    };
+  }
+
+  rpc Submit2FAToken(ActivationTokenMessage) returns (EmptyMessage){
+    option (google.api.http) = {
+      put: "/api/auth/users/two-fact-auth"
+    };
+  }
+
 }
 message ChangePasswordRequest{
   ChangePasswordMessage changePasswordMessage = 1;
@@ -163,3 +184,8 @@ message PutNewUser {
 message CreateNewUserResponse {
   User user = 1;
 }
+
+message UserUsernameMessage{
+  string username=1;
+}
+message EmptyMessage{}

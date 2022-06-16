@@ -35,6 +35,9 @@ type AuthServiceClient interface {
 	PasswordlessLogin(ctx context.Context, in *ActivationTokenMessage, opts ...grpc.CallOption) (*ActivationResponse, error)
 	GenerateApiKey(ctx context.Context, in *GetAllRequest, opts ...grpc.CallOption) (*Token, error)
 	GetUserApiKey(ctx context.Context, in *GetAllRequest, opts ...grpc.CallOption) (*Token, error)
+	Enable2FA(ctx context.Context, in *UserUsernameMessage, opts ...grpc.CallOption) (*EmptyMessage, error)
+	Get2FAToken(ctx context.Context, in *UserUsernameMessage, opts ...grpc.CallOption) (*EmptyMessage, error)
+	Submit2FAToken(ctx context.Context, in *ActivationTokenMessage, opts ...grpc.CallOption) (*EmptyMessage, error)
 }
 
 type authServiceClient struct {
@@ -162,6 +165,33 @@ func (c *authServiceClient) GetUserApiKey(ctx context.Context, in *GetAllRequest
 	return out, nil
 }
 
+func (c *authServiceClient) Enable2FA(ctx context.Context, in *UserUsernameMessage, opts ...grpc.CallOption) (*EmptyMessage, error) {
+	out := new(EmptyMessage)
+	err := c.cc.Invoke(ctx, "/auth_service.AuthService/Enable2FA", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) Get2FAToken(ctx context.Context, in *UserUsernameMessage, opts ...grpc.CallOption) (*EmptyMessage, error) {
+	out := new(EmptyMessage)
+	err := c.cc.Invoke(ctx, "/auth_service.AuthService/Get2FAToken", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) Submit2FAToken(ctx context.Context, in *ActivationTokenMessage, opts ...grpc.CallOption) (*EmptyMessage, error) {
+	out := new(EmptyMessage)
+	err := c.cc.Invoke(ctx, "/auth_service.AuthService/Submit2FAToken", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AuthServiceServer is the server API for AuthService service.
 // All implementations must embed UnimplementedAuthServiceServer
 // for forward compatibility
@@ -179,6 +209,9 @@ type AuthServiceServer interface {
 	PasswordlessLogin(context.Context, *ActivationTokenMessage) (*ActivationResponse, error)
 	GenerateApiKey(context.Context, *GetAllRequest) (*Token, error)
 	GetUserApiKey(context.Context, *GetAllRequest) (*Token, error)
+	Enable2FA(context.Context, *UserUsernameMessage) (*EmptyMessage, error)
+	Get2FAToken(context.Context, *UserUsernameMessage) (*EmptyMessage, error)
+	Submit2FAToken(context.Context, *ActivationTokenMessage) (*EmptyMessage, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
 
@@ -224,6 +257,15 @@ func (UnimplementedAuthServiceServer) GenerateApiKey(context.Context, *GetAllReq
 }
 func (UnimplementedAuthServiceServer) GetUserApiKey(context.Context, *GetAllRequest) (*Token, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUserApiKey not implemented")
+}
+func (UnimplementedAuthServiceServer) Enable2FA(context.Context, *UserUsernameMessage) (*EmptyMessage, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Enable2FA not implemented")
+}
+func (UnimplementedAuthServiceServer) Get2FAToken(context.Context, *UserUsernameMessage) (*EmptyMessage, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Get2FAToken not implemented")
+}
+func (UnimplementedAuthServiceServer) Submit2FAToken(context.Context, *ActivationTokenMessage) (*EmptyMessage, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Submit2FAToken not implemented")
 }
 func (UnimplementedAuthServiceServer) mustEmbedUnimplementedAuthServiceServer() {}
 
@@ -472,6 +514,60 @@ func _AuthService_GetUserApiKey_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_Enable2FA_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserUsernameMessage)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).Enable2FA(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/auth_service.AuthService/Enable2FA",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).Enable2FA(ctx, req.(*UserUsernameMessage))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_Get2FAToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserUsernameMessage)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).Get2FAToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/auth_service.AuthService/Get2FAToken",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).Get2FAToken(ctx, req.(*UserUsernameMessage))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_Submit2FAToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ActivationTokenMessage)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).Submit2FAToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/auth_service.AuthService/Submit2FAToken",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).Submit2FAToken(ctx, req.(*ActivationTokenMessage))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AuthService_ServiceDesc is the grpc.ServiceDesc for AuthService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -530,6 +626,18 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetUserApiKey",
 			Handler:    _AuthService_GetUserApiKey_Handler,
+		},
+		{
+			MethodName: "Enable2FA",
+			Handler:    _AuthService_Enable2FA_Handler,
+		},
+		{
+			MethodName: "Get2FAToken",
+			Handler:    _AuthService_Get2FAToken_Handler,
+		},
+		{
+			MethodName: "Submit2FAToken",
+			Handler:    _AuthService_Submit2FAToken_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
