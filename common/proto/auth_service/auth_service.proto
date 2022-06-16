@@ -100,6 +100,7 @@ service AuthService {
   rpc Submit2FAToken(ActivationTokenMessage) returns (EmptyMessage){
     option (google.api.http) = {
       put: "/api/auth/users/two-fact-auth"
+      body:"token"
     };
   }
 
