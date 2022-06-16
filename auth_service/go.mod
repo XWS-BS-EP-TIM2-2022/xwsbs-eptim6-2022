@@ -3,12 +3,13 @@ module github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/auth_service
 go 1.18
 
 require (
-	github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common v0.0.0-20220614075750-4353c7afc0b5
+	github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common v0.0.0-20220616180313-f79642a92bc4
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/go-playground/validator/v10 v10.11.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.10.1
 	github.com/jasonlvhit/gocron v0.0.1
 	github.com/opentracing/opentracing-go v1.2.0
+	github.com/sirupsen/logrus v1.8.1
 	go.mongodb.org/mongo-driver v1.9.0
 	golang.org/x/crypto v0.0.0-20211215153901-e495a2d5b3d3
 	google.golang.org/grpc v1.46.2
@@ -23,7 +24,6 @@ require (
 	github.com/klauspost/compress v1.13.6 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
-	github.com/sirupsen/logrus v1.8.1 // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
 	github.com/xdg-go/scram v1.0.2 // indirect
 	github.com/xdg-go/stringprep v1.0.2 // indirect

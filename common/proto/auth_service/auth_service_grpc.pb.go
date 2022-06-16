@@ -36,7 +36,7 @@ type AuthServiceClient interface {
 	GenerateApiKey(ctx context.Context, in *GetAllRequest, opts ...grpc.CallOption) (*Token, error)
 	GetUserApiKey(ctx context.Context, in *GetAllRequest, opts ...grpc.CallOption) (*Token, error)
 	Enable2FA(ctx context.Context, in *UserUsernameMessage, opts ...grpc.CallOption) (*EmptyMessage, error)
-	Get2FAToken(ctx context.Context, in *UserUsernameMessage, opts ...grpc.CallOption) (*EmptyMessage, error)
+	Get2FAToken(ctx context.Context, in *UserUsernameMessage, opts ...grpc.CallOption) (*Token, error)
 	Submit2FAToken(ctx context.Context, in *ActivationTokenMessage, opts ...grpc.CallOption) (*EmptyMessage, error)
 }
 
@@ -174,8 +174,8 @@ func (c *authServiceClient) Enable2FA(ctx context.Context, in *UserUsernameMessa
 	return out, nil
 }
 
-func (c *authServiceClient) Get2FAToken(ctx context.Context, in *UserUsernameMessage, opts ...grpc.CallOption) (*EmptyMessage, error) {
-	out := new(EmptyMessage)
+func (c *authServiceClient) Get2FAToken(ctx context.Context, in *UserUsernameMessage, opts ...grpc.CallOption) (*Token, error) {
+	out := new(Token)
 	err := c.cc.Invoke(ctx, "/auth_service.AuthService/Get2FAToken", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -210,7 +210,7 @@ type AuthServiceServer interface {
 	GenerateApiKey(context.Context, *GetAllRequest) (*Token, error)
 	GetUserApiKey(context.Context, *GetAllRequest) (*Token, error)
 	Enable2FA(context.Context, *UserUsernameMessage) (*EmptyMessage, error)
-	Get2FAToken(context.Context, *UserUsernameMessage) (*EmptyMessage, error)
+	Get2FAToken(context.Context, *UserUsernameMessage) (*Token, error)
 	Submit2FAToken(context.Context, *ActivationTokenMessage) (*EmptyMessage, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
@@ -261,7 +261,7 @@ func (UnimplementedAuthServiceServer) GetUserApiKey(context.Context, *GetAllRequ
 func (UnimplementedAuthServiceServer) Enable2FA(context.Context, *UserUsernameMessage) (*EmptyMessage, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Enable2FA not implemented")
 }
-func (UnimplementedAuthServiceServer) Get2FAToken(context.Context, *UserUsernameMessage) (*EmptyMessage, error) {
+func (UnimplementedAuthServiceServer) Get2FAToken(context.Context, *UserUsernameMessage) (*Token, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Get2FAToken not implemented")
 }
 func (UnimplementedAuthServiceServer) Submit2FAToken(context.Context, *ActivationTokenMessage) (*EmptyMessage, error) {
