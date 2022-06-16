@@ -85,9 +85,9 @@ service AuthService {
 
 
 
-  rpc Enable2FA(UserUsernameMessage) returns (EmptyMessage){
+  rpc Enable2FA(EmptyMessage) returns (EmptyMessage){
     option (google.api.http) = {
-      put: "/api/auth/users/{username}/two-fact-auth"
+      post: "/api/auth/users/two-fact-auth"
     };
   }
 

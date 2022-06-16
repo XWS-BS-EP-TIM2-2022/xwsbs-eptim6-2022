@@ -189,13 +189,14 @@ func (s *Server) GetUserApiKey(ctx context.Context, in *authServicePb.GetAllRequ
 	}
 	return &authServicePb.Token{Token: dbUser.ApiToken}, nil
 }
-func (s *Server) Enable2FA(context.Context, *authServicePb.UserUsernameMessage) (*authServicePb.EmptyMessage, error) {
+func (s *Server) Enable2FA(ctx context.Context, in *authServicePb.UserUsernameMessage) (*authServicePb.EmptyMessage, error) {
 	return nil, nil
 }
-func (s *Server) Get2FAToken(context.Context, *authServicePb.UserUsernameMessage) (*authServicePb.EmptyMessage, error) {
+func (s *Server) Get2FAToken(ctx context.Context, in *authServicePb.UserUsernameMessage) (*authServicePb.Token, error) {
+
 	return nil, nil
 }
-func (s *Server) Submit2FAToken(context.Context, *authServicePb.ActivationTokenMessage) (*authServicePb.EmptyMessage, error) {
+func (s *Server) Submit2FAToken(ctx context.Context, in *authServicePb.ActivationTokenMessage) (*authServicePb.EmptyMessage, error) {
 	return nil, nil
 }
 func (s *Server) getUsernameFromContext(ctx context.Context) string {

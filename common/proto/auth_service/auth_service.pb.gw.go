@@ -444,25 +444,8 @@ func local_request_AuthService_GetUserApiKey_0(ctx context.Context, marshaler ru
 }
 
 func request_AuthService_Enable2FA_0(ctx context.Context, marshaler runtime.Marshaler, client AuthServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq UserUsernameMessage
+	var protoReq EmptyMessage
 	var metadata runtime.ServerMetadata
-
-	var (
-		val string
-		ok  bool
-		err error
-		_   = err
-	)
-
-	val, ok = pathParams["username"]
-	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "username")
-	}
-
-	protoReq.Username, err = runtime.String(val)
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "username", err)
-	}
 
 	msg, err := client.Enable2FA(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
@@ -470,25 +453,8 @@ func request_AuthService_Enable2FA_0(ctx context.Context, marshaler runtime.Mars
 }
 
 func local_request_AuthService_Enable2FA_0(ctx context.Context, marshaler runtime.Marshaler, server AuthServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq UserUsernameMessage
+	var protoReq EmptyMessage
 	var metadata runtime.ServerMetadata
-
-	var (
-		val string
-		ok  bool
-		err error
-		_   = err
-	)
-
-	val, ok = pathParams["username"]
-	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "username")
-	}
-
-	protoReq.Username, err = runtime.String(val)
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "username", err)
-	}
 
 	msg, err := server.Enable2FA(ctx, &protoReq)
 	return msg, metadata, err
@@ -885,14 +851,14 @@ func RegisterAuthServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 
 	})
 
-	mux.Handle("PUT", pattern_AuthService_Enable2FA_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_AuthService_Enable2FA_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/auth_service.AuthService/Enable2FA", runtime.WithHTTPPathPattern("/api/auth/users/{username}/two-fact-auth"))
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/auth_service.AuthService/Enable2FA", runtime.WithHTTPPathPattern("/api/auth/users/two-fact-auth"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1271,12 +1237,12 @@ func RegisterAuthServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 
 	})
 
-	mux.Handle("PUT", pattern_AuthService_Enable2FA_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_AuthService_Enable2FA_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/auth_service.AuthService/Enable2FA", runtime.WithHTTPPathPattern("/api/auth/users/{username}/two-fact-auth"))
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/auth_service.AuthService/Enable2FA", runtime.WithHTTPPathPattern("/api/auth/users/two-fact-auth"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1364,7 +1330,7 @@ var (
 
 	pattern_AuthService_GetUserApiKey_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "auth", "api-tokens"}, ""))
 
-	pattern_AuthService_Enable2FA_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4}, []string{"api", "auth", "users", "username", "two-fact-auth"}, ""))
+	pattern_AuthService_Enable2FA_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "auth", "users", "two-fact-auth"}, ""))
 
 	pattern_AuthService_Get2FAToken_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "auth", "users", "two-fact-auth"}, ""))
 
