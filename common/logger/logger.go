@@ -62,6 +62,6 @@ func generateLogFileName(serviceName string) string {
 	return filename
 }
 func openFile(filename string) *os.File {
-	file, _ := os.OpenFile(filename, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0640)
+	file, _ := os.OpenFile(filename, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0440)
 	return file
 }

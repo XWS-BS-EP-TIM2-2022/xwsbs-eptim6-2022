@@ -29,7 +29,13 @@ type User struct {
 	VerificationToken string    `json:"verificationToken" bson:"verification-token"`
 	TokenExpiration   time.Time `json:"tokenExpiration" bson:"token-expiration"`
 	ApiToken          string    `json:"apiToken" bson:"api-token"`
+	Enabled           bool      `json:"two-fact-auth-enabled" bson:"two-fact-auth-enabled"`
+	Secret            string    `json:"two-fact-auth-secret"  bson:"two-fact-auth-secret"`
 }
+
+type TwoFactAuth struct {
+}
+
 type ChangePasswordRequest struct {
 	Username    string `json:"username"`
 	OldPassword string `json:"old-password"`
@@ -208,6 +214,19 @@ func (us *UsersStore) ActivateAccount(username string) error {
 	update := bson.D{
 		{"$set", bson.D{
 			{"is-activated", true},
+		}},
+	}
+	_, err := us.UsersCollection.UpdateOne(context.TODO(), filter, update)
+	return err
+}
+
+func (us *UsersStore) Enable2FA(username string, secret string) error {
+	filter := bson.D{{"username", username}}
+
+	update := bson.D{
+		{"$set", bson.D{
+			{"two-fact-auth-enabled", true},
+			{"two-fact-auth-secret", secret},
 		}},
 	}
 	_, err := us.UsersCollection.UpdateOne(context.TODO(), filter, update)

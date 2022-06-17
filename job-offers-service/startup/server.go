@@ -3,14 +3,18 @@ package startup
 import (
 	"context"
 	"fmt"
+	"github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common/logger"
 	authGw "github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common/proto/auth_service"
 	jobOffersPb "github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common/proto/job_offers_service"
+	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/metadata"
 	"job-offers-service/handlers"
 	"job-offers-service/mappers"
 	"job-offers-service/startup/config"
+	"reflect"
+	"runtime"
 	"strings"
 )
 
@@ -18,10 +22,11 @@ type Server struct {
 	config *config.Config
 	jobOffersPb.UnimplementedJobOffersServiceServer
 	jobOffersHandler *handlers.JobOffersHandler
+	log              *logger.LoggerWrapper
 }
 
-func NewServer(config config.Config) (*Server, error) {
-	return &Server{config: &config, jobOffersHandler: handlers.NewOffersHandler(config)}, nil
+func NewServer(config config.Config, log *logger.LoggerWrapper) (*Server, error) {
+	return &Server{config: &config, jobOffersHandler: handlers.NewOffersHandler(config, log), log: log}, nil
 }
 func (s *Server) GetAllJobOffers(ctx context.Context, in *jobOffersPb.EmptyRequest) (*jobOffersPb.JobOffersResponse, error) {
 	all, err := s.jobOffersHandler.GetAll()
@@ -38,8 +43,13 @@ func (s *Server) CreateNewJobOffer(ctx context.Context, in *jobOffersPb.CreateJo
 	offer.User, _ = s.validateLoggedinUser(getTokenFromContext(ctx))
 	jobOffer, err := s.jobOffersHandler.CreateJobOffer(&offer)
 	if err != nil {
+		s.log.Writeln(logger.LogMessage{Message: fmt.Sprintf("Creating offer failed. %s", err.Error()),
+			Component: GetComponentName(s.jobOffersHandler.CreateJobOffer), Level: logrus.ErrorLevel})
 		return nil, err
 	}
+
+	s.log.Writeln(logger.LogMessage{Message: fmt.Sprintf("New job offer created by: %s from IP address: %s", offer.User, getRequestIpAddressFromContext(ctx)),
+		Component: GetComponentName(s.jobOffersHandler.CreateJobOffer), Level: logrus.InfoLevel})
 	return mappers.MapToResponse(jobOffer), nil
 }
 func getTokenFromContext(ctx context.Context) string {
@@ -64,4 +74,13 @@ func InitAuthService(config *config.Config) authGw.AuthServiceClient {
 
 func getConnection(address string) (*grpc.ClientConn, error) {
 	return grpc.Dial(address, grpc.WithTransportCredentials(insecure.NewCredentials()))
+}
+
+func getRequestIpAddressFromContext(ctx context.Context) string {
+	md, _ := metadata.FromIncomingContext(ctx)
+	userIp := md.Get("x-forwarded-for")[0]
+	return userIp
+}
+func GetComponentName(methode interface{}) string {
+	return runtime.FuncForPC(reflect.ValueOf(methode).Pointer()).Name()
 }

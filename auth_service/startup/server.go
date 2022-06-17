@@ -2,6 +2,8 @@ package startup
 
 import (
 	"context"
+	"encoding/base64"
+	"errors"
 	"fmt"
 	"github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/auth_service/handlers"
 	"github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/auth_service/mappers"
@@ -189,12 +191,24 @@ func (s *Server) GetUserApiKey(ctx context.Context, in *authServicePb.GetAllRequ
 	}
 	return &authServicePb.Token{Token: dbUser.ApiToken}, nil
 }
+func (s *Server) Enable2FA(ctx context.Context, in *authServicePb.EmptyMessage) (*authServicePb.QrCodeUrlMessage, error) {
+	username := s.getUsernameFromContext(ctx)
+	photo, err := s.AuthHandler.Enable2FA(username)
+	if err != nil {
+		return nil, err
+	}
+	return &authServicePb.QrCodeUrlMessage{Photo: base64.StdEncoding.EncodeToString(photo)}, nil
+}
 
+func (s *Server) Submit2FAToken(ctx context.Context, in *authServicePb.ActivationTokenMessage) (*authServicePb.EmptyMessage, error) {
+	valid := s.AuthHandler.Validate2FA(s.getUsernameFromContext(ctx), in.Token.Token)
+	if valid {
+		return &authServicePb.EmptyMessage{}, nil
+	}
+	return &authServicePb.EmptyMessage{}, errors.New("Token is not valid")
+}
 func (s *Server) getUsernameFromContext(ctx context.Context) string {
 	token := s.getTokenFromContext(ctx)
-	if token != "" {
-		return ""
-	}
 	user, err := s.AuthHandler.ValidateToken(token)
 	if err != nil {
 		return ""
