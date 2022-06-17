@@ -1,22 +1,29 @@
 #coverphoto {
-    color: aliceblue; 
-    height: 200px;
-    background-image: url('..//..//../assets/coverphoto1.jpg');
-    background-repeat: no-repeat;
-    border-radius: 20px;
-    margin: 30px;
+  color: aliceblue;
+  height: 200px;
+  background-image: url("..//..//../assets/coverphoto1.jpg");
+  background-repeat: no-repeat;
+  border-radius: 20px;
+  margin: 30px;
 }
-.wrapbox{
-    background-color: #e8e8e8;
-      border-radius: 20px;
-      margin-top: 10px;
-      margin-left: 20px;
-      margin-right: 20px;
-      padding: 10px;
+.wrapbox {
+  background-color: #e8e8e8;
+  border-radius: 20px;
+  margin-top: 10px;
+  margin-left: 20px;
+  margin-right: 20px;
+  padding: 10px;
 }
-h3{
-    text-align: left; padding-left: 15px; padding-top: 15px
+h3 {
+  text-align: left;
+  padding-left: 15px;
+  padding-top: 15px;
 }
-label.form-label{
-    display: inline
+label.form-label {
+  display: inline;
+}
+
+.img-2fa:hover {
+  cursor: pointer;
+  transform: scale(1.15);
 }

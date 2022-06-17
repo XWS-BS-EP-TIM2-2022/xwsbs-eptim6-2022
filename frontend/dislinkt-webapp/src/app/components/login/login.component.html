@@ -3,8 +3,8 @@
   <h3>You are already logged in.</h3>
 </mat-card>
 <mat-card *ngIf="!logged">
-  <mat-card-content *ngIf="!passwordless">
-    <form #loginForm="ngForm" (ngSubmit)="submitForm()">
+  <mat-card-content *ngIf="!passwordless && !TwoFA">
+    <form #loginForm="ngForm" (ngSubmit)="login()">
       <h2>Log In</h2>
       <mat-form-field>
         <input matInput placeholder="Username" [(ngModel)]="username" name="username" required />
@@ -37,6 +37,22 @@
         Please enter a valid mail address!
       </mat-error>
       <button class="btn btn-primary" mat-raised-button color="primary" [disabled]="email == ''">
+        Submit
+      </button>
+    </form>
+  </mat-card-content>
+
+  <mat-card-content *ngIf="TwoFA">
+    <form #twoFA="ngForm" (ngSubmit)="login()">
+      <h2 class="mt-2 mx-2">Two-Factor Authentication</h2>
+      <div class="message mb-2">
+        <p>Enter generated code to complete login</p>
+      </div>
+      <mat-form-field>
+        <input matInput placeholder="Code" [(ngModel)]="code" name="code" required />
+      </mat-form-field>
+      <p class="mt-3 mb-2" style="color: red">{{ errorMessage }}</p>
+      <button class="btn btn-primary" mat-raised-button color="primary" [disabled]="code == ''">
         Submit
       </button>
     </form>

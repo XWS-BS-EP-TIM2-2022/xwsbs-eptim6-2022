@@ -24,56 +24,60 @@ export class ProfileService {
 
   addNewExperience(experience: Experience): Observable<any> {
     return this._http.put<any>('/api/users/experience', experience)
-    .pipe(
-      tap(data => console.log("experience: ", experience))
-    )
+      .pipe(
+        tap(data => console.log("experience: ", experience))
+      )
   }
 
   addNewEducation(education: Education): Observable<any> {
     return this._http.put<any>('api/users/education', education)
-    .pipe(
-      tap(data => console.log("data: ", data))
-    )
+      .pipe(
+        tap(data => console.log("data: ", data))
+      )
   }
 
   addNewSkill(skill: Skill): Observable<any> {
     return this._http.put<any>('api/users/skill', skill)
-    .pipe(
-      tap(data => console.log("data: ", data))
-    )
+      .pipe(
+        tap(data => console.log("data: ", data))
+      )
   }
 
   addNewInterest(interest: Interest): Observable<any> {
     return this._http.put<any>('api/users/interest', interest)
-    .pipe(
-      tap(data => console.log("data: ", data))
-    )
+      .pipe(
+        tap(data => console.log("data: ", data))
+      )
   }
 
   getAllUsers(): Observable<any> {
     return this._http.get<any>('api/users')
-    .pipe(
-      tap(data => console.log("data2: ", data))
-    )
+      .pipe(
+        tap(data => console.log("data2: ", data))
+      )
   }
 
-  followUser(id : any): Observable<any> {
+  followUser(id: any): Observable<any> {
     return this._http.put<any>('api/users/follow/' + id, {})
-    .pipe(
-      tap(data => console.log("data2: ", data))
-    )
+      .pipe(
+        tap(data => console.log("data2: ", data))
+      )
   }
 
-  unfollowUser(id : any): Observable<any> {
+  unfollowUser(id: any): Observable<any> {
     return this._http.put<any>('api/users/unfollow/' + id, {})
-    .pipe(
-      tap(data => console.log("data2: ", data))
-    )
+      .pipe(
+        tap(data => console.log("data2: ", data))
+      )
   }
-  
+
   generateApiToken(): Observable<any> {
-    return this._http.post<any>('api/auth/api-tokens','').pipe(tap(
-      resp=>{console.log(resp)}
+    return this._http.post<any>('api/auth/api-tokens', '').pipe(tap(
+      resp => { console.log(resp) }
     ))
+  }
+
+  enable2FA(): Observable<any> {
+    return this._http.post<any>('/api/auth/users/two-fact-auth', {});
   }
 }

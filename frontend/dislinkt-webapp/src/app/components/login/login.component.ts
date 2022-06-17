@@ -17,6 +17,8 @@ export class LoginComponent implements OnInit {
   email!: string
   checkMail = new FormControl('', [Validators.email]);
   logged: boolean = false
+  TwoFA: boolean = false
+  code: string = ""
 
   constructor(private authService: AuthService, private router: Router, public matSnackBar: MatSnackBar) { }
 
@@ -26,6 +28,14 @@ export class LoginComponent implements OnInit {
       this.logged = true
     else
       this.logged = false
+  }
+
+  login() {
+    //user = getUserByUsername(username) //provjeri da li postoji ako ne ispisi Invalid credentials odmah
+    if (1 > 2) // if (user.two-fact-auth-enabled)
+      this.TwoFA = true;
+    else
+      this.submitForm();
   }
 
   submitForm() {
@@ -58,6 +68,16 @@ export class LoginComponent implements OnInit {
       },
       (error) => {
         this.errorMessage = error.error;
+      }
+    )
+  }
+
+  submit2FA() {
+    this.authService.submit2FA(this.code).subscribe(data => {
+      this.submitForm();
+    },
+      error => {
+        this.errorMessage = error.error
       }
     )
   }

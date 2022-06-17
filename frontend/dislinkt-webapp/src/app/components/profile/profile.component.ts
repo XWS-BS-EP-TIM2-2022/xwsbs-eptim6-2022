@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { Education, Experience, Interest, Skill, UpdateUser } from 'src/app/model/profile';
 import { ProfileService } from 'src/app/services/profile.service';
 
@@ -20,36 +21,37 @@ export class ProfileComponent implements OnInit {
   public readonly educationFormGroup: FormGroup;
   public readonly skillFormGroup: FormGroup;
   public readonly interestFormGroup: FormGroup;
+  qrImage: any
 
   constructor(public readonly profileService: ProfileService,
-              private readonly formBuilder: FormBuilder) { 
-                this.updateFormGroup = this.formBuilder.group({
-                  id: [],
-                  email: ['', Validators.compose([Validators.required, Validators.email])],
-                  name: [],
-                  surname: [],
-                  telephone: [],
-                  gender: [],
-                  birthdate: [],
-                  biography: []
-                });
-                this.experienceFormGroup = this.formBuilder.group({
-                  experience: ''
-                });
-                this.educationFormGroup = this.formBuilder.group({
-                  education: ''
-                });
-                this.skillFormGroup = this.formBuilder.group({
-                  skill: ''
-                });
-                this.interestFormGroup = this.formBuilder.group({
-                  interest: ''
-                });
-              }
+    private readonly formBuilder: FormBuilder, private sanitizer: DomSanitizer) {
+    this.updateFormGroup = this.formBuilder.group({
+      id: [],
+      email: ['', Validators.compose([Validators.required, Validators.email])],
+      name: [],
+      surname: [],
+      telephone: [],
+      gender: [],
+      birthdate: [],
+      biography: []
+    });
+    this.experienceFormGroup = this.formBuilder.group({
+      experience: ''
+    });
+    this.educationFormGroup = this.formBuilder.group({
+      education: ''
+    });
+    this.skillFormGroup = this.formBuilder.group({
+      skill: ''
+    });
+    this.interestFormGroup = this.formBuilder.group({
+      interest: ''
+    });
+  }
 
   ngOnInit(): void {
     this.getUser();
-   
+
   }
 
   ngAfterViewInit(): void {
@@ -71,16 +73,16 @@ export class ProfileComponent implements OnInit {
       this.user = res.user
     });
     this.profileService.getUserApiKey().subscribe((res: any) => {
-        this.user.apiKey=res.token
-        console.log(this.user)
+      this.user.apiKey = res.token
+      console.log(this.user)
     });
   }
-  generateApiToken(){
+  generateApiToken() {
     this.profileService.generateApiToken().subscribe({
-      next:(data)=>{
+      next: (data) => {
         alert(data)
       },
-      error:(err)=>{alert(err)}
+      error: (err) => { alert(err) }
     })
     console.log("Generate api token")
   }
@@ -92,21 +94,21 @@ export class ProfileComponent implements OnInit {
 
     let updateUser = new UpdateUser();
     updateUser = {
-      name : this.updateFormGroup.get('name')?.value,
-      surname : this.updateFormGroup.get('surname')?.value,
-      email : this.updateFormGroup.get('email')?.value,
-      telephone : this.updateFormGroup.get('telephone')?.value,
+      name: this.updateFormGroup.get('name')?.value,
+      surname: this.updateFormGroup.get('surname')?.value,
+      email: this.updateFormGroup.get('email')?.value,
+      telephone: this.updateFormGroup.get('telephone')?.value,
       gender: this.updateFormGroup.get('gender')?.value,
-      birthDate : this.updateFormGroup.get('birthdate')?.value,
-      biography : this.updateFormGroup.get('biography')?.value
+      birthDate: this.updateFormGroup.get('birthdate')?.value,
+      biography: this.updateFormGroup.get('biography')?.value
     }
 
     this.profileService.updateUser(updateUser).subscribe({
       next: (data) => {
-      alert("Succesfully updated!")
-      this.getUser();
-    },
-      error: (err) => {alert("Error has occured, user not updated!")}
+        alert("Succesfully updated!")
+        this.getUser();
+      },
+      error: (err) => { alert("Error has occured, user not updated!") }
     });
   }
 
@@ -116,7 +118,7 @@ export class ProfileComponent implements OnInit {
       return;
     }
 
-    if (this.experienceFormGroup.get('experience')?.value == ""){
+    if (this.experienceFormGroup.get('experience')?.value == "") {
       alert('invalid input');
       return;
     }
@@ -128,10 +130,10 @@ export class ProfileComponent implements OnInit {
 
     this.profileService.addNewExperience(newExperience).subscribe({
       next: (data) => {
-      alert("Succesfully added!")
-      this.getUser();
-    },
-      error: (err) => {alert("Error has occured, new experience was not added!")}
+        alert("Succesfully added!")
+        this.getUser();
+      },
+      error: (err) => { alert("Error has occured, new experience was not added!") }
     });
   }
 
@@ -140,7 +142,7 @@ export class ProfileComponent implements OnInit {
       alert('Invalid input');
       return;
     }
-    if (this.educationFormGroup.get('education')?.value == ""){
+    if (this.educationFormGroup.get('education')?.value == "") {
       alert('invalid input');
       return;
     }
@@ -152,10 +154,10 @@ export class ProfileComponent implements OnInit {
 
     this.profileService.addNewEducation(newEducation).subscribe({
       next: (data) => {
-      alert("Succesfully added!")
-      this.getUser();
-    },
-      error: (err) => {alert("Error has occured, new education was not added!")}
+        alert("Succesfully added!")
+        this.getUser();
+      },
+      error: (err) => { alert("Error has occured, new education was not added!") }
     });
   }
 
@@ -164,7 +166,7 @@ export class ProfileComponent implements OnInit {
       alert('Invalid input');
       return;
     }
-    if (this.skillFormGroup.get('skill')?.value == ""){
+    if (this.skillFormGroup.get('skill')?.value == "") {
       alert('invalid input');
       return;
     }
@@ -176,10 +178,10 @@ export class ProfileComponent implements OnInit {
 
     this.profileService.addNewSkill(newSkill).subscribe({
       next: (data) => {
-      alert("Succesfully added!")
-      this.getUser();
-    },
-      error: (err) => {alert("Error has occured, new skill was not added!")}
+        alert("Succesfully added!")
+        this.getUser();
+      },
+      error: (err) => { alert("Error has occured, new skill was not added!") }
     });
   }
 
@@ -188,7 +190,7 @@ export class ProfileComponent implements OnInit {
       alert('Invalid input');
       return;
     }
-    if (this.interestFormGroup.get('interest')?.value == ""){
+    if (this.interestFormGroup.get('interest')?.value == "") {
       alert('invalid input');
       return;
     }
@@ -200,11 +202,16 @@ export class ProfileComponent implements OnInit {
 
     this.profileService.addNewInterest(newInterest).subscribe({
       next: (data) => {
-      alert("Succesfully added!")
-      this.getUser();
-    },
-      error: (err) => {alert("Error has occured, new interest was not added!")}
+        alert("Succesfully added!")
+        this.getUser();
+      },
+      error: (err) => { alert("Error has occured, new interest was not added!") }
     });
   }
 
+  enable2FA() {
+    this.profileService.enable2FA().subscribe(data => {
+      this.qrImage = this.sanitizer.bypassSecurityTrustUrl('data:image/jpeg;base64,' + data.photo)
+    })
+  }
 }
