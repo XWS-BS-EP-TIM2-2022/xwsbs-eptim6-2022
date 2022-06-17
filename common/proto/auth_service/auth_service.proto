@@ -183,5 +183,5 @@ message UserUsernameMessage{
 }
 message EmptyMessage{}
 message QrCodeUrlMessage{
-  string url=1;
+  repeated bytes photo=1;
 }
