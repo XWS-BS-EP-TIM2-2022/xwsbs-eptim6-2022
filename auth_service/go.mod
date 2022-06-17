@@ -3,8 +3,10 @@ module github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/auth_service
 go 1.18
 
 require (
-	github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common v0.0.0-20220616180856-c59467b328f8
+	github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common v0.0.0-20220617072012-0c981b4c2b93
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
+	github.com/dgryski/dgoogauth v0.0.0-20190221195224-5a805980a5f3
+	github.com/disintegration/imaging v1.6.2
 	github.com/go-playground/validator/v10 v10.11.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.10.1
 	github.com/jasonlvhit/gocron v0.0.1
@@ -13,6 +15,7 @@ require (
 	go.mongodb.org/mongo-driver v1.9.0
 	golang.org/x/crypto v0.0.0-20211215153901-e495a2d5b3d3
 	google.golang.org/grpc v1.46.2
+	rsc.io/qr v0.2.0
 )
 
 require (
@@ -28,6 +31,7 @@ require (
 	github.com/xdg-go/scram v1.0.2 // indirect
 	github.com/xdg-go/stringprep v1.0.2 // indirect
 	github.com/youmark/pkcs8 v0.0.0-20181117223130-1be2e3e5546d // indirect
+	golang.org/x/image v0.0.0-20191009234506-e7c1f5e7dbb8 // indirect
 	golang.org/x/net v0.0.0-20220520000938-2e3eb7b945c2 // indirect
 	golang.org/x/sync v0.0.0-20200625203802-6e8e738ad208 // indirect
 	golang.org/x/sys v0.0.0-20220520151302-bc2c85ada10a // indirect

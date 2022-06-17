@@ -1,0 +1,2 @@
+{"Component":"main.createGrpcServer","level":"info","msg":"Serving gRPC on: 5001","time":"2022-06-16T21:23:31+02:00"}
+{"Component":"main.creategRPCGateway","level":"info","msg":"Serving gRPC-Gateway on http://0.0.0.0:8003","time":"2022-06-16T21:23:31+02:00"}

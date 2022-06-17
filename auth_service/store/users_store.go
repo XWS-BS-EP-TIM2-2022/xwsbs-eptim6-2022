@@ -16,26 +16,24 @@ import (
 )
 
 type User struct {
-	Username          string      `json:"username" validate:"required,lt=50"`
-	Name              string      `json:"name" validate:"required"`
-	Surname           string      `json:"surname" validate:"required"`
-	Password          string      `json:"password" validate:"required"`
-	Email             string      `json:"email" validate:"required,email"`
-	Role              string      `json:"role" validate:"required"`
-	FailedLogins      int         `json:"failed-logins" bson:"failed-logins"`
-	Blocked           bool        `json:"blocked"`
-	BlockedUntil      time.Time   `json:"blocked-until" bson:"blocked-until"`
-	IsActivated       bool        `json:"isActivated" bson:"is-activated"`
-	VerificationToken string      `json:"verificationToken" bson:"verification-token"`
-	TokenExpiration   time.Time   `json:"tokenExpiration" bson:"token-expiration"`
-	ApiToken          string      `json:"apiToken" bson:"api-token"`
-	TwoFactAuth       TwoFactAuth `json:"twoFactAuth" bson:"two-fact-auth"`
+	Username          string    `json:"username" validate:"required,lt=50"`
+	Name              string    `json:"name" validate:"required"`
+	Surname           string    `json:"surname" validate:"required"`
+	Password          string    `json:"password" validate:"required"`
+	Email             string    `json:"email" validate:"required,email"`
+	Role              string    `json:"role" validate:"required"`
+	FailedLogins      int       `json:"failed-logins" bson:"failed-logins"`
+	Blocked           bool      `json:"blocked"`
+	BlockedUntil      time.Time `json:"blocked-until" bson:"blocked-until"`
+	IsActivated       bool      `json:"isActivated" bson:"is-activated"`
+	VerificationToken string    `json:"verificationToken" bson:"verification-token"`
+	TokenExpiration   time.Time `json:"tokenExpiration" bson:"token-expiration"`
+	ApiToken          string    `json:"apiToken" bson:"api-token"`
+	Enabled           bool      `json:"two-fact-auth-enabled" bson:"two-fact-auth-enabled"`
+	Secret            string    `json:"two-fact-auth-secret"  bson:"two-fact-auth-secret"`
 }
 
 type TwoFactAuth struct {
-	Enabled   bool      `json:"enabled" bson:"enabled"`
-	Token     string    `json:"token"  bson:"token"`
-	CreatedAt time.Time `json:"createdAt" bson:"createdAt"`
 }
 
 type ChangePasswordRequest struct {
@@ -216,6 +214,19 @@ func (us *UsersStore) ActivateAccount(username string) error {
 	update := bson.D{
 		{"$set", bson.D{
 			{"is-activated", true},
+		}},
+	}
+	_, err := us.UsersCollection.UpdateOne(context.TODO(), filter, update)
+	return err
+}
+
+func (us *UsersStore) Enable2FA(username string, secret string) error {
+	filter := bson.D{{"username", username}}
+
+	update := bson.D{
+		{"$set", bson.D{
+			{"two-fact-auth-enabled", true},
+			{"two-fact-auth-secret", secret},
 		}},
 	}
 	_, err := us.UsersCollection.UpdateOne(context.TODO(), filter, update)
