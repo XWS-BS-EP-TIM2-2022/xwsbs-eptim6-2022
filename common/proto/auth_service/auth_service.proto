@@ -83,8 +83,8 @@ service AuthService {
     };
   }
 
-  
-  rpc Enable2FA(QrCodeUrlMessage) returns (EmptyMessage){
+
+  rpc Enable2FA(EmptyMessage) returns (QrCodeUrlMessage){
     option (google.api.http) = {
       post: "/api/auth/users/two-fact-auth"
     };
