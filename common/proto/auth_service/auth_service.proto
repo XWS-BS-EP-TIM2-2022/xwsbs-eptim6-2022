@@ -82,6 +82,20 @@ service AuthService {
       get: "/api/auth/api-tokens"
     };
   }
+
+
+  rpc Enable2FA(EmptyMessage) returns (QrCodeUrlMessage){
+    option (google.api.http) = {
+      post: "/api/auth/users/two-fact-auth"
+    };
+  }
+  rpc Submit2FAToken(ActivationTokenMessage) returns (EmptyMessage){
+    option (google.api.http) = {
+      put: "/api/auth/users/two-fact-auth"
+      body:"token"
+    };
+  }
+
 }
 message ChangePasswordRequest{
   ChangePasswordMessage changePasswordMessage = 1;
@@ -162,4 +176,12 @@ message PutNewUser {
 
 message CreateNewUserResponse {
   User user = 1;
+}
+
+message UserUsernameMessage{
+  string username=1;
+}
+message EmptyMessage{}
+message QrCodeUrlMessage{
+  string photo=1;
 }

@@ -5,7 +5,7 @@ go 1.18
 require (
 	cloud.google.com/go/storage v1.10.0
 	firebase.google.com/go v3.13.0+incompatible
-	github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common v0.0.0-20220614120722-c789c51f9252
+	github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common v0.0.0-20220617072012-0c981b4c2b93
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.10.1
 	github.com/opentracing/opentracing-go v1.2.0
 	go.mongodb.org/mongo-driver v1.9.0

@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"encoding/base32"
 	"encoding/base64"
 	"encoding/json"
 	"errors"
@@ -12,6 +13,7 @@ import (
 	"net/http"
 	"net/smtp"
 	"reflect"
+	"rsc.io/qr"
 	"runtime"
 	"strings"
 	"time"
@@ -22,6 +24,7 @@ import (
 	authServicePb "github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common/proto/auth_service"
 	profileGw "github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common/proto/profile_service"
 	"github.com/dgrijalva/jwt-go"
+	"github.com/dgryski/dgoogauth"
 	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -42,6 +45,7 @@ type AuthHandler struct {
 	secretKey                []byte
 	profileServiceGrpcClient profileGw.ProfileServiceClient
 	log                      *logger.LoggerWrapper
+	config                   config.Config
 }
 
 type ActivationRequest struct {
@@ -59,7 +63,8 @@ func InitAuthHandler(serverConfig *config.Config, wrapper *logger.LoggerWrapper)
 		return nil, errors.New(fmt.Sprintf("Fatal error init profile service connection! %s", err.Error()))
 	}
 	client := profileGw.NewProfileServiceClient(conn)
-	return &AuthHandler{UserStore: userStore, profileServiceGrpcClient: client, secretKey: []byte(serverConfig.SecretKey), log: wrapper}, nil
+	return &AuthHandler{UserStore: userStore, profileServiceGrpcClient: client,
+		secretKey: []byte(serverConfig.SecretKey), log: wrapper, config: *serverConfig}, nil
 }
 
 func (ah *AuthHandler) LoginUser(user store.User) (JWT, error) {
@@ -345,6 +350,44 @@ func (ah *AuthHandler) AccountRecoveryEmail(email string) (store.User, error) {
 	return user, nil
 }
 
+func (ah *AuthHandler) Enable2FA(username string) ([]byte, error) {
+	randomStr := randStr(6)
+	secret := base32.StdEncoding.EncodeToString([]byte(randomStr))
+	authLink := "otpauth://totp/SocketLoop?secret=" + secret + "&issuer=SocketLoop"
+	code, err := qr.Encode(authLink, qr.L)
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+	imgByte := code.PNG()
+
+	err = ah.UserStore.Enable2FA(username, secret)
+	if err != nil {
+		return nil, err
+	}
+	return imgByte, nil
+}
+
+func (ah *AuthHandler) Validate2FA(username string, token string) bool {
+	user, err := ah.UserStore.FindByUsername(username)
+	if err != nil {
+		return false
+	}
+	otpConfig := &dgoogauth.OTPConfig{
+		Secret:      strings.TrimSpace(user.Secret),
+		WindowSize:  3,
+		HotpCounter: 0,
+	}
+	trimmedToken := strings.TrimSpace(token)
+
+	ok, err := otpConfig.Authenticate(trimmedToken)
+	if err != nil {
+		fmt.Println(err)
+		return false
+	}
+	return ok
+}
+
 func (ah *AuthHandler) ResetPassword(token string, newPassword string) (string, error) {
 	user := ah.UserStore.FindByToken(token)
 	if user == (store.User{}) {
@@ -420,6 +463,16 @@ func (ah *AuthHandler) PasswordlessLogin(token string) (JWT, error) {
 	return JWT{Token: tokenStr}, nil
 }
 
+func randStr(strSize int) string {
+	dictionary := "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+	var bytes = make([]byte, strSize)
+	rand.Read(bytes)
+	for k, v := range bytes {
+		bytes[k] = dictionary[v%byte(len(dictionary))]
+	}
+	return string(bytes)
+}
+
 func (ah *AuthHandler) GenerateMailBody(url string, heading string, text string, buttonText string) string {
 	body := "<html>\n" +
 		"<body style=\"margin: 0 !important; padding: 0 !important;\">\n" +
@@ -469,6 +522,7 @@ func (ah *AuthHandler) GenerateMailBody(url string, heading string, text string,
 
 	return body
 }
+
 func getComponentName(methode interface{}) string {
 	return runtime.FuncForPC(reflect.ValueOf(methode).Pointer()).Name()
 }
