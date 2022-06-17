@@ -2,16 +2,20 @@ package handlers
 
 import (
 	"errors"
+	"github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common/logger"
 	"job-offers-service/startup/config"
 	"job-offers-service/store"
+	"reflect"
+	"runtime"
 )
 
 type JobOffersHandler struct {
 	jobOffersStore *store.JobOffersStore
+	log            *logger.LoggerWrapper
 }
 
-func NewOffersHandler(config config.Config) *JobOffersHandler {
-	return &JobOffersHandler{jobOffersStore: store.InitJobOffersStore(config.MongoDbUri)}
+func NewOffersHandler(config config.Config, wrapper *logger.LoggerWrapper) *JobOffersHandler {
+	return &JobOffersHandler{jobOffersStore: store.InitJobOffersStore(config.MongoDbUri), log: wrapper}
 }
 
 func (joh *JobOffersHandler) GetAll() (*[]store.Offer, error) {
@@ -29,5 +33,10 @@ func (joh *JobOffersHandler) CreateJobOffer(in *store.Offer) (store.Offer, error
 	if err != nil {
 		return store.Offer{}, errors.New("Could not create an offer")
 	}
+
 	return *in, nil
+}
+
+func getComponentName(methode interface{}) string {
+	return runtime.FuncForPC(reflect.ValueOf(methode).Pointer()).Name()
 }
