@@ -83,20 +83,12 @@ service AuthService {
     };
   }
 
-
-
-  rpc Enable2FA(EmptyMessage) returns (EmptyMessage){
+  
+  rpc Enable2FA(QrCodeUrlMessage) returns (EmptyMessage){
     option (google.api.http) = {
       post: "/api/auth/users/two-fact-auth"
     };
   }
-
-  rpc Get2FAToken(EmptyMessage) returns (Token){
-    option (google.api.http) = {
-      get: "/api/auth/users/two-fact-auth"
-    };
-  }
-
   rpc Submit2FAToken(ActivationTokenMessage) returns (EmptyMessage){
     option (google.api.http) = {
       put: "/api/auth/users/two-fact-auth"
@@ -190,3 +182,6 @@ message UserUsernameMessage{
   string username=1;
 }
 message EmptyMessage{}
+message QrCodeUrlMessage{
+  string url=1;
+}
