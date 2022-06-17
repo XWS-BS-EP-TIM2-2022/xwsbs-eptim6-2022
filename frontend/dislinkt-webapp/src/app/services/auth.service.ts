@@ -95,4 +95,8 @@ export class AuthService {
   submit2FA(token: string) {
     return this.http.post('/api/auth/users/two-fact-auth', token);
   }
+
+  findUserByUsername(username: string): Observable<any> {
+    return this.http.get<any>('/api/auth/users/' + username);
+  }
 }

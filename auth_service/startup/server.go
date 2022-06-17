@@ -232,3 +232,12 @@ func getRequestIpAddressFromContext(ctx context.Context) string {
 func GetComponentName(methode interface{}) string {
 	return runtime.FuncForPC(reflect.ValueOf(methode).Pointer()).Name()
 }
+
+func (s *Server) FindByUsername(ctx context.Context, pb *authServicePb.UsernameMessage) (*authServicePb.CreateNewUserResponse, error) {
+	user, err := s.AuthHandler.UserStore.FindByUsername(pb.Username)
+	if err == nil {
+		return &authServicePb.CreateNewUserResponse{User: &authServicePb.User{Username: user.Username, MFAStatus: user.Enabled}}, nil
+	}
+
+	return nil, err
+}

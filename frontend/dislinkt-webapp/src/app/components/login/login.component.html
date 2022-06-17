@@ -43,7 +43,7 @@
   </mat-card-content>
 
   <mat-card-content *ngIf="TwoFA">
-    <form #twoFA="ngForm" (ngSubmit)="login()">
+    <form #twoFA="ngForm" (ngSubmit)="submit2FA()">
       <h2 class="mt-2 mx-2">Two-Factor Authentication</h2>
       <div class="message mb-2">
         <p>Enter generated code to complete login</p>
