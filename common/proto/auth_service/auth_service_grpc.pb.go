@@ -35,8 +35,7 @@ type AuthServiceClient interface {
 	PasswordlessLogin(ctx context.Context, in *ActivationTokenMessage, opts ...grpc.CallOption) (*ActivationResponse, error)
 	GenerateApiKey(ctx context.Context, in *GetAllRequest, opts ...grpc.CallOption) (*Token, error)
 	GetUserApiKey(ctx context.Context, in *GetAllRequest, opts ...grpc.CallOption) (*Token, error)
-	Enable2FA(ctx context.Context, in *EmptyMessage, opts ...grpc.CallOption) (*EmptyMessage, error)
-	Get2FAToken(ctx context.Context, in *EmptyMessage, opts ...grpc.CallOption) (*Token, error)
+	Enable2FA(ctx context.Context, in *QrCodeUrlMessage, opts ...grpc.CallOption) (*EmptyMessage, error)
 	Submit2FAToken(ctx context.Context, in *ActivationTokenMessage, opts ...grpc.CallOption) (*EmptyMessage, error)
 }
 
@@ -165,18 +164,9 @@ func (c *authServiceClient) GetUserApiKey(ctx context.Context, in *GetAllRequest
 	return out, nil
 }
 
-func (c *authServiceClient) Enable2FA(ctx context.Context, in *EmptyMessage, opts ...grpc.CallOption) (*EmptyMessage, error) {
+func (c *authServiceClient) Enable2FA(ctx context.Context, in *QrCodeUrlMessage, opts ...grpc.CallOption) (*EmptyMessage, error) {
 	out := new(EmptyMessage)
 	err := c.cc.Invoke(ctx, "/auth_service.AuthService/Enable2FA", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *authServiceClient) Get2FAToken(ctx context.Context, in *EmptyMessage, opts ...grpc.CallOption) (*Token, error) {
-	out := new(Token)
-	err := c.cc.Invoke(ctx, "/auth_service.AuthService/Get2FAToken", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -209,8 +199,7 @@ type AuthServiceServer interface {
 	PasswordlessLogin(context.Context, *ActivationTokenMessage) (*ActivationResponse, error)
 	GenerateApiKey(context.Context, *GetAllRequest) (*Token, error)
 	GetUserApiKey(context.Context, *GetAllRequest) (*Token, error)
-	Enable2FA(context.Context, *EmptyMessage) (*EmptyMessage, error)
-	Get2FAToken(context.Context, *EmptyMessage) (*Token, error)
+	Enable2FA(context.Context, *QrCodeUrlMessage) (*EmptyMessage, error)
 	Submit2FAToken(context.Context, *ActivationTokenMessage) (*EmptyMessage, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
@@ -258,11 +247,8 @@ func (UnimplementedAuthServiceServer) GenerateApiKey(context.Context, *GetAllReq
 func (UnimplementedAuthServiceServer) GetUserApiKey(context.Context, *GetAllRequest) (*Token, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUserApiKey not implemented")
 }
-func (UnimplementedAuthServiceServer) Enable2FA(context.Context, *EmptyMessage) (*EmptyMessage, error) {
+func (UnimplementedAuthServiceServer) Enable2FA(context.Context, *QrCodeUrlMessage) (*EmptyMessage, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Enable2FA not implemented")
-}
-func (UnimplementedAuthServiceServer) Get2FAToken(context.Context, *EmptyMessage) (*Token, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Get2FAToken not implemented")
 }
 func (UnimplementedAuthServiceServer) Submit2FAToken(context.Context, *ActivationTokenMessage) (*EmptyMessage, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Submit2FAToken not implemented")
@@ -515,7 +501,7 @@ func _AuthService_GetUserApiKey_Handler(srv interface{}, ctx context.Context, de
 }
 
 func _AuthService_Enable2FA_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(EmptyMessage)
+	in := new(QrCodeUrlMessage)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -527,25 +513,7 @@ func _AuthService_Enable2FA_Handler(srv interface{}, ctx context.Context, dec fu
 		FullMethod: "/auth_service.AuthService/Enable2FA",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServiceServer).Enable2FA(ctx, req.(*EmptyMessage))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _AuthService_Get2FAToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(EmptyMessage)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AuthServiceServer).Get2FAToken(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/auth_service.AuthService/Get2FAToken",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServiceServer).Get2FAToken(ctx, req.(*EmptyMessage))
+		return srv.(AuthServiceServer).Enable2FA(ctx, req.(*QrCodeUrlMessage))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -630,10 +598,6 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Enable2FA",
 			Handler:    _AuthService_Enable2FA_Handler,
-		},
-		{
-			MethodName: "Get2FAToken",
-			Handler:    _AuthService_Get2FAToken_Handler,
 		},
 		{
 			MethodName: "Submit2FAToken",
