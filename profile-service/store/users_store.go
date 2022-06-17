@@ -124,13 +124,13 @@ func (us *UsersStore) FindAll() []User {
 	return users
 }
 
-func (us *UsersStore) AddUser(u *User) *mongo.InsertOneResult {
+func (us *UsersStore) AddUser(u *User) (*mongo.InsertOneResult, error) {
 	insertResult, err := us.UsersCollection.InsertOne(context.TODO(), u)
 	if err != nil {
 		log.Fatal(err)
 	}
 	fmt.Println("Inserted a single document: ", insertResult.InsertedID)
-	return insertResult
+	return insertResult, err
 }
 
 func (us *UsersStore) UpdateUser(id primitive.ObjectID, user User) error {

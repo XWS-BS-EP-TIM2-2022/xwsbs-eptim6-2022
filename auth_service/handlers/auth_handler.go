@@ -150,8 +150,8 @@ func (ag *AuthHandler) AddNewUser(user *store.User) error {
 	return nil
 }
 
-func (ag *AuthHandler) NotifyProfileServiceAboutRegistration(in *authServicePb.User, dbUser *store.User) error {
-	_, err := ag.profileServiceGrpcClient.AddNewUser(context.TODO(), &profileGw.UserRequest{User: &profileGw.User{
+func (ag *AuthHandler) NotifyProfileServiceAboutRegistration(ctx context.Context, in *authServicePb.User, dbUser *store.User) error {
+	_, err := ag.profileServiceGrpcClient.AddNewUser(ctx, &profileGw.UserRequest{User: &profileGw.User{
 		Username:  in.Username,
 		Password:  dbUser.Password,
 		Biography: in.Biography,
