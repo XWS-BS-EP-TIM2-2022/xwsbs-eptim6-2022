@@ -37,6 +37,7 @@ type AuthServiceClient interface {
 	GetUserApiKey(ctx context.Context, in *GetAllRequest, opts ...grpc.CallOption) (*Token, error)
 	Enable2FA(ctx context.Context, in *EmptyMessage, opts ...grpc.CallOption) (*QrCodeUrlMessage, error)
 	Submit2FAToken(ctx context.Context, in *ActivationTokenMessage, opts ...grpc.CallOption) (*EmptyMessage, error)
+	FindByUsername(ctx context.Context, in *UsernameMessage, opts ...grpc.CallOption) (*CreateNewUserResponse, error)
 }
 
 type authServiceClient struct {
@@ -182,6 +183,15 @@ func (c *authServiceClient) Submit2FAToken(ctx context.Context, in *ActivationTo
 	return out, nil
 }
 
+func (c *authServiceClient) FindByUsername(ctx context.Context, in *UsernameMessage, opts ...grpc.CallOption) (*CreateNewUserResponse, error) {
+	out := new(CreateNewUserResponse)
+	err := c.cc.Invoke(ctx, "/auth_service.AuthService/FindByUsername", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AuthServiceServer is the server API for AuthService service.
 // All implementations must embed UnimplementedAuthServiceServer
 // for forward compatibility
@@ -201,6 +211,7 @@ type AuthServiceServer interface {
 	GetUserApiKey(context.Context, *GetAllRequest) (*Token, error)
 	Enable2FA(context.Context, *EmptyMessage) (*QrCodeUrlMessage, error)
 	Submit2FAToken(context.Context, *ActivationTokenMessage) (*EmptyMessage, error)
+	FindByUsername(context.Context, *UsernameMessage) (*CreateNewUserResponse, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
 
@@ -252,6 +263,9 @@ func (UnimplementedAuthServiceServer) Enable2FA(context.Context, *EmptyMessage) 
 }
 func (UnimplementedAuthServiceServer) Submit2FAToken(context.Context, *ActivationTokenMessage) (*EmptyMessage, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Submit2FAToken not implemented")
+}
+func (UnimplementedAuthServiceServer) FindByUsername(context.Context, *UsernameMessage) (*CreateNewUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FindByUsername not implemented")
 }
 func (UnimplementedAuthServiceServer) mustEmbedUnimplementedAuthServiceServer() {}
 
@@ -536,6 +550,24 @@ func _AuthService_Submit2FAToken_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_FindByUsername_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UsernameMessage)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).FindByUsername(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/auth_service.AuthService/FindByUsername",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).FindByUsername(ctx, req.(*UsernameMessage))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AuthService_ServiceDesc is the grpc.ServiceDesc for AuthService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -602,6 +634,10 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Submit2FAToken",
 			Handler:    _AuthService_Submit2FAToken_Handler,
+		},
+		{
+			MethodName: "FindByUsername",
+			Handler:    _AuthService_FindByUsername_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
