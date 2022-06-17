@@ -17,6 +17,8 @@ export class LoginComponent implements OnInit {
   email!: string
   checkMail = new FormControl('', [Validators.email]);
   logged: boolean = false
+  TwoFA!: boolean;
+  code: string = ""
 
   constructor(private authService: AuthService, private router: Router, public matSnackBar: MatSnackBar) { }
 
@@ -26,6 +28,21 @@ export class LoginComponent implements OnInit {
       this.logged = true
     else
       this.logged = false
+
+    this.TwoFA = false;
+  }
+
+  login() {
+    this.authService.findUserByUsername(this.username).subscribe(
+      data => {
+        if (data.user.MFAStatus)
+          this.TwoFA = true;
+        else
+          this.submitForm();
+      },
+      error => {
+        this.errorMessage = "Invalid credentials"
+      });
   }
 
   submitForm() {
@@ -35,7 +52,7 @@ export class LoginComponent implements OnInit {
     }
     this.authService.login(user).subscribe(
       (data) => {
-        this.router.navigate(['/home'])
+        window.location.href = "/home"
       },
       (error) => {
         this.errorMessage = error.error.message;
@@ -58,6 +75,16 @@ export class LoginComponent implements OnInit {
       },
       (error) => {
         this.errorMessage = error.error;
+      }
+    )
+  }
+
+  submit2FA() {
+    this.authService.submit2FA(this.code).subscribe(data => {
+      this.submitForm();
+    },
+      error => {
+        this.errorMessage = error.error
       }
     )
   }

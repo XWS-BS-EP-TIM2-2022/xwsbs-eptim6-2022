@@ -9,8 +9,8 @@ import { Observable } from 'rxjs';
 })
 export class AuthService {
 
-  constructor(private http: HttpClient) { 
-    http.options("",{})
+  constructor(private http: HttpClient) {
+    http.options("", {})
 
   }
 
@@ -19,7 +19,7 @@ export class AuthService {
       'username': user.username,
       'password': user.password
     };
-    
+
     return this.http.put("/api/auth/session", JSON.stringify(body)).pipe(
       map((res: any) => {
         console.log('Login success');
@@ -90,5 +90,13 @@ export class AuthService {
 
   getUser(): Observable<any> {
     return this.http.get<Observable<any>>('/api/whoami');
+  }
+
+  submit2FA(token: string) {
+    return this.http.post('/api/auth/users/two-fact-auth', token);
+  }
+
+  findUserByUsername(username: string): Observable<any> {
+    return this.http.get<any>('/api/auth/users/' + username);
   }
 }
