@@ -71,7 +71,7 @@ func (s *Server) AddSkill(ctx context.Context, in *usersServicePb.SkillRequest) 
 			Component: GetComponentName(s.userHandler.AddSkill)})
 		return mappers.MapToUserResponse(&user), err
 	}
-	s.log.Writeln(logger.LogMessage{Message: fmt.Sprintf("User: %s  added skill. %s. Ip address: %s ", username, err.Error(), getRequestIpAddressFromContext(ctx)), Level: logrus.WarnLevel,
+	s.log.Writeln(logger.LogMessage{Message: fmt.Sprintf("User: %s  added skill. Ip address: %s ", username, getRequestIpAddressFromContext(ctx)), Level: logrus.WarnLevel,
 		Component: GetComponentName(s.userHandler.AddSkill)})
 	return mappers.MapToUserResponse(&user), nil
 }
@@ -88,7 +88,7 @@ func (s *Server) AddInterest(ctx context.Context, in *usersServicePb.InterestReq
 			Component: GetComponentName(s.userHandler.AddInterest)})
 		return mappers.MapToUserResponse(&user), err
 	}
-	s.log.Writeln(logger.LogMessage{Message: fmt.Sprintf("User: %s  added interest. %s. Ip address: %s ", username, err.Error(), getRequestIpAddressFromContext(ctx)), Level: logrus.WarnLevel,
+	s.log.Writeln(logger.LogMessage{Message: fmt.Sprintf("User: %s  added interest. Ip address: %s ", username, getRequestIpAddressFromContext(ctx)), Level: logrus.WarnLevel,
 		Component: GetComponentName(s.userHandler.AddInterest)})
 	return mappers.MapToUserResponse(&user), nil
 
@@ -106,7 +106,7 @@ func (s *Server) AddExperience(ctx context.Context, in *usersServicePb.Experienc
 			Component: GetComponentName(s.userHandler.AddExperience)})
 		return mappers.MapToUserResponse(&user), err
 	}
-	s.log.Writeln(logger.LogMessage{Message: fmt.Sprintf("User: %s  added experience. %s. Ip address: %s ", username, err.Error(), getRequestIpAddressFromContext(ctx)), Level: logrus.WarnLevel,
+	s.log.Writeln(logger.LogMessage{Message: fmt.Sprintf("User: %s added experience. Ip address: %s ", username, getRequestIpAddressFromContext(ctx)), Level: logrus.WarnLevel,
 		Component: GetComponentName(s.userHandler.AddExperience)})
 	return mappers.MapToUserResponse(&user), nil
 
@@ -124,7 +124,7 @@ func (s *Server) AddEducation(ctx context.Context, in *usersServicePb.EducationR
 			Component: GetComponentName(s.userHandler.AddEducation)})
 		return mappers.MapToUserResponse(&user), err
 	}
-	s.log.Writeln(logger.LogMessage{Message: fmt.Sprintf("User: %s  added education. %s. Ip address: %s ", username, err.Error(), getRequestIpAddressFromContext(ctx)), Level: logrus.WarnLevel,
+	s.log.Writeln(logger.LogMessage{Message: fmt.Sprintf("User: %s  added education.  Ip address: %s ", username, getRequestIpAddressFromContext(ctx)), Level: logrus.WarnLevel,
 		Component: GetComponentName(s.userHandler.AddEducation)})
 	return mappers.MapToUserResponse(&user), nil
 
@@ -142,7 +142,7 @@ func (s *Server) FollowUser(ctx context.Context, in *usersServicePb.GetByIdReque
 			Component: GetComponentName(s.userHandler.FollowUser)})
 		return nil, err
 	}
-	s.log.Writeln(logger.LogMessage{Message: fmt.Sprintf("User: %s followed user with id: %s. %s. Ip address: %s ", username, in.Id, err.Error(), getRequestIpAddressFromContext(ctx)), Level: logrus.WarnLevel,
+	s.log.Writeln(logger.LogMessage{Message: fmt.Sprintf("User: %s followed user with id: %s. Ip address: %s ", username, in.Id, getRequestIpAddressFromContext(ctx)), Level: logrus.WarnLevel,
 		Component: GetComponentName(s.userHandler.FollowUser)})
 	user, err := s.userHandler.GetUser(username)
 	out := mappers.MapToUserResponse(&user)
@@ -178,7 +178,7 @@ func (s *Server) UnFollowUser(ctx context.Context, in *usersServicePb.GetByIdReq
 			Component: GetComponentName(s.userHandler.UnfollowUser)})
 		return nil, err
 	}
-	s.log.Writeln(logger.LogMessage{Message: fmt.Sprintf("User: %s unfollowed user with id: %s. %s. Ip address: %s ", err.Error(), username, in.Id, getRequestIpAddressFromContext(ctx)), Level: logrus.WarnLevel,
+	s.log.Writeln(logger.LogMessage{Message: fmt.Sprintf("User: %s unfollowed user with id: %s. Ip address: %s ", username, in.Id, getRequestIpAddressFromContext(ctx)), Level: logrus.WarnLevel,
 		Component: GetComponentName(s.userHandler.UnfollowUser)})
 	user, err := s.userHandler.GetUser(username)
 	out := mappers.MapToUserResponse(&user)
@@ -192,8 +192,10 @@ func (s *Server) RejectFollow(ctx context.Context, in *usersServicePb.GetByIdReq
 }
 func getRequestIpAddressFromContext(ctx context.Context) string {
 	md, _ := metadata.FromIncomingContext(ctx)
-	userIp := md.Get("x-forwarded-for")[0]
-	return userIp
+	if userIps := md.Get("x-forwarded-for"); len(userIps) != 0 {
+		return userIps[0]
+	}
+	return ""
 }
 func GetComponentName(methode interface{}) string {
 	return runtime.FuncForPC(reflect.ValueOf(methode).Pointer()).Name()

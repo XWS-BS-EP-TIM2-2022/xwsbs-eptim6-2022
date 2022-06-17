@@ -40,7 +40,7 @@ func (s *Server) AddNewUser(ctx context.Context, in *authServicePb.CreateNewUser
 		s.log.Writeln(logger.LogMessage{Message: err.Error(), Level: logrus.FatalLevel, Component: GetComponentName(s.AuthHandler.AddNewUser)})
 		return &authServicePb.CreateNewUser{}, err
 	}
-	err = s.AuthHandler.NotifyProfileServiceAboutRegistration(in.User, &user)
+	err = s.AuthHandler.NotifyProfileServiceAboutRegistration(ctx, in.User, &user)
 	if err != nil {
 		s.log.Writeln(logger.LogMessage{Message: err.Error(), Level: logrus.FatalLevel, Component: GetComponentName(s.AuthHandler.NotifyProfileServiceAboutRegistration)})
 		return nil, err
