@@ -48,7 +48,7 @@ func (s *Server) CreateNewJobOffer(ctx context.Context, in *jobOffersPb.CreateJo
 		return nil, err
 	}
 
-	s.log.Writeln(logger.LogMessage{Message: fmt.Sprintf("Job offer created by: %s from IP address: %s", offer.User, getRequestIpAddressFromContext(ctx)),
+	s.log.Writeln(logger.LogMessage{Message: fmt.Sprintf("New job offer created by: %s from IP address: %s", offer.User, getRequestIpAddressFromContext(ctx)),
 		Component: GetComponentName(s.jobOffersHandler.CreateJobOffer), Level: logrus.InfoLevel})
 	return mappers.MapToResponse(jobOffer), nil
 }

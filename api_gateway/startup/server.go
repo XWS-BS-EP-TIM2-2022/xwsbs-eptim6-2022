@@ -5,11 +5,13 @@ import (
 	"fmt"
 	"github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/api_gateway/infrastructure/service"
 	cfg "github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/api_gateway/startup/config"
+	"github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common/logger"
 	authGw "github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common/proto/auth_service"
 	jobOffersPb "github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common/proto/job_offers_service"
 	postsGw "github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common/proto/posts_service"
 	profileGw "github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common/proto/profile_service"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"log"
@@ -20,6 +22,7 @@ type Server struct {
 	config      *cfg.Config
 	mux         *runtime.ServeMux
 	authService *service.AuthService
+	log         *logger.LoggerWrapper
 }
 
 type SecurityServer struct {
@@ -31,11 +34,12 @@ const (
 	serverKeyFile  = "./startup/certificates/XWSBackend.key"
 )
 
-func NewServer(config *cfg.Config) *Server {
+func NewServer(config *cfg.Config, log *logger.LoggerWrapper) *Server {
 	server := &Server{
 		config:      config,
 		mux:         runtime.NewServeMux(),
-		authService: service.InitAuthService(config),
+		authService: service.InitAuthService(config, log),
+		log:         log,
 	}
 	server.initHandlers()
 	server.initCustomHandlers()
@@ -95,6 +99,8 @@ func authWrapper(h http.Handler, s *Server) http.Handler {
 				return
 			} else {
 				w.WriteHeader(http.StatusForbidden)
+				s.log.Writeln(logger.LogMessage{Message: fmt.Sprintf("Unauthorized request: %s from IP address: %s", request, r.Header.Get("x-forwarded-for")),
+					Level: logrus.FatalLevel, Component: "api_gateway/server.go"})
 				fmt.Fprintf(w, "Not Authorized")
 			}
 		}
@@ -105,8 +111,9 @@ func authWrapper(h http.Handler, s *Server) http.Handler {
 			h.ServeHTTP(w, r)
 		} else {
 			w.WriteHeader(http.StatusForbidden)
-
 			fmt.Fprintf(w, "Not Authorized")
+			s.log.Writeln(logger.LogMessage{Message: fmt.Sprintf("Unauthorized request: %s from IP address: %s", request, r.RemoteAddr),
+				Level: logrus.FatalLevel, Component: "api_gateway/server.go"})
 		}
 	})
 }

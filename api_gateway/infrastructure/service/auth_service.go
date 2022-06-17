@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/api_gateway/startup/config"
+	"github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common/logger"
 	authGw "github.com/XWS-BS-EP-TIM2-2022/xwsbs-eptim6-2022/common/proto/auth_service"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -13,9 +14,10 @@ import (
 
 type AuthService struct {
 	client authGw.AuthServiceClient
+	log    *logger.LoggerWrapper
 }
 
-func InitAuthService(config *config.Config) *AuthService {
+func InitAuthService(config *config.Config, wrapper *logger.LoggerWrapper) *AuthService {
 	authEndpoint := fmt.Sprintf("%s:%s", config.AuthHost, config.AuthPort)
 	conn, err := getConnection(authEndpoint)
 	if err != nil {
@@ -23,7 +25,7 @@ func InitAuthService(config *config.Config) *AuthService {
 		return nil
 	}
 	authConn := authGw.NewAuthServiceClient(conn)
-	return &AuthService{client: authConn}
+	return &AuthService{client: authConn, log: wrapper}
 }
 
 func getConnection(address string) (*grpc.ClientConn, error) {
